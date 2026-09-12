@@ -16,4 +16,4 @@ For patches without a visible interface, `VALIDATION.md` records the testable be
 
 ![Extension Pack Installer](screenshots/extension-pack-installer.png)
 
-Actual GTK application window captured under Xvfb. The install action stays disabled until the user selects an archive that passes path and metadata validation.
+Actual GTK application window captured under Xvfb after a demo archive passed path and metadata validation. It shows the extension name, UUID, declared Shell versions, and the enabled explicit install action.
