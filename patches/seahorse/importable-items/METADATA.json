@@ -1,0 +1,21 @@
+{
+  "project": "seahorse",
+  "series": "importable-items",
+  "source_branch": "main",
+  "base": "e47cb74dc46e2af555525499fe654c9ac31515fb",
+  "tip": "bb380b87ae52e7c7d92587bf458fe049c2e8aa94",
+  "commits": [
+    "bb380b87ae52e7c7d92587bf458fe049c2e8aa94"
+  ],
+  "patches": [
+    "0001-import-Keep-import-action-enabled-for-importable-items.patch"
+  ],
+  "archive_directory": "patches/seahorse/importable-items",
+  "validation": {
+    "commands": [
+      "git diff --check",
+      "meson setup build --wipe"
+    ],
+    "result": "Whitespace validation passed. Meson reached dependency validation and stopped because the local development environment lacks pwquality; no full build or runtime result is claimed."
+  }
+}

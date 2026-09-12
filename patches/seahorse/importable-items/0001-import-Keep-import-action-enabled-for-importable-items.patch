@@ -1,0 +1,44 @@
+From bb380b87ae52e7c7d92587bf458fe049c2e8aa94 Mon Sep 17 00:00:00 2001
+From: yeager <yeager@users.noreply.github.com>
+Date: Sat, 12 Sep 2026 14:34:43 +0200
+Subject: [PATCH] import: Keep import action enabled for importable items
+
+---
+ src/import-dialog.vala | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/src/import-dialog.vala b/src/import-dialog.vala
+index 948b531..5d30e5b 100644
+--- a/src/import-dialog.vala
++++ b/src/import-dialog.vala
+@@ -118,9 +118,12 @@ public class Seahorse.ImportDialog : Adw.Window {
+         // Add to the list of parsed items
+         this.parsed_items.add(parsed);
+ 
+-        // Check if we have any importers
++        // Keep the action available when any parsed item is importable. A
++        // subsequent non-importable item must not disable a valid certificate.
+         var importers = Gcr.Importer.create_for_parsed(parsed);
+-        action_set_enabled("import-all", !importers.is_empty());
++        if (!importers.is_empty()) {
++            action_set_enabled("import-all", true);
++        }
+     }
+ 
+     private bool on_parser_authenticate(Gcr.Parser parser, int count) {
+@@ -150,10 +153,8 @@ public class Seahorse.ImportDialog : Adw.Window {
+     private void action_import_all(string action_name, Variant? param) {
+         foreach (unowned var parsed in this.parsed_items) {
+             var importers = Gcr.Importer.create_for_parsed(parsed);
+-            if (importers.length() == 0) {
+-                warning("No importers available. How was the import action called?");
+-                return;
+-            }
++            if (importers.length() == 0)
++                continue;
+ 
+             var importer = importers.data;
+             importer.queue_for_parsed(parsed);
+-- 
+2.53.0
+

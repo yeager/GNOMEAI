@@ -321,6 +321,7 @@ Each series is stored below `patches/` and can be applied locally with `git am`.
 | NetworkManager-openvpn | `openvpn-2-6-dns-options` | 1 | [`openvpn-2-6-dns-options`](patches/NetworkManager-openvpn/openvpn-2-6-dns-options) |
 | pango | `ci-windows-fontconfig` | 1 | [`ci-windows-fontconfig`](patches/pango/ci-windows-fontconfig) |
 | pango | `clang23-unused-global` | 3 | [`clang23-unused-global`](patches/pango/clang23-unused-global) |
+| seahorse | `main` | 1 | [`importable-items`](patches/seahorse/importable-items) |
 | shotwell | `prepare-before-copy` | 1 | [`prepare-before-copy`](patches/shotwell/prepare-before-copy) |
 | xdg-desktop-portal-gnome | `fix-input-capture-version-50` | 1 | [`fix-input-capture-version-50`](patches/xdg-desktop-portal-gnome/fix-input-capture-version-50) |
 

@@ -1,3 +1,11 @@
+## Seahorse: retain import action for importable data
+
+Patch archive: `patches/seahorse/importable-items/`
+
+- `git diff --check` passed.
+- `meson setup build --wipe` reached dependency validation and stopped because the local development environment lacks `pwquality`.
+- The dialog now keeps **Import All** enabled after an importable parsed item even if a later parsed item has no importer, and skips the latter instead of aborting the full import action.
+
 ## GNOME Software: full-size screenshots
 
 Patch archive: `patches/gnome-software/screenshot-zoom/`

@@ -730,5 +730,19 @@
       "0001-screenshots-Open-screenshots-at-full-size.patch"
     ],
     "archive_directory": "screenshot-zoom"
+  },
+  {
+    "project": "seahorse",
+    "source_repository": "https://gitlab.gnome.org/GNOME/seahorse.git",
+    "branch": "main",
+    "base": "e47cb74dc46e2af555525499fe654c9ac31515fb",
+    "tip": "bb380b87ae52e7c7d92587bf458fe049c2e8aa94",
+    "commits": [
+      "bb380b87ae52e7c7d92587bf458fe049c2e8aa94"
+    ],
+    "patches": [
+      "0001-import-Keep-import-action-enabled-for-importable-items.patch"
+    ],
+    "archive_directory": "importable-items"
   }
 ]
