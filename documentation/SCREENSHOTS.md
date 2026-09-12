@@ -8,6 +8,6 @@ App screenshots show the current local build in English. The Calendar image is a
 | Clip Shelf | [clip-shelf.png](screenshots/clip-shelf.png) | The manual local clipboard shelf UI. |
 | GNOME Calendar default reminder patch | [calendar-default-reminder.png](screenshots/calendar-default-reminder.png) | The source-derived Preferences UI showing a calendar-specific default reminder. |
 | Command Shelf | [command-shelf.png](screenshots/command-shelf.png) | Named local snippets and explicit clipboard copying. |
-| Name Shift | [name-shift.png](screenshots/name-shift.png) | Loaded local files and the validation state before a rename can be applied. |
+| Name Shift | [name-shift.png](screenshots/name-shift.png) | A valid local rename preview before the explicit rename action is applied. |
 
 For patches without a visible interface, `VALIDATION.md` records the testable behavior and commands instead of inventing a visual result.
