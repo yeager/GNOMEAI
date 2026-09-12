@@ -1,0 +1,14 @@
+{
+  "project": "gnome-bluetooth",
+  "series": "device-alias",
+  "source_branch": "master",
+  "base": "4c2a6c2f81d29b28045692760e44db41d20b2677",
+  "tip": "5354c9a1c4217b293fc5121f69238eb462a0f654",
+  "commits": ["5354c9a1c4217b293fc5121f69238eb462a0f654"],
+  "patches": ["0001-settings-Allow-renaming-Bluetooth-devices.patch"],
+  "archive_directory": "patches/gnome-bluetooth/device-alias",
+  "validation": {
+    "commands": ["meson setup build --wipe", "meson compile -C build", "LANGUAGE=C LC_ALL=C LANG=C meson test -C build --print-errorlogs"],
+    "result": "17 of 17 tests passed"
+  }
+}

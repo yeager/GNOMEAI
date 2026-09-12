@@ -20,3 +20,12 @@ Patch archive: `patches/console/default-window-size/`
 - `meson compile -C build` passed.
 - `meson test -C build --print-errorlogs` passed: 44 of 44 tests.
 - The settings regression test covers both the default 800×600 size and a user-configured 1024×768 size when previous-window restoration is disabled.
+
+## GNOME Bluetooth: editable device name
+
+Patch archive: `patches/gnome-bluetooth/device-alias/`
+
+- `meson setup build --wipe` passed.
+- `meson compile -C build` passed.
+- `LANGUAGE=C LC_ALL=C LANG=C meson test -C build --print-errorlogs` passed: 17 of 17 tests.
+- The UI writes the user-selected BlueZ `org.bluez.Device1.Alias` property with an asynchronous system-DBus call; it does not maintain a separate name store.
