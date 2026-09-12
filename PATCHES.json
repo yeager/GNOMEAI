@@ -646,5 +646,33 @@
       "0001-inputcapture-Advertise-version-2-on-gnome-50.patch"
     ],
     "archive_directory": "fix-input-capture-version-50"
+  },
+  {
+    "project": "console",
+    "source_repository": "https://gitlab.gnome.org/GNOME/console.git",
+    "branch": "xdg-terminal-exec",
+    "base": "4ad9d2f0b402e8334b4e3e3c01f67f7149007474",
+    "tip": "a83fcc7ba6a1ab578402a6db9ffeb26a5a74d5af",
+    "commits": [
+      "a83fcc7ba6a1ab578402a6db9ffeb26a5a74d5af"
+    ],
+    "patches": [
+      "0001-preferences-Add-default-window-size-controls.patch"
+    ],
+    "archive_directory": "default-window-size"
+  },
+  {
+    "project": "gnome-bluetooth",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-bluetooth.git",
+    "branch": "master",
+    "base": "4c2a6c2f81d29b28045692760e44db41d20b2677",
+    "tip": "013c561a3f3695b5e4c4cd0245b89c5a262c9d29",
+    "commits": [
+      "013c561a3f3695b5e4c4cd0245b89c5a262c9d29"
+    ],
+    "patches": [
+      "0001-settings-Allow-renaming-Bluetooth-devices.patch"
+    ],
+    "archive_directory": "device-alias"
   }
 ]

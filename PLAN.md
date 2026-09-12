@@ -5,10 +5,10 @@ This plan tracks 250 GNOME issues selected by community demand and current relev
 ## Working Rules
 
 - Prefer a small, reviewable fix with a regression test.
-- Do not duplicate an active upstream merge request.
+- Keep the archive independent; do not submit patches to GNOME or GitLab.
 - Do not replace a required design or security decision with a superficial UI change.
 - Archive every prepared contribution as an ordered patch series with its upstream base.
-- AI assistance is allowed; the final patch still requires technical review and accountable ownership.
+- AI assistance is allowed; each archived patch still requires technical review and accountable ownership.
 
 ## Issue Inventory
 
@@ -269,10 +269,11 @@ The first 50 entries were globally vote-sorted when collected. Entries 51–250 
 
 ## Archived Contribution Series
 
-Each series is stored below `patches/` and can be applied with `git am`. The exact source repository, upstream base, tip commit, and patch filenames are in [`PATCHES.json`](PATCHES.json) and in the series-local `METADATA.json`.
+Each series is stored below `patches/` and can be applied locally with `git am`. The exact source repository, base revision, tip commit, and patch filenames are in [`PATCHES.json`](PATCHES.json) and in the series-local `METADATA.json`.
 
 | Project | Branch | Commits | Archive |
 | --- | --- | ---: | --- |
+| console | `xdg-terminal-exec` | 1 | [`default-window-size`](patches/console/default-window-size) |
 | console | `xdg-terminal-exec` | 2 | [`xdg-terminal-exec`](patches/console/xdg-terminal-exec) |
 | epiphany | `webextension-null-message` | 1 | [`webextension-null-message`](patches/epiphany/webextension-null-message) |
 | gdk-pixbuf | `icns-rle-bounds` | 1 | [`icns-rle-bounds`](patches/gdk-pixbuf/icns-rle-bounds) |
@@ -282,6 +283,7 @@ Each series is stored below `patches/` and can be applied with `git am`. The exa
 | gimp | `fix-color-picker-exact-samples` | 3 | [`fix-color-picker-exact-samples`](patches/gimp/fix-color-picker-exact-samples) |
 | gimp | `fix-raw-float-endianness` | 1 | [`fix-raw-float-endianness`](patches/gimp/fix-raw-float-endianness) |
 | gnome-autoar | `async-signal-return` | 1 | [`async-signal-return`](patches/gnome-autoar/async-signal-return) |
+| gnome-bluetooth | `master` | 1 | [`device-alias`](patches/gnome-bluetooth/device-alias) |
 | gnome-characters | `fix-search-result-metas` | 1 | [`fix-search-result-metas`](patches/gnome-characters/fix-search-result-metas) |
 | gnome-connections | `rdp-pass-f10` | 1 | [`rdp-pass-f10`](patches/gnome-connections/rdp-pass-f10) |
 | gnome-control-center | `feature-default-terminal` | 2 | [`feature-default-terminal`](patches/gnome-control-center/feature-default-terminal) |
@@ -322,5 +324,4 @@ Each series is stored below `patches/` and can be applied with `git am`. The exa
 
 - The GNOME Control Center recording-level patch depends on the accompanying libgnome-volume-control API patch.
 - The Power Saver patch includes a regression test that fails against the previous behaviour and passes with the fix.
-- Some archived series already have upstream merge requests. They remain here so their work is available while GitLab access or review is unavailable.
-- GitLab status, review comments, and pipelines must be rechecked before any archived series is resubmitted upstream.
+- The source repositories are referenced only for compatible local bases and investigation. GNOMEAI does not make GNOME or GitLab submissions.

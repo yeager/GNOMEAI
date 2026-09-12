@@ -1,6 +1,6 @@
 # GNOMEAI
 
-GNOMEAI is an open archive for GNOME-related patch series, debugging notes, and implementation plans where AI may be used as a productive development tool.
+GNOMEAI is an independent GitHub archive for GNOME-related patch series, debugging notes, and implementation plans where AI may be used as a productive development tool. It does not submit work to GNOME or GitLab.
 
 AI is not a threat to software development. Used well, it shortens the path from a bug report to a clear reproduction, helps people navigate large codebases, suggests focused changes, and finds tests that might otherwise be missed. It leaves more time for work that still needs judgment: understanding user needs, choosing architecture, reviewing risk, and taking responsibility for the result.
 
@@ -29,11 +29,11 @@ Clone the source project listed in `METADATA.json`, check out a compatible upstr
 git am /path/to/GNOMEAI/patches/PROJECT/ARCHIVE-DIRECTORY/*.patch
 ```
 
-Some series depend on other series. Read `PLAN.md` and the relevant metadata before submitting a series upstream.
+Some series depend on other series. Read `PLAN.md` and the relevant metadata before applying a series locally.
 
 ## Contribute
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md). Always state the target project, upstream base, problem addressed, validation performed, and known limitations. The contributor is responsible for the final diff.
+Read [CONTRIBUTING.md](CONTRIBUTING.md). Always state the target project, base revision, problem addressed, validation performed, and known limitations. The contributor is responsible for the final diff in this archive.
 
 ## Apps
 
