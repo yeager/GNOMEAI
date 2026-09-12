@@ -10,5 +10,16 @@
   "patches": [
     "0001-screenshot-Add-persistent-save-to-disk-option.patch"
   ],
-  "archive_directory": "work-screenshot-save-to-disk"
+  "archive_directory": "work-screenshot-save-to-disk",
+  "validation": {
+    "date": "2026-09-12",
+    "checks_passed": [
+      "node --check js/ui/screenshot.js",
+      "schema XML parsing",
+      "git diff --check 8b21ff4^ 8b21ff4"
+    ],
+    "meson_configuration": "passed with --wrap-mode=nodownload -Dtests=false",
+    "full_build": "blocked by GNOME Shell 49.1 source versus local Mutter 50.1 API mismatch in unchanged C files",
+    "test_suite": "not run; jasmine-gjs wrap unavailable in the offline configuration"
+  }
 }
