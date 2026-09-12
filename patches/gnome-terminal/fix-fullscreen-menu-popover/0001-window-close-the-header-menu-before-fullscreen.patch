@@ -1,0 +1,56 @@
+From da47e67bd14e458338fa8d4898526c273cdd2483 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Fri, 11 Sep 2026 23:21:09 +0200
+Subject: [PATCH] window: close the header menu before fullscreen
+
+---
+ src/terminal-headerbar.cc | 8 ++++++++
+ src/terminal-headerbar.hh | 3 ++-
+ src/terminal-window.cc    | 2 ++
+ 3 files changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/src/terminal-headerbar.cc b/src/terminal-headerbar.cc
+index 83b3eda..a439184 100644
+--- a/src/terminal-headerbar.cc
++++ b/src/terminal-headerbar.cc
+@@ -120,3 +120,11 @@ terminal_headerbar_new (void)
+   return reinterpret_cast<GtkWidget*>
+     (g_object_new (TERMINAL_TYPE_HEADERBAR, nullptr));
+ }
++
++void
++terminal_headerbar_popdown_menu (TerminalHeaderbar *headerbar)
++{
++  g_return_if_fail (TERMINAL_IS_HEADERBAR (headerbar));
++
++  gtk_menu_button_popdown (GTK_MENU_BUTTON (headerbar->menubutton));
++}
+diff --git a/src/terminal-headerbar.hh b/src/terminal-headerbar.hh
+index b673c6d..50aac31 100644
+--- a/src/terminal-headerbar.hh
++++ b/src/terminal-headerbar.hh
+@@ -26,6 +26,7 @@ G_BEGIN_DECLS
+ 
+ G_DECLARE_FINAL_TYPE (TerminalHeaderbar, terminal_headerbar, TERMINAL, HEADERBAR, GtkWidget)
+ 
+-GtkWidget *terminal_headerbar_new (void);
++GtkWidget *terminal_headerbar_new          (void);
++void       terminal_headerbar_popdown_menu  (TerminalHeaderbar *headerbar);
+ 
+ G_END_DECLS
+diff --git a/src/terminal-window.cc b/src/terminal-window.cc
+index 9b69a00..15bb105 100644
+--- a/src/terminal-window.cc
++++ b/src/terminal-window.cc
+@@ -1219,6 +1219,8 @@ action_fullscreen_state_cb (GSimpleAction *action,
+   if (!gtk_widget_get_realized (GTK_WIDGET (window)))
+     return;
+ 
++  /* Close the menu before its headerbar is hidden by fullscreen. */
++  terminal_headerbar_popdown_menu (window->headerbar);
+   adw_toolbar_view_set_reveal_top_bars (window->toolbar_view, !fullscreen);
+ 
+   /* Wait for the revealer transition to finish plus a small amount
+-- 
+2.53.0
+

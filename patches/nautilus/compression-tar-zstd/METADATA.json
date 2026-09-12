@@ -1,0 +1,13 @@
+{
+  "project": "nautilus",
+  "source_repository": "https://gitlab.gnome.org/GNOME/nautilus.git",
+  "branch": "compression-tar-zstd",
+  "base": "7674c26523c0cbac5b908d42008d7117494d19bc",
+  "tip": "5f8df94560fa740baa84498c127e26d8b295732f",
+  "commits": [
+    "5f8df94560fa740baa84498c127e26d8b295732f"
+  ],
+  "patches": [
+    "0001-compress-Add-TAR-with-Zstandard-support.patch"
+  ]
+}

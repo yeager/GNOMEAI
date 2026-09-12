@@ -1,0 +1,13 @@
+{
+  "project": "gnome-characters",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-characters.git",
+  "branch": "fix-search-result-metas",
+  "base": "4b422979084db0f7a242a265d627b682b27d4f98",
+  "tip": "728726864f81924ed4d8021f8834eaf5a24048ec",
+  "commits": [
+    "728726864f81924ed4d8021f8834eaf5a24048ec"
+  ],
+  "patches": [
+    "0001-search-provider-return-metadata-for-results-without-.patch"
+  ]
+}

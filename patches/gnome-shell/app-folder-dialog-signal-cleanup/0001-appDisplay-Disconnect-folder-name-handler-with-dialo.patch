@@ -1,0 +1,25 @@
+From bcf9f80558a3bf221149f9f1b84aa52f1345c602 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Fri, 11 Sep 2026 22:53:33 +0200
+Subject: [PATCH] appDisplay: Disconnect folder name handler with dialog
+
+---
+ js/ui/appDisplay.js | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/js/ui/appDisplay.js b/js/ui/appDisplay.js
+index 85f7b08..a88f502 100644
+--- a/js/ui/appDisplay.js
++++ b/js/ui/appDisplay.js
+@@ -2600,7 +2600,7 @@ export const AppFolderDialog = GObject.registerClass({
+             coordinate: Clutter.BindCoordinate.SIZE,
+         }));
+ 
+-        this._folder.connect('changed::name', () => this._syncFolderName());
++        this._folder.connectObject('changed::name', () => this._syncFolderName(), this);
+         this._syncFolderName();
+     }
+ 
+-- 
+2.53.0
+

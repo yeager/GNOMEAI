@@ -1,0 +1,13 @@
+{
+  "project": "gimp",
+  "source_repository": "git@ssh.gitlab.gnome.org:yeager/gimp.git",
+  "branch": "addborder-opacity",
+  "base": "d6cba36129c9080a72863ed4f8f4151a0668bf99",
+  "tip": "1ffd3be159e07a732d28dc4ef7a830cc92921db4",
+  "commits": [
+    "1ffd3be159e07a732d28dc4ef7a830cc92921db4"
+  ],
+  "patches": [
+    "0001-plug-ins-script-fu-Reset-Add-Border-opacity.patch"
+  ]
+}

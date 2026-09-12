@@ -1,0 +1,67 @@
+From 5eb1273928ca895a3de2c05a56e637f56de64e72 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Fri, 11 Sep 2026 21:45:25 +0200
+Subject: [PATCH] Fix const correctness in Fedora build
+
+---
+ properties/nm-openvpn-editor.c |  2 +-
+ shared/utils.c                 | 17 +++++++++--------
+ 2 files changed, 10 insertions(+), 9 deletions(-)
+
+diff --git a/properties/nm-openvpn-editor.c b/properties/nm-openvpn-editor.c
+index 0f86b7c..d0bec4a 100644
+--- a/properties/nm-openvpn-editor.c
++++ b/properties/nm-openvpn-editor.c
+@@ -729,7 +729,7 @@ sk_default_filter (const GtkFileFilterInfo *filter_info, gpointer data)
+ 	unsigned char buffer[1024];
+ 	ssize_t bytes_read;
+ 	gboolean show = FALSE;
+-	char *p;
++	const char *p;
+ 	char *ext;
+ 
+ 	if (!filter_info->filename)
+diff --git a/shared/utils.c b/shared/utils.c
+index d688adc..f19ef48 100644
+--- a/shared/utils.c
++++ b/shared/utils.c
+@@ -223,6 +223,7 @@ nmovpn_remote_parse (const char *str,
+                      GError **error)
+ {
+ 	gs_free char *str_copy = NULL;
++	const char *invalid_char;
+ 	char *t;
+ 	char *host = NULL;
+ 	char *port = NULL;
+@@ -238,20 +239,20 @@ nmovpn_remote_parse (const char *str,
+ 	}
+ 	g_return_val_if_fail (!error || !*error, 0);
+ 
+-	t = strchr (str, ' ');
+-	if (!t)
+-		t = strchr (str, ',');
+-	if (t) {
++	invalid_char = strchr (str, ' ');
++	if (!invalid_char)
++		invalid_char = strchr (str, ',');
++	if (invalid_char) {
+ 		g_set_error (error, NM_UTILS_ERROR, NM_UTILS_ERROR_UNKNOWN,
+-		             _("invalid delimiter character '%c'"), t[0]);
+-		idx_fail = t - str;
++		             _("invalid delimiter character '%c'"), invalid_char[0]);
++		idx_fail = invalid_char - str;
+ 		goto out_fail;
+ 	}
+ 
+-	if (!g_utf8_validate (str, -1, (const char **) &t)) {
++	if (!g_utf8_validate (str, -1, &invalid_char)) {
+ 		g_set_error (error, NM_UTILS_ERROR, NM_UTILS_ERROR_UNKNOWN,
+ 		             _("invalid non-utf-8 character"));
+-		idx_fail = t - str;
++		idx_fail = invalid_char - str;
+ 		goto out_fail;
+ 	}
+ 
+-- 
+2.53.0
+

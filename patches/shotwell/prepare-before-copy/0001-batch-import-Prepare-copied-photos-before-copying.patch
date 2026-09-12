@@ -1,0 +1,66 @@
+From ae34254cd596096aeed08e6600ace315cc2131cc Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 10:07:09 +0200
+Subject: [PATCH] batch-import: Prepare copied photos before copying
+
+---
+ src/BatchImport.vala | 25 +++++++++++++++++++++++--
+ 1 file changed, 23 insertions(+), 2 deletions(-)
+
+diff --git a/src/BatchImport.vala b/src/BatchImport.vala
+index 0439c998..0922933b 100644
+--- a/src/BatchImport.vala
++++ b/src/BatchImport.vala
+@@ -1971,6 +1971,23 @@ private class PreparedFileImportJob : BackgroundJob {
+         
+         File final_file = prepared_file.file;
+         File? final_associated_file = prepared_file.associated_file;
++        PhotoImportParams? photo_import_params = null;
++
++        /* Prepare copied photos from the source, so metadata and thumbnail
++         * generation do not read the newly copied file from the library. */
++        if (prepared_file.copy_to_library && !prepared_file.is_video) {
++            photo_import_params = new PhotoImportParams(prepared_file.file,
++                final_associated_file, import_id, PhotoFileSniffer.Options.GET_ALL,
++                prepared_file.exif_md5, prepared_file.thumbnail_md5,
++                prepared_file.full_md5, new Thumbnails());
++
++            ImportResult result = Photo.prepare_for_import(photo_import_params);
++            if (result != ImportResult.SUCCESS) {
++                failed = new BatchImportResult(prepared_file.job, prepared_file.file,
++                    prepared_file.file.get_path(), prepared_file.file.get_path(), null, result);
++                return;
++            }
++        }
+         
+         if (prepared_file.copy_to_library) {
+             try {
+@@ -2007,19 +2024,23 @@ private class PreparedFileImportJob : BackgroundJob {
+         
+         ImportResult result = ImportResult.SUCCESS;
+         VideoImportParams? video_import_params = null;
+-        PhotoImportParams? photo_import_params = null;
+         if (prepared_file.is_video) {
+             video_import_params = new VideoImportParams(final_file, import_id,
+                 prepared_file.full_md5, new Thumbnails(),
+                 prepared_file.job.get_exposure_time_override());
+             
+             result = VideoReader.prepare_for_import(video_import_params);
+-        } else {
++        } else if (photo_import_params == null) {
+             photo_import_params = new PhotoImportParams(final_file, final_associated_file, import_id,
+                 PhotoFileSniffer.Options.GET_ALL, prepared_file.exif_md5,
+                 prepared_file.thumbnail_md5, prepared_file.full_md5, new Thumbnails());
+             
+             result = Photo.prepare_for_import(photo_import_params);
++        } else {
++            photo_import_params.file = final_file;
++            photo_import_params.final_associated_file = final_associated_file;
++            photo_import_params.row.master.filepath = final_file.get_path();
++            photo_import_params.row.import_id = import_id;
+         }
+         
+         if (result != ImportResult.SUCCESS && final_file != prepared_file.file) {
+-- 
+2.53.0
+

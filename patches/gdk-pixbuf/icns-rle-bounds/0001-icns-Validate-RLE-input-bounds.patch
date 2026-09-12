@@ -1,0 +1,92 @@
+From 80407c1ea3d60108ea5959ed39a4daa75ec626ba Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 09:58:43 +0200
+Subject: [PATCH] icns: Validate RLE input bounds
+
+---
+ gdk-pixbuf/io-icns.c                       |  23 ++++++++++++++++-----
+ tests/test-images/fail/CVE-2026-18090.icns | Bin 0 -> 1048 bytes
+ 2 files changed, 18 insertions(+), 5 deletions(-)
+ create mode 100644 tests/test-images/fail/CVE-2026-18090.icns
+
+diff --git a/gdk-pixbuf/io-icns.c b/gdk-pixbuf/io-icns.c
+index bee669b8b..9ba879ceb 100644
+--- a/gdk-pixbuf/io-icns.c
++++ b/gdk-pixbuf/io-icns.c
+@@ -120,7 +120,7 @@ load_resources (unsigned size, IN gpointer data, gsize datalen,
+ 	    {
+ 	      *picture = (gpointer) (current + sizeof (IcnsBlockHeader));
+ 	      *plen = blocklen - sizeof (IcnsBlockHeader);
+-	      if (memcmp (*picture, "\0\0\0\0", 4) == 0)
++	      if (*plen >= 4 && memcmp (*picture, "\0\0\0\0", 4) == 0)
+ 		{
+ 		  *picture += 4;
+ 		  *plen -= 4;
+@@ -190,7 +190,11 @@ load_resources (unsigned size, IN gpointer data, gsize datalen,
+  *	(non-repeating values are stored next: n bytes)
+  */
+ static gboolean
+-uncompress (unsigned size, INOUT guchar ** source, OUT guchar * target, INOUT gsize * _remaining)
++uncompress (unsigned      size,
++            INOUT guchar **source,
++            guchar        *source_end,
++            OUT guchar    *target,
++            INOUT gsize   *_remaining)
+ {
+   guchar *data = *source;
+   gsize remaining;
+@@ -207,8 +211,14 @@ uncompress (unsigned size, INOUT guchar ** source, OUT guchar * target, INOUT gs
+     {
+       guint8 count = 0;
+ 
++      if (data >= source_end)
++        return FALSE;
++
+       if (data[0] & 0x80)	/* repeating byte */
+ 	{
++	  if (source_end - data < 2)
++	    return FALSE;
++
+ 	  count = data[0] - 125;
+ 
+ 	  if (count > remaining)
+@@ -226,6 +236,9 @@ uncompress (unsigned size, INOUT guchar ** source, OUT guchar * target, INOUT gs
+ 	{
+ 	  count = data[0] + 1;
+ 
++	  if (source_end - data < count + 1)
++	    return FALSE;
++
+ 	  if (count > remaining)
+ 	    return FALSE;
+ 
+@@ -301,13 +314,13 @@ load_icon (unsigned size, IN gpointer data, gsize datalen)
+       gsize remaining = 0;
+ 
+       /* R */
+-      if (!uncompress (size, &data, image, &remaining))
++      if (!uncompress (size, &data, icon + isize, image, &remaining))
+         goto bail;
+       /* G */
+-      if (!uncompress (size, &data, image + 1, &remaining))
++      if (!uncompress (size, &data, icon + isize, image + 1, &remaining))
+         goto bail;
+       /* B */
+-      if (!uncompress (size, &data, image + 2, &remaining))
++      if (!uncompress (size, &data, icon + isize, image + 2, &remaining))
+         goto bail;
+     }
+ 
+diff --git a/tests/test-images/fail/CVE-2026-18090.icns b/tests/test-images/fail/CVE-2026-18090.icns
+new file mode 100644
+index 0000000000000000000000000000000000000000..7f036c88bac56b5558e8aadb444333cb5ff1be78
+GIT binary patch
+literal 1048
+ocmc~y&MRhMV3EkN$jt`Q9REkbXb6mkz=#cj%p7AQ1_lNW0Ol?L&;S4c
+
+literal 0
+HcmV?d00001
+
+-- 
+2.53.0
+

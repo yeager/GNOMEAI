@@ -1,0 +1,60 @@
+From db8d6be5b81ff276834bce047c820a88a085811b Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Fri, 11 Sep 2026 22:41:44 +0200
+Subject: [PATCH 1/6] engine: Limit text normalized for message previews
+
+---
+ src/engine/rfc822/rfc822-utils.vala       |  8 +++++++-
+ test/engine/rfc822/rfc822-utils-test.vala | 10 ++++++++++
+ 2 files changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/src/engine/rfc822/rfc822-utils.vala b/src/engine/rfc822/rfc822-utils.vala
+index 58d5508..d3c8f85 100644
+--- a/src/engine/rfc822/rfc822-utils.vala
++++ b/src/engine/rfc822/rfc822-utils.vala
+@@ -13,6 +13,7 @@ namespace Geary.RFC822.Utils {
+     // email bodies, is a single byte in UTF-8, and is unmolested by
+     // GMime.FilterHTML.
+     public const char QUOTE_MARKER = '\x7f';
++    private const int MAX_PREVIEW_BYTES = 64 * 1024;
+ 
+ 
+     public string create_subject_for_reply(Email email) {
+@@ -200,7 +201,12 @@ namespace Geary.RFC822.Utils {
+         // XXX really shouldn't have to call make_valid here but do so to
+         // avoid segfaults in the regex engine on invalid char data. See
+         // issue #186 for the proper fix.
+-        return Geary.String.reduce_whitespace(preview.make_valid());
++        string valid_preview = preview.make_valid();
++        if (valid_preview.length > MAX_PREVIEW_BYTES) {
++            valid_preview = Geary.String.safe_byte_substring(valid_preview, MAX_PREVIEW_BYTES);
++        }
++
++        return Geary.String.reduce_whitespace(valid_preview);
+     }
+ 
+     /**
+diff --git a/test/engine/rfc822/rfc822-utils-test.vala b/test/engine/rfc822/rfc822-utils-test.vala
+index 7711fa9..9903693 100644
+--- a/test/engine/rfc822/rfc822-utils-test.vala
++++ b/test/engine/rfc822/rfc822-utils-test.vala
+@@ -22,6 +22,16 @@ class Geary.RFC822.Utils.Test : TestCase {
+                HTML_BODY_EXPECTED);
+         assert(Geary.RFC822.Utils.to_preview_text(HTML_BODY_ENCODED, Geary.RFC822.TextFormat.HTML) ==
+                HTML_BODY_EXPECTED);
++
++        var long_body = new GLib.StringBuilder();
++        for (int i = 0; i < 20_000; i++) {
++            long_body.append("åäö ");
++        }
++        string preview = Geary.RFC822.Utils.to_preview_text(
++            long_body.str, Geary.RFC822.TextFormat.PLAIN
++        );
++        assert(preview.length <= 64 * 1024);
++        assert(preview.validate());
+     }
+ 
+     public void best_encoding_default() throws GLib.Error {
+-- 
+2.53.0
+

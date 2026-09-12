@@ -1,0 +1,80 @@
+From 23ff2405ebc3acb116e455c547d891d19686a45b Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 10:19:36 +0200
+Subject: [PATCH] files-view: Explain why cut is unavailable in Recent
+
+---
+ src/nautilus-files-view.c | 36 +++++++++++++++++++++++++++++++++++-
+ 1 file changed, 35 insertions(+), 1 deletion(-)
+
+diff --git a/src/nautilus-files-view.c b/src/nautilus-files-view.c
+index 17b410b..914944e 100644
+--- a/src/nautilus-files-view.c
++++ b/src/nautilus-files-view.c
+@@ -78,6 +78,7 @@
+ #include "nautilus-view-item.h"
+ #include "nautilus-view-model.h"
+ #include "nautilus-window-slot.h"
++#include "nautilus-window.h"
+ 
+ /* Minimum starting update interval */
+ #define UPDATE_INTERVAL_MIN 100
+@@ -5923,6 +5924,38 @@ action_cut (GSimpleAction *action,
+     nautilus_clipboard_prepare_for_files (clipboard, selection, TRUE);
+ }
+ 
++static void
++action_cut_shortcut (GSimpleAction *action,
++                     GVariant      *state,
++                     gpointer       user_data)
++{
++    NautilusFilesView *view = NAUTILUS_FILES_VIEW (user_data);
++    GAction *cut_action;
++
++    if (showing_recent_directory (view))
++    {
++        g_autolist (NautilusFile) selection = nautilus_files_view_get_selection (view);
++
++        if (selection != NULL)
++        {
++            NautilusWindow *window = NAUTILUS_WINDOW (gtk_widget_get_root (GTK_WIDGET (view)));
++
++            nautilus_window_show_operation_notification (window,
++                                                         _("Cut is not available in Recent"),
++                                                         nautilus_window_slot_get_location (view->slot),
++                                                         FALSE);
++        }
++
++        return;
++    }
++
++    cut_action = g_action_map_lookup_action (G_ACTION_MAP (view->view_action_group), "cut");
++    if (g_action_get_enabled (cut_action))
++    {
++        g_action_activate (cut_action, NULL);
++    }
++}
++
+ static void
+ action_copy_current_location (GSimpleAction *action,
+                               GVariant      *state,
+@@ -6927,6 +6960,7 @@ const GActionEntry view_entries[] =
+     { .name = "open-item-new-window", .activate = action_open_item_new_window },
+     { .name = "open-item-new-tab", .activate = action_open_item_new_tab },
+     { .name = "cut", .activate = action_cut},
++    { .name = "cut-shortcut", .activate = action_cut_shortcut},
+     { .name = "copy", .activate = action_copy},
+     { .name = "create-link-in-place", .activate = action_create_links_in_place },
+     { .name = "create-link-in-place-shortcut", .activate = action_create_links_in_place },
+@@ -9457,7 +9491,7 @@ nautilus_files_view_class_init (NautilusFilesViewClass *klass)
+     gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Insert, GDK_CONTROL_MASK, "view.copy", NULL);
+     gtk_widget_class_add_binding_action (widget_class, GDK_KEY_c, GDK_CONTROL_MASK, "view.copy", NULL);
+     gtk_widget_class_add_binding_action (widget_class, GDK_KEY_v, GDK_CONTROL_MASK, "view.paste", NULL);
+-    gtk_widget_class_add_binding_action (widget_class, GDK_KEY_x, GDK_CONTROL_MASK, "view.cut", NULL);
++    gtk_widget_class_add_binding_action (widget_class, GDK_KEY_x, GDK_CONTROL_MASK, "view.cut-shortcut", NULL);
+     gtk_widget_class_add_binding_action (widget_class, GDK_KEY_c, GDK_CONTROL_MASK, "view.copy-network-address", NULL);
+ }
+ 
+-- 
+2.53.0
+

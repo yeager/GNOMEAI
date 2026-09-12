@@ -1,0 +1,13 @@
+{
+  "project": "gdk-pixbuf",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gdk-pixbuf.git",
+  "branch": "icns-rle-bounds",
+  "base": "8c2942509b02fccabaefcef48d2e0328b497fc5d",
+  "tip": "80407c1ea3d60108ea5959ed39a4daa75ec626ba",
+  "commits": [
+    "80407c1ea3d60108ea5959ed39a4daa75ec626ba"
+  ],
+  "patches": [
+    "0001-icns-Validate-RLE-input-bounds.patch"
+  ]
+}

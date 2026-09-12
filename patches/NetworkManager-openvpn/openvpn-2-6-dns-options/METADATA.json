@@ -1,0 +1,13 @@
+{
+  "project": "NetworkManager-openvpn",
+  "source_repository": "git@ssh.gitlab.gnome.org:GNOME/NetworkManager-openvpn.git",
+  "branch": "openvpn-2-6-dns-options",
+  "base": "7fb52f40ec23d2da91e2259302a50390ee20bc13",
+  "tip": "d0da830cb0ff7d97fd39031b5d3f550209bcd5f6",
+  "commits": [
+    "d0da830cb0ff7d97fd39031b5d3f550209bcd5f6"
+  ],
+  "patches": [
+    "0001-helper-Parse-OpenVPN-2.6-DNS-options.patch"
+  ]
+}

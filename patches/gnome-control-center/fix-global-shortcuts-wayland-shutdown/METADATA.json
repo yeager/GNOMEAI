@@ -1,0 +1,13 @@
+{
+  "project": "gnome-control-center",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
+  "branch": "fix-global-shortcuts-wayland-shutdown",
+  "base": "cd79a897190989ca395c6f00962f0929734103c7",
+  "tip": "7cc09c2b5ea2f148f9b017034c0f2e4332cbc1b5",
+  "commits": [
+    "7cc09c2b5ea2f148f9b017034c0f2e4332cbc1b5"
+  ],
+  "patches": [
+    "0001-global-shortcuts-Avoid-destroying-dialogs-after-disp.patch"
+  ]
+}

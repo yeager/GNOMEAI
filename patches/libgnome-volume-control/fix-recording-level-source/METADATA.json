@@ -1,0 +1,13 @@
+{
+  "project": "libgnome-volume-control",
+  "source_repository": "https://gitlab.gnome.org/GNOME/libgnome-volume-control.git",
+  "branch": "fix-recording-level-source",
+  "base": "0a4eda0cdc2deb352bebc70ec697c42af46094e4",
+  "tip": "52b39e7034911dced8c57d39b3b2e76daf0469fb",
+  "commits": [
+    "52b39e7034911dced8c57d39b3b2e76daf0469fb"
+  ],
+  "patches": [
+    "0001-source-output-Track-the-recording-source.patch"
+  ]
+}

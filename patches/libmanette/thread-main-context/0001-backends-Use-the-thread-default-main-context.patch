@@ -1,0 +1,79 @@
+From e6daef50d7f6a5359a37ac6ed3ea2001be53ee8e Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 10:14:38 +0200
+Subject: [PATCH] backends: Use the thread-default main context
+
+---
+ src/drivers/manette-steam-deck-driver.c | 15 ++++++++++++---
+ src/manette-evdev-backend.c             |  5 ++++-
+ src/manette-hid-backend.c               |  5 ++++-
+ 3 files changed, 20 insertions(+), 5 deletions(-)
+
+diff --git a/src/drivers/manette-steam-deck-driver.c b/src/drivers/manette-steam-deck-driver.c
+index 577b8ed..c25dfce 100644
+--- a/src/drivers/manette-steam-deck-driver.c
++++ b/src/drivers/manette-steam-deck-driver.c
+@@ -842,6 +842,14 @@ stop_rumble_cb (ManetteSteamDeckDriver *self)
+   send_rumble (self, 0, 0);
+ }
+ 
++static gboolean
++stop_rumble_source_cb (ManetteSteamDeckDriver *self)
++{
++  stop_rumble_cb (self);
++
++  return G_SOURCE_REMOVE;
++}
++
+ static gboolean
+ manette_steam_deck_driver_rumble (ManetteHidDriver *driver,
+                                   guint16           strong_magnitude,
+@@ -858,9 +866,10 @@ manette_steam_deck_driver_rumble (ManetteHidDriver *driver,
+ 
+   g_clear_handle_id (&self->rumble_timeout, g_source_remove);
+ 
+-  self->rumble_timeout = g_timeout_add_once (milliseconds,
+-                                             (GSourceOnceFunc) stop_rumble_cb,
+-                                             self);
++  g_autoptr (GSource) source = g_timeout_source_new (milliseconds);
++
++  g_source_set_callback (source, G_SOURCE_FUNC (stop_rumble_source_cb), self, NULL);
++  self->rumble_timeout = g_source_attach (source, g_main_context_get_thread_default ());
+ 
+   return TRUE;
+ }
+diff --git a/src/manette-evdev-backend.c b/src/manette-evdev-backend.c
+index 5d2ce10..70339bb 100644
+--- a/src/manette-evdev-backend.c
++++ b/src/manette-evdev-backend.c
+@@ -466,7 +466,10 @@ manette_evdev_backend_initialize (ManetteBackend *backend)
+ 
+   // Poll the events in the main loop.
+   channel = g_io_channel_unix_new (self->fd);
+-  self->event_source_id = g_io_add_watch (channel, G_IO_IN, (GIOFunc) poll_events, self);
++  g_autoptr (GSource) source = g_io_create_watch (channel, G_IO_IN);
++
++  g_source_set_callback (source, (GSourceFunc) poll_events, self, NULL);
++  self->event_source_id = g_source_attach (source, g_main_context_get_thread_default ());
+ 
+   buttons_number = 0;
+ 
+diff --git a/src/manette-hid-backend.c b/src/manette-hid-backend.c
+index db69846..e071393 100644
+--- a/src/manette-hid-backend.c
++++ b/src/manette-hid-backend.c
+@@ -135,7 +135,10 @@ manette_hid_backend_initialize (ManetteBackend *backend)
+ 
+   // Poll the events in the main loop.
+   poll_rate = manette_hid_driver_get_poll_rate (self->driver);
+-  self->event_source_id = g_timeout_add (poll_rate, G_SOURCE_FUNC (poll_events), self);
++  g_autoptr (GSource) source = g_timeout_source_new (poll_rate);
++
++  g_source_set_callback (source, G_SOURCE_FUNC (poll_events), self, NULL);
++  self->event_source_id = g_source_attach (source, g_main_context_get_thread_default ());
+ 
+   return TRUE;
+ }
+-- 
+2.53.0
+

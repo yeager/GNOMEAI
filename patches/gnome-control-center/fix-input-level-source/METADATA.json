@@ -1,0 +1,13 @@
+{
+  "project": "gnome-control-center",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
+  "branch": "fix-input-level-source",
+  "base": "cd79a897190989ca395c6f00962f0929734103c7",
+  "tip": "9cc6433834f03a60cfe5628919aae0fe95c90844",
+  "commits": [
+    "9cc6433834f03a60cfe5628919aae0fe95c90844"
+  ],
+  "patches": [
+    "0001-sound-Read-recording-levels-from-their-source.patch"
+  ]
+}

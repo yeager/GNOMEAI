@@ -1,0 +1,13 @@
+{
+  "project": "libgnome-games-support",
+  "source_repository": "https://gitlab.gnome.org/GNOME/libgnome-games-support.git",
+  "branch": "fix-score-dialog-row-factory",
+  "base": "4ad6b54d1e31b9fb757554315991e9a1d50012ed",
+  "tip": "d8ebd578b3a9cd960f1a5dbdb9169d5a1d0e9878",
+  "commits": [
+    "d8ebd578b3a9cd960f1a5dbdb9169d5a1d0e9878"
+  ],
+  "patches": [
+    "0001-scores-create-player-cells-during-factory-setup.patch"
+  ]
+}

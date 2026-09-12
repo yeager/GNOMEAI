@@ -1,0 +1,13 @@
+{
+  "project": "libmanette",
+  "source_repository": "git@ssh.gitlab.gnome.org:GNOME/libmanette.git",
+  "branch": "thread-main-context",
+  "base": "006e17b2184a3098a14081d50d2b5303c5cf172c",
+  "tip": "e6daef50d7f6a5359a37ac6ed3ea2001be53ee8e",
+  "commits": [
+    "e6daef50d7f6a5359a37ac6ed3ea2001be53ee8e"
+  ],
+  "patches": [
+    "0001-backends-Use-the-thread-default-main-context.patch"
+  ]
+}

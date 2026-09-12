@@ -1,0 +1,13 @@
+{
+  "project": "gnome-shell",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-shell.git",
+  "branch": "work/screenshot-save-to-disk",
+  "base": "unrelated-history",
+  "tip": "8b21ff45649f1f3fd7c561e6c9f72797c9cc0786",
+  "commits": [
+    "8b21ff45649f1f3fd7c561e6c9f72797c9cc0786"
+  ],
+  "patches": [
+    "0001-screenshot-Add-persistent-save-to-disk-option.patch"
+  ]
+}

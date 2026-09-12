@@ -1,0 +1,13 @@
+{
+  "project": "gnome-connections",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-connections.git",
+  "branch": "rdp-pass-f10",
+  "base": "529fc588a8f0c2f4853b95c03fb9a9fb3b7faabf",
+  "tip": "a21c59c8b5544a4ec8dd9ebd850491db237da7b6",
+  "commits": [
+    "a21c59c8b5544a4ec8dd9ebd850491db237da7b6"
+  ],
+  "patches": [
+    "0001-window-Keep-F10-in-remote-displays.patch"
+  ]
+}

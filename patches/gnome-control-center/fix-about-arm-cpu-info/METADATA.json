@@ -1,0 +1,15 @@
+{
+  "project": "gnome-control-center",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
+  "branch": "fix-about-arm-cpu-info",
+  "base": "cd79a897190989ca395c6f00962f0929734103c7",
+  "tip": "03d9515710bd075d24801e1f6c27d57d82b29b79",
+  "commits": [
+    "31e401cdc729d6c76a840e28cffcfd628c0ada55",
+    "03d9515710bd075d24801e1f6c27d57d82b29b79"
+  ],
+  "patches": [
+    "0001-about-Show-a-CPU-fallback-on-systems-without-model-n.patch",
+    "0002-about-Use-uname-for-the-CPU-architecture-fallback.patch"
+  ]
+}

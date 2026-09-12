@@ -1,0 +1,13 @@
+{
+  "project": "gnome-control-center",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
+  "branch": "fix-sound-preserve-configured-sink",
+  "base": "cd79a897190989ca395c6f00962f0929734103c7",
+  "tip": "f416959f24b640b6c61b6704b488089909d89991",
+  "commits": [
+    "f416959f24b640b6c61b6704b488089909d89991"
+  ],
+  "patches": [
+    "0001-sound-Preserve-configured-output-when-a-device-is-re.patch"
+  ]
+}

@@ -1,0 +1,31 @@
+From 74ea32dd0f8e7ca2919cf45042b7aa353750ea0b Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 10:32:41 +0200
+Subject: [PATCH 3/3] style: Format color frame sample condition
+
+---
+ app/widgets/gimpcolorframe.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/app/widgets/gimpcolorframe.c b/app/widgets/gimpcolorframe.c
+index c8fdee2d2e..689e0921e0 100644
+--- a/app/widgets/gimpcolorframe.c
++++ b/app/widgets/gimpcolorframe.c
+@@ -613,10 +613,10 @@ gimp_color_frame_set_color (GimpColorFrame *frame,
+   g_return_if_fail (GEGL_IS_COLOR (color));
+ 
+   color = gegl_color_duplicate (color);
+-  if (frame->sample_valid                                                   &&
+-      frame->sample_average                == sample_average                &&
+-      frame->x                             == x                             &&
+-      frame->y                             == y                             &&
++  if (frame->sample_valid &&
++      frame->sample_average == sample_average &&
++      frame->x == x &&
++      frame->y == y &&
+       gegl_color_get_format (frame->color) == gegl_color_get_format (color))
+     {
+       gdouble old_rgba[4];
+-- 
+2.53.0
+

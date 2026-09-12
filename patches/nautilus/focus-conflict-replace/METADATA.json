@@ -1,0 +1,13 @@
+{
+  "project": "nautilus",
+  "source_repository": "https://gitlab.gnome.org/GNOME/nautilus.git",
+  "branch": "focus-conflict-replace",
+  "base": "7674c26523c0cbac5b908d42008d7117494d19bc",
+  "tip": "bb7a56ecfd8c7a7a6c54b384a3c45dd81769a937",
+  "commits": [
+    "bb7a56ecfd8c7a7a6c54b384a3c45dd81769a937"
+  ],
+  "patches": [
+    "0001-file-conflict-dialog-Focus-Replace-when-shown.patch"
+  ]
+}

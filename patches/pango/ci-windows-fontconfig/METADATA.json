@@ -1,0 +1,13 @@
+{
+  "project": "pango",
+  "source_repository": "https://gitlab.gnome.org/GNOME/pango.git",
+  "branch": "ci-windows-fontconfig",
+  "base": "8e74c27c113c98664b77272d16b14bbce542c184",
+  "tip": "6077d2715f72358b58a7f5f328b994e5798c59c2",
+  "commits": [
+    "6077d2715f72358b58a7f5f328b994e5798c59c2"
+  ],
+  "patches": [
+    "0001-ci-Enable-Fontconfig-in-MSYS2-tests.patch"
+  ]
+}

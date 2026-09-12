@@ -1,0 +1,13 @@
+{
+  "project": "gnome-control-center",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
+  "branch": "fix-wwan-unspecified-sim",
+  "base": "cd79a897190989ca395c6f00962f0929734103c7",
+  "tip": "2ba8ac349613f82ae505bdc30ad14c87dbbd147a",
+  "commits": [
+    "2ba8ac349613f82ae505bdc30ad14c87dbbd147a"
+  ],
+  "patches": [
+    "0001-wwan-Reuse-active-connection-without-a-SIM-ID.patch"
+  ]
+}

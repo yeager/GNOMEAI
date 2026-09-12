@@ -1,0 +1,45 @@
+From bb7a56ecfd8c7a7a6c54b384a3c45dd81769a937 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Fri, 11 Sep 2026 23:08:21 +0200
+Subject: [PATCH] file-conflict-dialog: Focus Replace when shown
+
+---
+ src/nautilus-file-conflict-dialog.c                | 2 ++
+ src/resources/ui/nautilus-file-conflict-dialog.blp | 1 +
+ 2 files changed, 3 insertions(+)
+
+diff --git a/src/nautilus-file-conflict-dialog.c b/src/nautilus-file-conflict-dialog.c
+index 66ce930..84bafa9 100644
+--- a/src/nautilus-file-conflict-dialog.c
++++ b/src/nautilus-file-conflict-dialog.c
+@@ -314,6 +314,7 @@ nautilus_file_conflict_dialog_class_init (NautilusFileConflictDialogClass *klass
+     gtk_widget_class_bind_template_callback (widget_class, checkbox_toggled_cb);
+     gtk_widget_class_bind_template_callback (widget_class, reset_button_clicked_cb);
+ 
++
+     G_OBJECT_CLASS (klass)->dispose = nautilus_file_conflict_dialog_dispose;
+     G_OBJECT_CLASS (klass)->finalize = do_finalize;
+ }
+@@ -326,6 +327,7 @@ activate_buttons (NautilusFileConflictDialog *fcd)
+     gtk_widget_set_sensitive (GTK_WIDGET (fcd->rename_button), TRUE);
+     gtk_widget_set_sensitive (GTK_WIDGET (fcd->replace_button), TRUE);
+     gtk_widget_set_sensitive (GTK_WIDGET (fcd->expander), TRUE);
++    gtk_widget_grab_focus (fcd->replace_button);
+ }
+ 
+ void
+diff --git a/src/resources/ui/nautilus-file-conflict-dialog.blp b/src/resources/ui/nautilus-file-conflict-dialog.blp
+index 6a0aee9..15de0c7 100644
+--- a/src/resources/ui/nautilus-file-conflict-dialog.blp
++++ b/src/resources/ui/nautilus-file-conflict-dialog.blp
+@@ -4,6 +4,7 @@ using Adw 1;
+ template $NautilusFileConflictDialog: Adw.Window {
+   modal: true;
+   resizable: false;
++  focus-widget: replace_button;
+ 
+   content: Adw.ToolbarView {
+     [top]
+-- 
+2.53.0
+

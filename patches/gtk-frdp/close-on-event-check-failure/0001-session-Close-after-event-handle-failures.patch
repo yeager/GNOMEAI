@@ -1,0 +1,28 @@
+From b7beb9dafbf10498a8e2211461b9983ac74d6948 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 10:26:15 +0200
+Subject: [PATCH] session: Close after event handle failures
+
+---
+ src/frdp-session.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/frdp-session.c b/src/frdp-session.c
+index 85f3c13..c904e00 100644
+--- a/src/frdp-session.c
++++ b/src/frdp-session.c
+@@ -959,7 +959,10 @@ update (gpointer user_data)
+       g_warning ("Failed to check FreeRDP file descriptor");
+     }
+ 
+-    return TRUE;
++    priv->update_id = 0;
++    g_idle_add ((GSourceFunc) idle_close, self);
++
++    return FALSE;
+   }
+ 
+   return TRUE;
+-- 
+2.53.0
+

@@ -1,0 +1,43 @@
+From 7cc09c2b5ea2f148f9b017034c0f2e4332cbc1b5 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 11:30:58 +0200
+Subject: [PATCH] global-shortcuts: Avoid destroying dialogs after display
+ shutdown
+
+---
+ .../cc-global-shortcuts-provider.c                   | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/global-shortcuts-provider/cc-global-shortcuts-provider.c b/global-shortcuts-provider/cc-global-shortcuts-provider.c
+index 622a91211..0fbcbbcb6 100644
+--- a/global-shortcuts-provider/cc-global-shortcuts-provider.c
++++ b/global-shortcuts-provider/cc-global-shortcuts-provider.c
+@@ -85,6 +85,16 @@ handle_dialog_done (CcGlobalShortcutsProvider *self, CcGlobalShortcutDialog *sho
+     }
+ }
+ 
++static void
++destroy_dialog (CcGlobalShortcutDialog *shortcut_dialog)
++{
++    GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (shortcut_dialog));
++
++    /* GTK cannot safely destroy a window after its Wayland display closed. */
++    if (!gdk_display_is_closed (display))
++        gtk_window_destroy (GTK_WINDOW (shortcut_dialog));
++}
++
+ static void
+ on_dialog_done (CcGlobalShortcutDialog *shortcut_dialog, GVariant *response, CcGlobalShortcutsProvider *self)
+ {
+@@ -148,7 +158,7 @@ handle_bind_shortcuts (CcGlobalShortcutsProvider *self, GDBusMethodInvocation *i
+ static void
+ cc_global_shortcuts_provider_init (CcGlobalShortcutsProvider *self)
+ {
+-    self->dialogs = g_hash_table_new_full (NULL, NULL, (GDestroyNotify) gtk_window_destroy, NULL);
++    self->dialogs = g_hash_table_new_full (NULL, NULL, (GDestroyNotify) destroy_dialog, NULL);
+     self->skeleton = cc_settings_global_shortcuts_provider_skeleton_new ();
+ 
+     g_signal_connect_swapped (self->skeleton, "handle-bind-shortcuts", G_CALLBACK (handle_bind_shortcuts), self);
+-- 
+2.53.0
+

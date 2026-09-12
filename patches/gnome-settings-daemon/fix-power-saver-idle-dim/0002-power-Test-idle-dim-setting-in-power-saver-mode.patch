@@ -1,0 +1,41 @@
+From acb3ef68a582d8d7dd60b0a248efbb809daba42b Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 11:56:46 +0200
+Subject: [PATCH 2/2] power: Test idle dim setting in power saver mode
+
+---
+ plugins/power/test.py | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/plugins/power/test.py b/plugins/power/test.py
+index 7914faf..7095411 100755
+--- a/plugins/power/test.py
++++ b/plugins/power/test.py
+@@ -621,6 +621,24 @@ class PowerPluginTestLid(PowerPluginBase):
+                 dbus_interface='org.gnome.SessionManager')
+ 
+ class PowerPluginTestDim(PowerPluginBase):
++    def test_power_saver_respects_idle_dim(self):
++        """Power Saver must not override the Dim Screen preference."""
++
++        if not self.ppd:
++            self.skipTest("power-profiles-daemon dbusmock support is not available")
++
++        self.settings_gsd_power['idle-dim'] = False
++        Gio.Settings.sync()
++
++        self.obj_ppd.Set(
++            'org.freedesktop.UPower.PowerProfiles',
++            'ActiveProfile',
++            dbus.String('power-saver', variant_level=1),
++            dbus_interface=dbus.PROPERTIES_IFACE,
++        )
++
++        self.check_no_dim(gsdpowerconstants.SCREENSAVER_TIMEOUT_BLANK + 2)
++
+     def test_dim(self):
+         '''Check that we do go to dim'''
+ 
+-- 
+2.53.0
+

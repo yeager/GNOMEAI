@@ -1,0 +1,13 @@
+{
+  "project": "xdg-desktop-portal-gnome",
+  "source_repository": "https://gitlab.gnome.org/GNOME/xdg-desktop-portal-gnome.git",
+  "branch": "fix-input-capture-version-50",
+  "base": "5176d452df0dc078f470b6e4b8884d88f34ec474",
+  "tip": "a629b1c5a03204354265656e7faefd460df110a4",
+  "commits": [
+    "a629b1c5a03204354265656e7faefd460df110a4"
+  ],
+  "patches": [
+    "0001-inputcapture-Advertise-version-2-on-gnome-50.patch"
+  ]
+}

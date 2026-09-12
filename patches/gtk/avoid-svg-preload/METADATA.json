@@ -1,0 +1,13 @@
+{
+  "project": "gtk",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gtk.git",
+  "branch": "avoid-svg-preload",
+  "base": "9a950181e1dc800beb2c4a2da2cf2c798b19b80e",
+  "tip": "b23a531d85fef8afe5e6aa834fc7720525c79bfc",
+  "commits": [
+    "b23a531d85fef8afe5e6aa834fc7720525c79bfc"
+  ],
+  "patches": [
+    "0001-icontheme-Avoid-preloading-SVG-icons-in-worker-threa.patch"
+  ]
+}

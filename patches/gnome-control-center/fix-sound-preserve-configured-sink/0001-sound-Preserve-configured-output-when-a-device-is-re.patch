@@ -1,0 +1,32 @@
+From f416959f24b640b6c61b6704b488089909d89991 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 11:25:48 +0200
+Subject: [PATCH] sound: Preserve configured output when a device is removed
+
+---
+ panels/sound/cc-device-combo-row.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/panels/sound/cc-device-combo-row.c b/panels/sound/cc-device-combo-row.c
+index 826fdd382..2dbe5aa2c 100644
+--- a/panels/sound/cc-device-combo-row.c
++++ b/panels/sound/cc-device-combo-row.c
+@@ -214,8 +214,14 @@ device_removed_cb (CcDeviceComboRow *self, guint id)
+     GvcMixerUIDevice *device = lookup_device_id (self, id);
+     guint position;
+ 
+-    if (g_list_store_find (self->device_list, device, &position))
++    if (g_list_store_find (self->device_list, device, &position)) {
++        /* Removing the selected item can make AdwComboRow select a fallback.
++         * That is a model update, not a user request to change the default
++         * PipeWire sink. */
++        g_signal_handlers_block_by_func (self, selection_changed_cb, self);
+         g_list_store_remove (self->device_list, position);
++        g_signal_handlers_unblock_by_func (self, selection_changed_cb, self);
++    }
+ }
+ 
+ static void
+-- 
+2.53.0
+

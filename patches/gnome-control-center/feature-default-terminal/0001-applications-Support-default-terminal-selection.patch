@@ -1,0 +1,248 @@
+From ae9a113969e45187a30f7bc0700bf7398b629c15 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 11:10:31 +0200
+Subject: [PATCH 1/2] applications: Support default terminal selection
+
+---
+ panels/applications/cc-default-apps-row.c | 157 ++++++++++++++++++++--
+ 1 file changed, 146 insertions(+), 11 deletions(-)
+
+diff --git a/panels/applications/cc-default-apps-row.c b/panels/applications/cc-default-apps-row.c
+index 77d5d1d47..aa986c11f 100644
+--- a/panels/applications/cc-default-apps-row.c
++++ b/panels/applications/cc-default-apps-row.c
+@@ -18,6 +18,9 @@
+  * SPDX-License-Identifier: GPL-2.0-or-later
+  */
+ 
++#include <errno.h>
++
++#include <gio/gdesktopappinfo.h>
+ #include <glib/gi18n.h>
+ 
+ #include "cc-default-apps-row.h"
+@@ -27,6 +30,7 @@ struct _CcDefaultAppsRow {
+ 
+     char *content_type;
+     char *filters;
++    gboolean terminal;
+ 
+     GListStore *model;
+ };
+@@ -37,6 +41,7 @@ enum {
+     PROP_0,
+     PROP_CONTENT_TYPE,
+     PROP_FILTERS,
++    PROP_TERMINAL,
+     N_PROPS
+ };
+ 
+@@ -60,6 +65,9 @@ cc_default_apps_row_get_property (GObject *object, guint prop_id, GValue *value,
+     case PROP_FILTERS:
+         g_value_set_string (value, self->filters);
+         break;
++    case PROP_TERMINAL:
++        g_value_set_boolean (value, self->terminal);
++        break;
+     default:
+         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+     }
+@@ -77,6 +85,9 @@ cc_default_apps_row_set_property (GObject *object, guint prop_id, const GValue *
+     case PROP_FILTERS:
+         self->filters = g_value_dup_string (value);
+         break;
++    case PROP_TERMINAL:
++        self->terminal = g_value_get_boolean (value);
++        break;
+     default:
+         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+     }
+@@ -110,6 +121,97 @@ update_checkmark (CcDefaultAppsRow *self, GtkListItem *list_item)
+         (gtk_list_item_get_position (list_item) == adw_combo_row_get_selected (ADW_COMBO_ROW (self))) ? 1.0 : 0.0);
+ }
+ 
++static gboolean
++terminal_app_matches_id (GAppInfo *app, const char *id)
++{
++    const char *app_id;
++
++    app_id = g_app_info_get_id (app);
++    return g_strcmp0 (app_id, id) == 0;
++}
++
++static void
++select_default_terminal (CcDefaultAppsRow *self)
++{
++    g_autoptr (GSubprocess) subprocess = NULL;
++    g_autoptr (GError) error = NULL;
++    g_autofree char *stdout_text = NULL;
++    g_autofree char *default_id = NULL;
++    guint n_items;
++
++    subprocess = g_subprocess_new (G_SUBPROCESS_FLAGS_STDOUT_PIPE, &error, "xdg-terminal-exec", "--print-id", NULL);
++    if (subprocess == NULL)
++        return;
++
++    if (!g_subprocess_communicate_utf8 (subprocess, NULL, NULL, &stdout_text, NULL, &error)
++        || !g_subprocess_get_successful (subprocess))
++        return;
++
++    default_id = g_strstrip (g_steal_pointer (&stdout_text));
++    n_items = g_list_model_get_n_items (G_LIST_MODEL (self->model));
++    for (guint i = 0; i < n_items; i++) {
++        g_autoptr (GAppInfo) app = g_list_model_get_item (G_LIST_MODEL (self->model), i);
++
++        if (terminal_app_matches_id (app, default_id)) {
++            adw_combo_row_set_selected (ADW_COMBO_ROW (self), i);
++            break;
++        }
++    }
++}
++
++static gboolean
++terminal_config_rewrite (const char *path, const char *desktop_id, GError **error)
++{
++    g_autofree char *contents = NULL;
++    g_auto (GStrv) lines = NULL;
++    g_autoptr (GString) replacement = NULL;
++
++    g_file_get_contents (path, &contents, NULL, NULL);
++    lines = g_strsplit_set (contents ? contents : "", "\r\n", -1);
++    replacement = g_string_new (desktop_id);
++    g_string_append_c (replacement, '\n');
++
++    for (guint i = 0; lines[i] != NULL; i++) {
++        const char *line = lines[i];
++        gsize id_length = strlen (desktop_id);
++
++        if (g_str_has_prefix (line, desktop_id) && (line[id_length] == '\0' || line[id_length] == ':'))
++            continue;
++
++        g_string_append (replacement, line);
++        g_string_append_c (replacement, '\n');
++    }
++
++    return g_file_set_contents (path, replacement->str, replacement->len, error);
++}
++
++static gboolean
++set_default_terminal (GAppInfo *app, GError **error)
++{
++    const char *desktop_id;
++    const char *config_dir;
++    g_autofree char *desktop_path = NULL;
++    g_autofree char *fallback_path = NULL;
++
++    desktop_id = g_app_info_get_id (app);
++    if (desktop_id == NULL) {
++        g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT, "The selected terminal has no desktop ID");
++        return FALSE;
++    }
++
++    config_dir = g_get_user_config_dir ();
++    if (g_mkdir_with_parents (config_dir, 0700) != 0) {
++        g_set_error (error, G_FILE_ERROR, g_file_error_from_errno (errno), "Failed to create %s", config_dir);
++        return FALSE;
++    }
++
++    desktop_path = g_build_filename (config_dir, "gnome-xdg-terminals.list", NULL);
++    fallback_path = g_build_filename (config_dir, "xdg-terminals.list", NULL);
++
++    return terminal_config_rewrite (desktop_path, desktop_id, error)
++           && terminal_config_rewrite (fallback_path, desktop_id, error);
++}
++
+ static void
+ on_combo_row_selected_changed (AdwComboRow *combo_row, GParamSpec *pspec, GtkListItem *list_item)
+ {
+@@ -225,21 +327,46 @@ cc_default_apps_row_constructed (GObject *object)
+     G_OBJECT_CLASS (cc_default_apps_row_parent_class)->constructed (object);
+ 
+     self = CC_DEFAULT_APPS_ROW (object);
+-    default_app = g_app_info_get_default_for_type (self->content_type, FALSE);
+-    recommended_apps = g_app_info_get_recommended_for_type (self->content_type);
+     self->model = g_list_store_new (G_TYPE_APP_INFO);
+ 
+-    /* Add the default separately because it may not be in the list of recommended apps */
+-    if (G_IS_APP_INFO (default_app))
+-        g_list_store_append (self->model, default_app);
++    if (self->terminal) {
++        g_autolist (GAppInfo) apps = g_app_info_get_all ();
+ 
+-    for (l = recommended_apps; l != NULL; l = l->next) {
+-        GAppInfo *app = l->data;
++        for (l = apps; l != NULL; l = l->next) {
++            GAppInfo *app = l->data;
++            GDesktopAppInfo *desktop_app;
++            const char *categories;
+ 
+-        if (!G_IS_APP_INFO (app) || (default_app != NULL && g_app_info_equal (app, default_app)))
+-            continue;
++            if (!G_IS_DESKTOP_APP_INFO (app))
++                continue;
+ 
+-        g_list_store_append (self->model, app);
++            desktop_app = G_DESKTOP_APP_INFO (app);
++            categories = g_desktop_app_info_get_categories (desktop_app);
++            if (categories == NULL || !g_strrstr (categories, "TerminalEmulator"))
++                continue;
++
++            if (!g_desktop_app_info_has_key (desktop_app, "X-TerminalArgExec")
++                && !g_desktop_app_info_has_key (desktop_app, "X-ExecArg"))
++                continue;
++
++            g_list_store_append (self->model, app);
++        }
++    } else {
++        default_app = g_app_info_get_default_for_type (self->content_type, FALSE);
++        recommended_apps = g_app_info_get_recommended_for_type (self->content_type);
++
++        /* Add the default separately because it may not be in the list of recommended apps */
++        if (G_IS_APP_INFO (default_app))
++            g_list_store_append (self->model, default_app);
++
++        for (l = recommended_apps; l != NULL; l = l->next) {
++            GAppInfo *app = l->data;
++
++            if (!G_IS_APP_INFO (app) || (default_app != NULL && g_app_info_equal (app, default_app)))
++                continue;
++
++            g_list_store_append (self->model, app);
++        }
+     }
+ 
+     if (g_list_model_get_n_items (G_LIST_MODEL (self->model)) == 0) {
+@@ -267,6 +394,9 @@ cc_default_apps_row_constructed (GObject *object)
+     adw_combo_row_set_expression (ADW_COMBO_ROW (self), name_expr);
+ 
+     adw_combo_row_set_model (ADW_COMBO_ROW (self), G_LIST_MODEL (self->model));
++
++    if (self->terminal)
++        select_default_terminal (self);
+ }
+ 
+ static void
+@@ -283,6 +413,8 @@ cc_default_apps_row_class_init (CcDefaultAppsRowClass *klass)
+         "content-type", NULL, NULL, NULL, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
+     properties[PROP_FILTERS] = g_param_spec_string (
+         "filters", NULL, NULL, NULL, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
++    properties[PROP_TERMINAL] = g_param_spec_boolean (
++        "terminal", NULL, NULL, FALSE, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
+ 
+     g_object_class_install_properties (object_class, N_PROPS, properties);
+ }
+@@ -304,7 +436,10 @@ cc_default_apps_row_update_default_app (CcDefaultAppsRow *self)
+     if (!info)
+         return;
+ 
+-    if (g_app_info_set_as_default_for_type (info, self->content_type, &error) == FALSE) {
++    if (self->terminal) {
++        if (!set_default_terminal (info, &error))
++            g_warning ("Failed to set '%s' as the default terminal: %s", g_app_info_get_name (info), error->message);
++    } else if (g_app_info_set_as_default_for_type (info, self->content_type, &error) == FALSE) {
+         g_warning ("Failed to set '%s' as the default app for '%s': %s", g_app_info_get_name (info), self->content_type,
+                    error->message);
+     } else {
+-- 
+2.53.0
+

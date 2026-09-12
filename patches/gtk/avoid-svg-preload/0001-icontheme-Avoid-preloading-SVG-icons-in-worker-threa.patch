@@ -1,0 +1,29 @@
+From b23a531d85fef8afe5e6aa834fc7720525c79bfc Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Fri, 11 Sep 2026 23:00:46 +0200
+Subject: [PATCH] icontheme: Avoid preloading SVG icons in worker threads
+
+---
+ gtk/gtkicontheme.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/gtk/gtkicontheme.c b/gtk/gtkicontheme.c
+index 7937e57..58cf1eb 100644
+--- a/gtk/gtkicontheme.c
++++ b/gtk/gtkicontheme.c
+@@ -2382,7 +2382,11 @@ gtk_icon_theme_lookup_icon (GtkIconTheme       *self,
+           has_paintable = icon->paintable != NULL;
+           g_mutex_unlock (&icon->texture_lock);
+ 
+-          if (!has_paintable)
++          /* Loading an SVG can fall back to rasterizing it. That path may
++           * render text with Pango, whose default font map is not safe to use
++           * from this worker thread. Load SVG icons when they are first
++           * snapshotted on the main thread instead. */
++          if (!has_paintable && !icon->is_svg)
+             {
+               GTask *task = g_task_new (icon, NULL, NULL, NULL);
+               g_task_set_source_tag (task, gtk_icon_theme_lookup_icon);
+-- 
+2.53.0
+

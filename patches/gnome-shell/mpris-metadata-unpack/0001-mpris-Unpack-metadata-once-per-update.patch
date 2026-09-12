@@ -1,0 +1,29 @@
+From 0b10528cf183ba4c15199ca76fa8765542423a82 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Fri, 11 Sep 2026 23:03:10 +0200
+Subject: [PATCH] mpris: Unpack metadata once per update
+
+---
+ js/ui/mpris.js | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/js/ui/mpris.js b/js/ui/mpris.js
+index 5523155..25f1bf9 100644
+--- a/js/ui/mpris.js
++++ b/js/ui/mpris.js
+@@ -127,9 +127,10 @@ export const MprisPlayer = GObject.registerClass({
+     }
+ 
+     _updateState() {
++        const rawMetadata = this._playerProxy.Metadata;
+         const metadata = {};
+-        for (const prop in this._playerProxy.Metadata)
+-            metadata[prop] = this._playerProxy.Metadata[prop].deepUnpack();
++        for (const prop in rawMetadata)
++            metadata[prop] = rawMetadata[prop].deepUnpack();
+ 
+         // Validate according to the spec; some clients send buggy metadata:
+         // https://www.freedesktop.org/wiki/Specifications/mpris-spec/metadata
+-- 
+2.53.0
+

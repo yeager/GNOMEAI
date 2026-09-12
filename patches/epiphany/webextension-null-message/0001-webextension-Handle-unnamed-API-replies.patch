@@ -1,0 +1,26 @@
+From b39be280623964bb810e304ffa44f433e831b430 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Fri, 11 Sep 2026 22:22:24 +0200
+Subject: [PATCH] webextension: Handle unnamed API replies
+
+Fixes #2908
+---
+ embed/web-process-extension/ephy-webextension-common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/embed/web-process-extension/ephy-webextension-common.c b/embed/web-process-extension/ephy-webextension-common.c
+index 9f9ddba71..b38f658e7 100644
+--- a/embed/web-process-extension/ephy-webextension-common.c
++++ b/embed/web-process-extension/ephy-webextension-common.c
+@@ -73,7 +73,7 @@ on_send_message_finish (WebKitWebPage *page,
+     if (strcmp (json, "") == 0) {
+       value = jsc_value_new_undefined (context);
+       ret = jsc_value_function_call (callback_data->resolve_callback, JSC_TYPE_VALUE, value, G_TYPE_NONE);
+-    } else if (strcmp (webkit_user_message_get_name (response), "error") == 0) {
++    } else if (g_strcmp0 (webkit_user_message_get_name (response), "error") == 0) {
+       ret = jsc_value_function_call (callback_data->reject_callback, G_TYPE_STRING, json, G_TYPE_NONE);
+     } else {
+       value = jsc_value_new_from_json (context, json);
+-- 
+2.53.0
+

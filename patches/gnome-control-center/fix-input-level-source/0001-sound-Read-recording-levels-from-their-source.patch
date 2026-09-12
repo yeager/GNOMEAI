@@ -1,0 +1,55 @@
+From 9cc6433834f03a60cfe5628919aae0fe95c90844 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 11:38:36 +0200
+Subject: [PATCH] sound: Read recording levels from their source
+
+---
+ panels/sound/cc-level-bar.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
+
+diff --git a/panels/sound/cc-level-bar.c b/panels/sound/cc-level-bar.c
+index 881dd87a8..2eedc0b43 100644
+--- a/panels/sound/cc-level-bar.c
++++ b/panels/sound/cc-level-bar.c
+@@ -18,6 +18,7 @@
+ #include <pulse/pulseaudio.h>
+ 
+ #include "cc-level-bar.h"
++#include "gvc-mixer-source-output.h"
+ #include "gvc-mixer-stream-private.h"
+ 
+ struct _CcLevelBar {
+@@ -176,15 +177,24 @@ cc_level_bar_set_stream (CcLevelBar *self, GvcMixerStream *stream, CcStreamType
+     pa_stream_set_read_callback (self->level_stream, read_cb, self);
+     pa_stream_set_suspended_callback (self->level_stream, suspended_cb, self);
+ 
+-    if (type == CC_STREAM_TYPE_INPUT) {
+-        guint sink_idx = gvc_mixer_stream_get_id (stream);
+-        pa_stream_set_monitor_stream (self->level_stream, sink_idx);
+-    }
+-
+     memset (&attr, 0, sizeof (attr));
+     attr.fragsize = sizeof (float);
+     attr.maxlength = (uint32_t) -1;
+-    device = g_strdup_printf ("%u", gvc_mixer_stream_get_index (stream));
++
++    if (type == CC_STREAM_TYPE_INPUT) {
++        guint source_idx;
++
++        source_idx = gvc_mixer_source_output_get_source_index (GVC_MIXER_SOURCE_OUTPUT (stream));
++        if (source_idx == PA_INVALID_INDEX) {
++            g_warning ("No source is available for the recording stream");
++            g_clear_pointer (&self->level_stream, pa_stream_unref);
++            return;
++        }
++
++        device = g_strdup_printf ("%u", source_idx);
++    } else {
++        device = g_strdup_printf ("%u", gvc_mixer_stream_get_index (stream));
++    }
+     if (pa_stream_connect_record (
+             self->level_stream, device, &attr,
+             (pa_stream_flags_t) (PA_STREAM_DONT_MOVE | PA_STREAM_PEAK_DETECT | PA_STREAM_ADJUST_LATENCY))
+-- 
+2.53.0
+

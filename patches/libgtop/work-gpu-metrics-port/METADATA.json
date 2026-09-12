@@ -1,0 +1,15 @@
+{
+  "project": "libgtop",
+  "source_repository": "https://gitlab.gnome.org/GNOME/libgtop.git",
+  "branch": "work/gpu-metrics-port",
+  "base": "ebd49f21e36fd4344c622e3d1e1428df86bf05bb",
+  "tip": "4dbb68f24fbd40b56d4ccf3f16e5096f3d4494bb",
+  "commits": [
+    "ae06b3bd1d15c0a084d292dd51acbb2f366322aa",
+    "4dbb68f24fbd40b56d4ccf3f16e5096f3d4494bb"
+  ],
+  "patches": [
+    "0001-gpu-Add-AMDGPU-metrics.patch",
+    "0002-ci-Use-a-buildable-ABI-baseline.patch"
+  ]
+}

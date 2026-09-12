@@ -1,0 +1,51 @@
+From 5d4e2797ee3cda4772c0712de2b781c30aaf7884 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 11:10:31 +0200
+Subject: [PATCH 2/2] applications: Show Terminal in Default Apps
+
+---
+ panels/applications/cc-default-apps-page.blp | 7 +++++++
+ panels/applications/cc-default-apps-page.c   | 2 ++
+ 2 files changed, 9 insertions(+)
+
+diff --git a/panels/applications/cc-default-apps-page.blp b/panels/applications/cc-default-apps-page.blp
+index 2cc9595ba..47f82c489 100644
+--- a/panels/applications/cc-default-apps-page.blp
++++ b/panels/applications/cc-default-apps-page.blp
+@@ -13,6 +13,13 @@ template $CcDefaultAppsPage: Adw.NavigationPage {
+       Adw.PreferencesGroup {
+         title: _("Default Apps");
+ 
++        $CcDefaultAppsRow terminal_row {
++          title: _("_Terminal");
++          use-underline: true;
++          terminal: true;
++          notify::selected-item => $on_row_selected_item_changed();
++        }
++
+         $CcDefaultAppsRow web_row {
+           title: _("_Web");
+           use-underline: true;
+diff --git a/panels/applications/cc-default-apps-page.c b/panels/applications/cc-default-apps-page.c
+index d3b9f5288..94ee0eb2f 100644
+--- a/panels/applications/cc-default-apps-page.c
++++ b/panels/applications/cc-default-apps-page.c
+@@ -41,6 +41,7 @@ typedef struct {
+ struct _CcDefaultAppsPage {
+     AdwNavigationPage parent;
+ 
++    GtkWidget *terminal_row;
+     GtkWidget *web_row;
+     GtkWidget *mail_row;
+     GtkWidget *calendar_row;
+@@ -111,6 +112,7 @@ cc_default_apps_page_class_init (CcDefaultAppsPageClass *klass)
+ 
+     gtk_widget_class_set_template_from_resource (widget_class,
+                                                  "/org/gnome/control-center/applications/cc-default-apps-page.ui");
++    gtk_widget_class_bind_template_child (widget_class, CcDefaultAppsPage, terminal_row);
+     gtk_widget_class_bind_template_child (widget_class, CcDefaultAppsPage, web_row);
+     gtk_widget_class_bind_template_child (widget_class, CcDefaultAppsPage, mail_row);
+     gtk_widget_class_bind_template_child (widget_class, CcDefaultAppsPage, calendar_row);
+-- 
+2.53.0
+

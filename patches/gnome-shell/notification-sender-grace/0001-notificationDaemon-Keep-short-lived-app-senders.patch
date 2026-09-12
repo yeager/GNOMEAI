@@ -1,0 +1,42 @@
+From f4ac940c1b7bcb733bf8055068a9f7760fa19232 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 09:25:17 +0200
+Subject: [PATCH] notificationDaemon: Keep short-lived app senders
+
+---
+ js/ui/notificationDaemon.js | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/js/ui/notificationDaemon.js b/js/ui/notificationDaemon.js
+index 797100e..f200747 100644
+--- a/js/ui/notificationDaemon.js
++++ b/js/ui/notificationDaemon.js
+@@ -327,6 +327,7 @@ class FdoNotificationDaemonSource extends MessageTray.Source {
+         });
+ 
+         this.app = app;
++        this._createdAt = GLib.get_monotonic_time();
+         this._appName = null;
+         this._appIcon = null;
+ 
+@@ -342,11 +343,12 @@ class FdoNotificationDaemonSource extends MessageTray.Source {
+ 
+     _onNameVanished() {
+         // Destroy the notification source when its sender is removed from DBus.
+-        // Only do so if this.app is set to avoid removing "notify-send" sources, senders
+-        // of which аre removed from DBus immediately.
+-        // Sender being removed from DBus would normally result in a tray icon being removed,
+-        // so allow the code path that handles the tray icon being removed to handle that case.
+-        if (this.app)
++        // Ignore senders that vanish immediately: fire-and-forget clients like
++        // notify-send may use an app name but do not keep a D-Bus connection.
++        // Later sender removal normally also removes a tray icon, so let that
++        // code path handle it.
++        const elapsed = GLib.get_monotonic_time() - this._createdAt;
++        if (this.app && elapsed >= 500 * 1000)
+             this.destroy();
+     }
+ 
+-- 
+2.53.0
+

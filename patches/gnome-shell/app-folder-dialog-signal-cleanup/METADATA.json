@@ -1,0 +1,13 @@
+{
+  "project": "gnome-shell",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-shell.git",
+  "branch": "app-folder-dialog-signal-cleanup",
+  "base": "fa82d28c3b0dcfd27e49bac291b37b5ca9237dc7",
+  "tip": "bcf9f80558a3bf221149f9f1b84aa52f1345c602",
+  "commits": [
+    "bcf9f80558a3bf221149f9f1b84aa52f1345c602"
+  ],
+  "patches": [
+    "0001-appDisplay-Disconnect-folder-name-handler-with-dialo.patch"
+  ]
+}

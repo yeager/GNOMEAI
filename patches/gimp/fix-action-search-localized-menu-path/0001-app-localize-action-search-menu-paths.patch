@@ -1,0 +1,241 @@
+From 964bc521e648ffbe8ee7cda3b3cc69d10b417feb Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 08:10:22 +0200
+Subject: [PATCH] app: localize action search menu paths
+
+---
+ app/widgets/gimpmenumodel.c | 90 +++++++++++++++++++++++++++----------
+ 1 file changed, 66 insertions(+), 24 deletions(-)
+
+diff --git a/app/widgets/gimpmenumodel.c b/app/widgets/gimpmenumodel.c
+index 0912f34883..9e50f66d27 100644
+--- a/app/widgets/gimpmenumodel.c
++++ b/app/widgets/gimpmenumodel.c
+@@ -72,6 +72,7 @@ struct _GimpMenuModelPrivate
+   GMenuModel    *model;
+ 
+   gchar         *path;
++  gchar         *display_path;
+   gboolean       is_section;
+   /* If this GimpMenuModel represents a submenu for a bigger menu, this object
+    * will not be NULL.
+@@ -215,6 +216,7 @@ gimp_menu_model_init (GimpMenuModel *model)
+ 
+   model->priv->items         = NULL;
+   model->priv->path          = NULL;
++  model->priv->display_path  = NULL;
+   model->priv->is_section    = FALSE;
+   model->priv->submenu_item  = NULL;
+   model->priv->submenu_color = NULL;
+@@ -232,6 +234,7 @@ gimp_menu_model_finalize (GObject *object)
+   g_clear_object (&model->priv->model);
+   g_list_free_full (model->priv->items, g_object_unref);
+   g_free (model->priv->path);
++  g_free (model->priv->display_path);
+   g_clear_object (&model->priv->submenu_color);
+   g_hash_table_destroy (model->priv->named_sections);
+ 
+@@ -636,30 +639,42 @@ gimp_menu_model_set_color (GimpMenuModel *model,
+ static GimpMenuModel *
+ gimp_menu_model_new_section (GimpUIManager *manager,
+                              GMenuModel    *model,
+-                             const gchar   *path)
++                             const gchar   *path,
++                             const gchar   *display_path)
+ {
+   g_return_val_if_fail (GIMP_IS_UI_MANAGER (manager), NULL);
+ 
+-  return g_object_new (GIMP_TYPE_MENU_MODEL,
+-                       "manager", manager,
+-                       "model",   model,
+-                       "path",    path,
+-                       "section", TRUE,
+-                       NULL);
++  GimpMenuModel *result;
++
++  result                     = g_object_new (GIMP_TYPE_MENU_MODEL,
++                                             "manager", manager,
++                                             "path", path,
++                                             "section", TRUE,
++                                             NULL);
++  result->priv->display_path = g_strdup (display_path);
++  g_object_set (result, "model", model, NULL);
++
++  return result;
+ }
+ 
+ static GimpMenuModel *
+ gimp_menu_model_new_submenu (GimpUIManager *manager,
+                              GMenuModel    *model,
+-                             const gchar   *path)
++                             const gchar   *path,
++                             const gchar   *display_path)
+ {
+   g_return_val_if_fail (GIMP_IS_UI_MANAGER (manager), NULL);
+ 
+-  return g_object_new (GIMP_TYPE_MENU_MODEL,
+-                       "manager", manager,
+-                       "model",   model,
+-                       "path",    path,
+-                       NULL);
++  GimpMenuModel *result;
++
++  result                     = g_object_new (GIMP_TYPE_MENU_MODEL,
++                                             "manager", manager,
++                                             "path", path,
++                                             NULL);
++  result->priv->display_path = g_strdup (display_path);
++  g_object_set (result, "model", model, NULL);
++
++  return result;
+ }
+ 
+ static void
+@@ -693,7 +708,8 @@ gimp_menu_model_initialize (GimpMenuModel *model,
+           gchar         *section_name = NULL;
+ 
+           submodel = gimp_menu_model_new_section (model->priv->manager, subsection,
+-                                                  model->priv->path);
++                                                  model->priv->path,
++                                                  model->priv->display_path);
+           item = g_menu_item_new_section (label, G_MENU_MODEL (submodel));
+ 
+           if (g_menu_model_get_item_attribute (G_MENU_MODEL (gmodel), i,
+@@ -711,6 +727,7 @@ gimp_menu_model_initialize (GimpMenuModel *model,
+           gchar         *canon_label;
+           const gchar   *group_label;
+           gchar         *path;
++          gchar         *display_path;
+ 
+           g_return_if_fail (action_name != NULL);
+ 
+@@ -728,9 +745,13 @@ gimp_menu_model_initialize (GimpMenuModel *model,
+           path = g_strdup_printf ("%s/%s",
+                                   model->priv->path ? model->priv->path : "",
+                                   canon_label);
++          display_path = g_strdup_printf ("%s/%s",
++                                          model->priv->display_path ? model->priv->display_path : "",
++                                          canon_label);
+           g_free (canon_label);
+ 
+-          submodel = gimp_menu_model_new_submenu (model->priv->manager, submenu, path);
++          submodel = gimp_menu_model_new_submenu (model->priv->manager, submenu, path,
++                                                  display_path);
+           item     = g_menu_item_new_submenu (group_label, G_MENU_MODEL (submodel));
+           g_signal_connect_object (action, "notify::group-label",
+                                    G_CALLBACK (gimp_menu_model_notify_group_label),
+@@ -738,12 +759,14 @@ gimp_menu_model_initialize (GimpMenuModel *model,
+ 
+           g_object_unref (submodel);
+           g_free (path);
++          g_free (display_path);
+         }
+       else if (submenu != NULL)
+         {
+           GimpMenuModel *submodel;
+           gchar         *canon_label;
+           gchar         *path;
++          gchar         *display_path;
+           const gchar   *en_label;
+           gchar         *en_label_copy;
+ 
+@@ -756,8 +779,14 @@ gimp_menu_model_initialize (GimpMenuModel *model,
+                                   model->priv->path ? model->priv->path : "",
+                                   canon_label);
+           g_free (canon_label);
++          canon_label  = gimp_utils_make_canonical_menu_label (label);
++          display_path = g_strdup_printf ("%s/%s",
++                                          model->priv->display_path ? model->priv->display_path : "",
++                                          canon_label);
++          g_free (canon_label);
+ 
+-          submodel = gimp_menu_model_new_submenu (model->priv->manager, submenu, path);
++          submodel = gimp_menu_model_new_submenu (model->priv->manager, submenu, path,
++                                                  display_path);
+           item     = g_menu_item_new_submenu (label, G_MENU_MODEL (submodel));
+ 
+           en_label_copy = g_strdup (en_label);
+@@ -767,6 +796,7 @@ gimp_menu_model_initialize (GimpMenuModel *model,
+ 
+           g_object_unref (submodel);
+           g_free (path);
++          g_free (display_path);
+         }
+       else
+         {
+@@ -784,23 +814,29 @@ gimp_menu_model_initialize (GimpMenuModel *model,
+               /* Special-case the main menu manager when constructing it as
+                * this is the only one which should set the menu path.
+                */
+-              const gchar *menu_path = gimp_menu_model_get_path (model);
++              const gchar *display_path = model->priv->display_path;
+ 
+ #ifdef PLATFORM_OSX
+-              /* on macOS, entries flagged with "hidden-when" == "macos-menubar"
+-                 are relocated to the "GIMP" Mac menu. See: #9877 */
++              gchar *macos_display_path = NULL;
+               gchar *hidden_when = NULL;
+ 
++              /* On macOS, entries flagged with "hidden-when" == "macos-menubar"
++               * are relocated to the "GIMP" Mac menu. See: #9877.
++               */
+               if (g_menu_item_get_attribute (item, "hidden-when", "s", &hidden_when) &&
+                   g_strcmp0 (hidden_when, "macos-menubar") == 0)
+                 {
+-                  menu_path = g_strdup_printf ("/GIMP/%s",
+-                                               gimp_action_get_short_label (action));
++                  macos_display_path = g_strdup_printf ("/GIMP/%s",
++                                                        gimp_action_get_short_label (action));
++                  display_path       = macos_display_path;
+                 }
+               g_free (hidden_when);
+ #endif
+ 
+-              gimp_action_set_menu_path (action, menu_path);
++              gimp_action_set_menu_path (action, display_path);
++#ifdef PLATFORM_OSX
++              g_free (macos_display_path);
++#endif
+             }
+ 
+           g_signal_connect_object (action,
+@@ -1192,7 +1228,7 @@ gimp_menu_model_ui_added (GimpUIManager *manager,
+       g_free (detailed_action_name);
+ 
+       if (model->priv->manager->store_action_paths)
+-        gimp_action_set_menu_path (GIMP_ACTION (action), gimp_menu_model_get_path (model));
++        gimp_action_set_menu_path (GIMP_ACTION (action), mod_model->priv->display_path);
+ 
+       if (top)
+         {
+@@ -1232,13 +1268,18 @@ gimp_menu_model_ui_added (GimpUIManager *manager,
+       GMenuItem     *item;
+       gchar         *canon_label;
+       gchar         *submodel_path;
++      gchar         *display_path;
+ 
+       canon_label   = gimp_utils_make_canonical_menu_label (new_dir);
+       submodel_path = g_strdup_printf ("%s/%s",
+                                        model->priv->path ? model->priv->path : "",
+                                        canon_label);
++      display_path  = g_strdup_printf ("%s/%s",
++                                       model->priv->display_path ? model->priv->display_path : "",
++                                       canon_label);
+ 
+-      submodel = gimp_menu_model_new_submenu (model->priv->manager, NULL, submodel_path);
++      submodel = gimp_menu_model_new_submenu (model->priv->manager, NULL, submodel_path,
++                                              display_path);
+       item     = g_menu_item_new_submenu (new_dir, G_MENU_MODEL (submodel));
+ 
+       if (model->priv->path == NULL)
+@@ -1250,6 +1291,7 @@ gimp_menu_model_ui_added (GimpUIManager *manager,
+       g_free (canon_label);
+       g_object_unref (submodel);
+       g_free (submodel_path);
++      g_free (display_path);
+       g_free (new_dir);
+ 
+       g_menu_model_items_changed (G_MENU_MODEL (model),
+-- 
+2.53.0
+

@@ -1,0 +1,114 @@
+From 3ad34bd098d649e6b9cfd35c435b792aa0714cbb Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 10:49:09 +0200
+Subject: [PATCH] file-raw: Honor endianness for floating point samples
+
+---
+ plug-ins/common/file-raw-data.c | 42 ++++++++++++++++++++++++++-------
+ 1 file changed, 34 insertions(+), 8 deletions(-)
+
+diff --git a/plug-ins/common/file-raw-data.c b/plug-ins/common/file-raw-data.c
+index 89cede87f7..5af2f69949 100644
+--- a/plug-ins/common/file-raw-data.c
++++ b/plug-ins/common/file-raw-data.c
+@@ -989,7 +989,9 @@ raw_load_standard (RawGimpData *data,
+                     {
+                       if (is_float)
+                         {
+-                          pixel_val = ((guint16 *) in)[pos];
++                          pixel_val = (is_big_endian ?
++                                           GUINT16_FROM_BE (((guint16 *) in)[pos]) :
++                                           GUINT16_FROM_LE (((guint16 *) in)[pos]));
+                         }
+                       else if (is_big_endian)
+                         {
+@@ -1012,7 +1014,9 @@ raw_load_standard (RawGimpData *data,
+ 
+                       if (is_float)
+                         {
+-                          pixel_val = ((guint32 *) in)[pos];
++                          pixel_val = (is_big_endian ?
++                                           GUINT32_FROM_BE (((guint32 *) in)[pos]) :
++                                           GUINT32_FROM_LE (((guint32 *) in)[pos]));
+                         }
+                       else if (is_big_endian)
+                         {
+@@ -1141,7 +1145,9 @@ raw_load_planar (RawGimpData *data,
+                     {
+                       if (is_float)
+                         {
+-                          pixel_val = ((guint16 *) in)[x];
++                          pixel_val = (is_big_endian ?
++                                           GUINT16_FROM_BE (((guint16 *) in)[x]) :
++                                           GUINT16_FROM_LE (((guint16 *) in)[x]));
+                         }
+                       else if (is_big_endian)
+                         {
+@@ -1164,7 +1170,9 @@ raw_load_planar (RawGimpData *data,
+ 
+                       if (is_float)
+                         {
+-                          pixel_val = ((guint32 *) in)[x];
++                          pixel_val = (is_big_endian ?
++                                           GUINT32_FROM_BE (((guint32 *) in)[x]) :
++                                           GUINT32_FROM_LE (((guint32 *) in)[x]));
+                         }
+                       else if (is_big_endian)
+                         {
+@@ -2245,7 +2253,9 @@ preview_update (GimpPreviewArea *preview,
+                             {
+                               guint16 int16_val;
+ 
+-                              int16_val = ((guint16 *) in)[pos];
++                              int16_val = (is_big_endian ?
++                                               GUINT16_FROM_BE (((guint16 *) in)[pos]) :
++                                               GUINT16_FROM_LE (((guint16 *) in)[pos]));
+                               halfp2singles ((uint32_t *) &float_val, &int16_val, 1);
+                             }
+                           else if (is_big_endian)
+@@ -2269,7 +2279,14 @@ preview_update (GimpPreviewArea *preview,
+ 
+                           if (is_float)
+                             {
+-                              float_val = ((gfloat *) in)[pos];
++                              {
++                                guint32 int32_val;
++
++                                int32_val = (is_big_endian ?
++                                                 GUINT32_FROM_BE (((guint32 *) in)[pos]) :
++                                                 GUINT32_FROM_LE (((guint32 *) in)[pos]));
++                                memcpy (&float_val, &int32_val, sizeof (float_val));
++                              }
+                             }
+                           else if (is_big_endian)
+                             {
+@@ -2336,7 +2353,9 @@ preview_update (GimpPreviewArea *preview,
+                             {
+                               guint16 int16_val;
+ 
+-                              int16_val = ((guint16 *) in)[x];
++                              int16_val = (is_big_endian ?
++                                               GUINT16_FROM_BE (((guint16 *) in)[x]) :
++                                               GUINT16_FROM_LE (((guint16 *) in)[x]));
+                               halfp2singles ((uint32_t *) &float_val, &int16_val, 1);
+                             }
+                           else if (is_big_endian)
+@@ -2360,7 +2379,14 @@ preview_update (GimpPreviewArea *preview,
+ 
+                           if (is_float)
+                             {
+-                              float_val = ((gfloat *) in)[x];
++                              {
++                                guint32 int32_val;
++
++                                int32_val = (is_big_endian ?
++                                                 GUINT32_FROM_BE (((guint32 *) in)[x]) :
++                                                 GUINT32_FROM_LE (((guint32 *) in)[x]));
++                                memcpy (&float_val, &int32_val, sizeof (float_val));
++                              }
+                             }
+                           else if (is_big_endian)
+                             {
+-- 
+2.53.0
+

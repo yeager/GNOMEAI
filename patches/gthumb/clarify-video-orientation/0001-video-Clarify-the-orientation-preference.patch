@@ -1,0 +1,25 @@
+From 74134543f1da2ab1ca5d7178e8b61f5afbbeac40 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 10:22:42 +0200
+Subject: [PATCH] video: Clarify the orientation preference
+
+---
+ data/ui/videos-preferences.ui | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/data/ui/videos-preferences.ui b/data/ui/videos-preferences.ui
+index 90467be..e490516 100644
+--- a/data/ui/videos-preferences.ui
++++ b/data/ui/videos-preferences.ui
+@@ -29,7 +29,7 @@
+                 </child>
+                 <child>
+                   <object class="AdwSwitchRow" id="autorotate">
+-                    <property name="title" translatable="yes">Respect Orientation</property>
++                    <property name="title" translatable="yes">Apply Video Orientation Metadata</property>
+                     <signal name="notify::active" handler="on_autorotate_activated"/>
+                   </object>
+                 </child>
+-- 
+2.53.0
+

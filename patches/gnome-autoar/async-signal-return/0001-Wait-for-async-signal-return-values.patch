@@ -1,0 +1,182 @@
+From 512a9c1b2bb9106c6013fca1e0b1773c47898013 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Fri, 11 Sep 2026 22:00:01 +0200
+Subject: [PATCH] Wait for async signal return values
+
+---
+ gnome-autoar/autoar-private.c | 48 +++++++++++++++++++++++++++++-----
+ tests/test-extract-unit.c     | 49 ++++++++++++++++++++++++++++++++++-
+ 2 files changed, 89 insertions(+), 8 deletions(-)
+
+diff --git a/gnome-autoar/autoar-private.c b/gnome-autoar/autoar-private.c
+index 1232ba3..15849fd 100644
+--- a/gnome-autoar/autoar-private.c
++++ b/gnome-autoar/autoar-private.c
+@@ -49,6 +49,11 @@ struct _AutoarCommonSignalData
+ {
+   GValue instance_and_params[3]; /* Maximum number of parameters + 1 */
+   gssize used_values; /* Number of GValues to be unset */
++  GValue return_value;
++  gboolean has_return_value;
++  GMutex mutex;
++  GCond cond;
++  gboolean completed;
+   guint signal_id;
+   GQuark detail;
+ };
+@@ -118,6 +123,10 @@ autoar_common_signal_data_free (AutoarCommonSignalData *signal_data)
+ 
+   for (i = 0; i < signal_data->used_values; i++)
+     g_value_unset (signal_data->instance_and_params + i);
++  if (signal_data->has_return_value)
++    g_value_unset (&signal_data->return_value);
++  g_mutex_clear (&signal_data->mutex);
++  g_cond_clear (&signal_data->cond);
+ 
+   g_free (signal_data);
+ }
+@@ -129,9 +138,17 @@ autoar_common_g_signal_emit_main_context (void *data)
+   g_signal_emitv (signal_data->instance_and_params,
+                   signal_data->signal_id,
+                   signal_data->detail,
+-                  NULL);
+-  autoar_common_signal_data_free (signal_data);
+-  return FALSE;
++                  signal_data->has_return_value ? &signal_data->return_value : NULL);
++
++  g_mutex_lock (&signal_data->mutex);
++  signal_data->completed = TRUE;
++  g_cond_signal (&signal_data->cond);
++  g_mutex_unlock (&signal_data->mutex);
++
++  if (!signal_data->has_return_value)
++    autoar_common_signal_data_free (signal_data);
++
++  return G_SOURCE_REMOVE;
+ }
+ 
+ /**
+@@ -144,10 +161,9 @@ autoar_common_g_signal_emit_main_context (void *data)
+  *
+  * This is a wrapper for g_signal_emit(). If @in_thread is %FALSE, this
+  * function is the same as g_signal_emit(). If @in_thread is %TRUE, the
+- * signal will be emitted from the main thread. This function will send
+- * the signal emission job via g_main_context_invoke(), but it does not
+- * wait for the signal emission job to be completed. Hence, the signal
+- * may emitted after autoar_common_g_signal_emit() is returned.
++ * signal will be emitted from the main thread. For signals with a return
++ * value, this function waits for the main-thread emission so that the
++ * caller receives the handler result before continuing.
+  **/
+ G_GNUC_INTERNAL void
+ autoar_common_g_signal_emit (gpointer instance,
+@@ -192,7 +208,25 @@ autoar_common_g_signal_emit (gpointer instance,
+     }
+ 
+     if (error == NULL) {
++      data->has_return_value = query.return_type != G_TYPE_NONE;
++      if (data->has_return_value)
++        g_value_init (&data->return_value, query.return_type);
++
++      if (data->has_return_value)
++        g_mutex_lock (&data->mutex);
+       g_main_context_invoke (NULL, autoar_common_g_signal_emit_main_context, data);
++      if (data->has_return_value) {
++        while (!data->completed)
++          g_cond_wait (&data->cond, &data->mutex);
++        g_mutex_unlock (&data->mutex);
++
++        G_VALUE_LCOPY (&data->return_value, ap, 0, &error);
++        if (error != NULL) {
++          g_debug ("G_VALUE_LCOPY: Error: %s", error);
++          g_free (error);
++        }
++        autoar_common_signal_data_free (data);
++      }
+     } else {
+       autoar_common_signal_data_free (data);
+       g_debug ("G_VALUE_COLLECT_INIT: Error: %s", error);
+diff --git a/tests/test-extract-unit.c b/tests/test-extract-unit.c
+index a073aff..01fb72a 100644
+--- a/tests/test-extract-unit.c
++++ b/tests/test-extract-unit.c
+@@ -37,6 +37,7 @@ typedef struct {
+   gboolean cancelled_signalled;
+   gboolean completed_signalled;
+   gboolean request_passphrase_signalled;
++  const gchar *passphrase_to_return;
+ } ExtractTestData;
+ 
+ static void extract_test_data_free (ExtractTestData *data);
+@@ -259,7 +260,17 @@ request_passphrase_handler (AutoarExtractor *extractor,
+ 
+   data->request_passphrase_signalled = TRUE;
+ 
+-  return NULL;
++  return g_strdup (data->passphrase_to_return);
++}
++
++static gboolean
++set_boolean_true (gpointer user_data)
++{
++  gboolean *value = user_data;
++
++  *value = TRUE;
++
++  return G_SOURCE_REMOVE;
+ }
+ 
+ static ExtractTestData*
+@@ -1482,6 +1493,40 @@ test_encrypted_request_passphrase (void)
+   assert_reference_and_output_match (extract_test);
+ }
+ 
++static void
++test_async_encrypted_request_passphrase (void)
++{
++  g_autoptr (ExtractTest) extract_test = NULL;
++  g_autoptr (ExtractTestData) data = NULL;
++  g_autoptr (GFile) archive = NULL;
++  g_autoptr (AutoarExtractor) extractor = NULL;
++  gboolean timed_out = FALSE;
++  guint timeout_id;
++
++  extract_test = extract_test_new ("test-encrypted");
++  g_assert_nonnull (extract_test);
++
++  archive = g_file_get_child (extract_test->input, "arextract.zip");
++  extractor = autoar_extractor_new (archive, extract_test->output);
++  data = extract_test_data_new_for_extract (extractor);
++  data->passphrase_to_return = "password123";
++
++  autoar_extractor_start_async (extractor, data->cancellable);
++  timeout_id = g_timeout_add_seconds (10, set_boolean_true, &timed_out);
++
++  while (!data->completed_signalled && data->error == NULL && !timed_out)
++    g_main_context_iteration (NULL, TRUE);
++
++  if (!timed_out)
++    g_source_remove (timeout_id);
++
++  g_assert_false (timed_out);
++  g_assert_true (data->request_passphrase_signalled);
++  g_assert_no_error (data->error);
++  g_assert_true (data->completed_signalled);
++  assert_reference_and_output_match (extract_test);
++}
++
+ static void
+ test_encrypted_wrong_passphrase (void)
+ {
+@@ -1579,6 +1624,8 @@ setup_test_suite (void)
+                    test_encrypted);
+   g_test_add_func ("/autoar-extract/test-encrypted-request-passphrase",
+                    test_encrypted_request_passphrase);
++  g_test_add_func ("/autoar-extract/test-async-encrypted-request-passphrase",
++                   test_async_encrypted_request_passphrase);
+   g_test_add_func ("/autoar-extract/test-encrypted-wrong-passphrase",
+                    test_encrypted_wrong_passphrase);
+ }
+-- 
+2.53.0
+

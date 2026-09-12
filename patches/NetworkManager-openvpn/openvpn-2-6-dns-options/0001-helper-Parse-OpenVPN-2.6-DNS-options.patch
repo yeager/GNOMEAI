@@ -1,0 +1,94 @@
+From d0da830cb0ff7d97fd39031b5d3f550209bcd5f6 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Fri, 11 Sep 2026 21:39:27 +0200
+Subject: [PATCH] helper: Parse OpenVPN 2.6 DNS options
+
+OpenVPN 2.6 exports DNS addresses and domains through dns_server_N variables instead of foreign_option_N. Parse both the new address and resolve-domain variables while retaining the legacy parser.\n\nCloses #152
+---
+ src/nm-openvpn-service-openvpn-helper.c | 63 +++++++++++++++++++++++++
+ 1 file changed, 63 insertions(+)
+
+diff --git a/src/nm-openvpn-service-openvpn-helper.c b/src/nm-openvpn-service-openvpn-helper.c
+index 46db231..61255e8 100644
+--- a/src/nm-openvpn-service-openvpn-helper.c
++++ b/src/nm-openvpn-service-openvpn-helper.c
+@@ -210,6 +210,67 @@ parse_addr_list (GPtrArray *array4, GPtrArray *array6, const char *str)
+ 	return;
+ }
+ 
++static void
++parse_openvpn_dns_options (GPtrArray *dns4_list,
++                           GPtrArray *dns6_list,
++                           GPtrArray *dns_domains,
++                           GPtrArray *dns_domain_search);
++
++static inline gboolean
++is_domain_valid (const char *str);
++
++static void
++parse_openvpn_dns_options (GPtrArray *dns4_list,
++                           GPtrArray *dns6_list,
++                           GPtrArray *dns_domains,
++                           GPtrArray *dns_domain_search)
++{
++	guint i;
++
++	for (i = 1;; i++) {
++		char env_name[NM_STRLEN ("dns_search_domain_") + 40];
++		const char *domain;
++
++		nm_sprintf_buf (env_name, "dns_search_domain_%u", i);
++		domain = getenv (env_name);
++		if (!domain || !domain[0])
++			break;
++
++		if (is_domain_valid (domain))
++			g_ptr_array_add (dns_domain_search, (gpointer) domain);
++	}
++
++	/* OpenVPN permits DNS server ids from 0 through 127, with gaps. */
++	for (i = 0; i <= 127; i++) {
++		guint j;
++
++		for (j = 1; j <= 8; j++) {
++			char env_name[NM_STRLEN ("dns_server_") + 3 + NM_STRLEN ("_address_") + 1 + 40];
++			const char *address;
++
++			nm_sprintf_buf (env_name, "dns_server_%u_address_%u", i, j);
++			address = getenv (env_name);
++			if (!address || !address[0])
++				break;
++
++			parse_addr_list (dns4_list, dns6_list, address);
++		}
++
++		for (j = 1;; j++) {
++			char env_name[NM_STRLEN ("dns_server_") + 3 + NM_STRLEN ("_resolve_domain_") + 1 + 40];
++			const char *domain;
++
++			nm_sprintf_buf (env_name, "dns_server_%u_resolve_domain_%u", i, j);
++			domain = getenv (env_name);
++			if (!domain || !domain[0])
++				break;
++
++			if (is_domain_valid (domain))
++				g_ptr_array_add (dns_domains, (gpointer) domain);
++		}
++	}
++}
++
+ static inline gboolean
+ is_domain_valid (const char *str)
+ {
+@@ -705,6 +766,8 @@ main (int argc, char *argv[])
+ 			g_ptr_array_add (dns_domain_search, &tmp[NM_STRLEN ("DOMAIN-SEARCH ")]);
+ 	}
+ 
++	parse_openvpn_dns_options (dns4_list, dns6_list, dns_domains, dns_domain_search);
++
+ 	/* if DOMAIN and DOMAIN-SEARCH are intermixed, make the latter follow the former */
+ 	for (i = 0; i < dns_domain_search->len; i++) {
+ 		g_ptr_array_add (dns_domains, g_ptr_array_index (dns_domain_search, i));
+-- 
+2.53.0
+

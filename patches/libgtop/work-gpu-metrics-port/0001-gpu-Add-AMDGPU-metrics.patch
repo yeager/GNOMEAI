@@ -1,0 +1,885 @@
+From ae06b3bd1d15c0a084d292dd51acbb2f366322aa Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Fri, 11 Sep 2026 20:29:35 +0200
+Subject: [PATCH 1/2] gpu: Add AMDGPU metrics
+
+Read AMDGPU utilization and memory metrics from DRM sysfs. Keep the card path while enumerating devices, so mixed-driver systems do not read metrics from the wrong card.
+---
+ .gitignore                       |   1 +
+ configure.ac                     |   6 +-
+ examples/Makefile.am             |   5 +-
+ examples/gpu.c                   |  23 ++++++
+ features.def                     |   1 +
+ include/glibtop/Makefile.am      |   3 +-
+ include/glibtop/command.h        |   3 +-
+ include/glibtop/gpu.h            |  67 ++++++++++++++++
+ include/glibtop/sysdeps.h        |   7 +-
+ include/glibtop/union.h          |   2 +
+ lib/Makefile.am                  |   2 +-
+ lib/command.c                    |   1 +
+ lib/libgtop.sym                  |   2 +
+ lib/sysdeps.c                    |   7 ++
+ src/daemon/main.c                |   4 +
+ src/daemon/slave.c               |   6 ++
+ sysdeps/aix/Makefile.am          |   2 +-
+ sysdeps/aix/glibtop_server.h     |   1 +
+ sysdeps/bsd/Makefile.am          |   2 +-
+ sysdeps/bsd/glibtop_server.h     |   1 +
+ sysdeps/common/default.c         |  12 +++
+ sysdeps/common/gpu.c             |  26 ++++++
+ sysdeps/cygwin/Makefile.am       |   2 +-
+ sysdeps/cygwin/glibtop_server.h  |   1 +
+ sysdeps/darwin/Makefile.am       |   2 +-
+ sysdeps/darwin/glibtop_server.h  |   1 +
+ sysdeps/freebsd/Makefile.am      |   2 +-
+ sysdeps/freebsd/glibtop_server.h |   1 +
+ sysdeps/linux/Makefile.am        |   2 +-
+ sysdeps/linux/glibtop_server.h   |   1 +
+ sysdeps/linux/gpu.c              | 131 +++++++++++++++++++++++++++++++
+ sysdeps/openbsd/Makefile.am      |   2 +-
+ sysdeps/openbsd/glibtop_server.h |   1 +
+ sysdeps/osf1/Makefile.am         |   2 +-
+ sysdeps/osf1/glibtop_server.h    |   1 +
+ sysdeps/solaris/Makefile.am      |   3 +-
+ sysdeps/solaris/glibtop_server.h |   1 +
+ sysdeps/stub/Makefile.am         |   2 +-
+ sysdeps/stub/glibtop_server.h    |   1 +
+ sysdeps/sun4/Makefile.am         |   2 +-
+ sysdeps/sun4/glibtop_server.h    |   1 +
+ 41 files changed, 320 insertions(+), 23 deletions(-)
+ create mode 100644 examples/gpu.c
+ create mode 100644 include/glibtop/gpu.h
+ create mode 100644 sysdeps/common/gpu.c
+ create mode 100644 sysdeps/linux/gpu.c
+
+diff --git a/.gitignore b/.gitignore
+index 4b36b554..8b5e2a11 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -62,6 +62,7 @@ examples/disk
+ examples/diskio
+ examples/first
+ examples/free
++examples/gpu
+ examples/mountlist
+ examples/netlist
+ examples/netload
+diff --git a/configure.ac b/configure.ac
+index db2a48bb..537c25ae 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -8,7 +8,7 @@ m4_define([libgtop_micro_version], [3])
+ m4_define([libgtop_version], [libgtop_major_version.libgtop_minor_version.libgtop_micro_version])
+ 
+ dnl  increment if the interface has additions, changes, removals.
+-m4_define([libgtop_current], [12])
++m4_define([libgtop_current], [13])
+ 
+ dnl  increment any time the source changes; set to
+ dnl  0 if you increment CURRENT
+@@ -17,10 +17,10 @@ m4_define([libgtop_revision], [0])
+ dnl  increment if any interfaces have been added; set to 0
+ dnl  if any interfaces have been removed. removal has
+ dnl  precedence over adding, so set to 0 if both happened.
+-m4_define([libgtop_age], [1])
++m4_define([libgtop_age], [2])
+ 
+ # Increase each time you change the client/server protocol.
+-m4_define([libgtop_server_version], [5])
++m4_define([libgtop_server_version], [6])
+ 
+ # Version code calculation
+ m4_define([libgtop_version_code], [m4_eval(libgtop_major_version * 1000000 + libgtop_minor_version * 1000 + libgtop_micro_version)])
+diff --git a/examples/Makefile.am b/examples/Makefile.am
+index 84e074e5..a61bb74d 100644
+--- a/examples/Makefile.am
++++ b/examples/Makefile.am
+@@ -11,7 +11,7 @@ AM_LDFLAGS			= $(LIBGTOP_EXTRA_LIBS)
+ 
+ noinst_PROGRAMS	= 	first second pprint procargs df netlist \
+ 			  mountlist procmap netload sysdeps timings \
+-			  openfiles smp proclist free wd affinity disk diskio sysinfo
++			  openfiles smp proclist free wd affinity disk diskio sysinfo gpu
+ 
+ first_SOURCES		= first.c
+ first_LDADD		= $(top_builddir)/lib/libgtop-2.0.la
+@@ -73,3 +73,6 @@ diskio_LDADD	  = $(top_builddir)/lib/libgtop-2.0.la
+ 
+ sysinfo_SOURCES		= sysinfo.c
+ sysinfo_LDADD		= $(top_builddir)/lib/libgtop-2.0.la
++
++gpu_SOURCES		= gpu.c
++gpu_LDADD		= $(top_builddir)/lib/libgtop-2.0.la
+diff --git a/examples/gpu.c b/examples/gpu.c
+new file mode 100644
+index 00000000..d353ff86
+--- /dev/null
++++ b/examples/gpu.c
+@@ -0,0 +1,23 @@
++#include <glibtop.h>
++#include <glibtop/gpu.h>
++
++#include <stdio.h>
++
++int
++main (void)
++{
++	glibtop_gpu gpu;
++
++	glibtop_init ();
++	glibtop_get_gpu (&gpu);
++
++	for (guint64 i = 0; i < gpu.ngpu; i++) {
++		printf ("%" G_GUINT64_FORMAT "\t%s\tbusy: %" G_GUINT64_FORMAT
++		        "%%\tvram: %" G_GUINT64_FORMAT "/%" G_GUINT64_FORMAT " bytes\n",
++		        i, gpu.driver[i], gpu.xgpu_busy_percent[i],
++		        gpu.xgpu_vram_used[i], gpu.xgpu_vram_total[i]);
++	}
++
++	glibtop_close ();
++	return 0;
++}
+diff --git a/features.def b/features.def
+index 50cbe72a..86ca626b 100644
+--- a/features.def
++++ b/features.def
+@@ -1,5 +1,6 @@
+ void|cpu
+ void|disk
++void|gpu
+ void|mem
+ void|swap
+ void|uptime
+diff --git a/include/glibtop/Makefile.am b/include/glibtop/Makefile.am
+index da78ca93..9742ac75 100644
+--- a/include/glibtop/Makefile.am
++++ b/include/glibtop/Makefile.am
+@@ -2,7 +2,7 @@ glibtopdir		= $(includedir)/libgtop-2.0/glibtop
+ 
+ glibtop_HEADERS		= close.h loadavg.h prockernel.h procstate.h \
+ 			  sem_limits.h uptime.h command.h mem.h proclist.h \
+-			  proctime.h shm_limits.h cpu.h disk.h msg_limits.h \
++			  proctime.h shm_limits.h cpu.h disk.h gpu.h msg_limits.h \
+ 			  procmem.h procuid.h swap.h \
+ 			  procsegment.h sysdeps.h global.h \
+ 			  procsignal.h union.h gnuserv.h \
+@@ -14,4 +14,3 @@ glibtop_HEADERS		= close.h loadavg.h prockernel.h procstate.h \
+ 
+ noinst_HEADERS		= error.h write.h read_data.h read.h init_hooks.h machine.h \
+ 			  version.h
+-
+diff --git a/include/glibtop/command.h b/include/glibtop/command.h
+index 31e89589..f37377af 100644
+--- a/include/glibtop/command.h
++++ b/include/glibtop/command.h
+@@ -61,8 +61,9 @@ G_BEGIN_DECLS
+ #define GLIBTOP_CMND_PROC_AFFINITY	27
+ #define GLIBTOP_CMND_PROC_IO	28
+ #define GLIBTOP_CMND_DISK	29
++#define GLIBTOP_CMND_GPU		30
+ 
+-#define GLIBTOP_MAX_CMND		30
++#define GLIBTOP_MAX_CMND		31
+ 
+ #define _GLIBTOP_PARAM_SIZE		16
+ 
+diff --git a/include/glibtop/gpu.h b/include/glibtop/gpu.h
+new file mode 100644
+index 00000000..25365f5b
+--- /dev/null
++++ b/include/glibtop/gpu.h
+@@ -0,0 +1,67 @@
++/* Copyright (C) 2026
++ *
++ * This file is part of LibGTop.
++ *
++ * LibGTop is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ */
++
++#ifndef __GLIBTOP_GPU_H__
++#define __GLIBTOP_GPU_H__
++
++#include <glibtop.h>
++#include <glibtop/global.h>
++
++G_BEGIN_DECLS
++
++#define GLIBTOP_NGPU                 0
++#define GLIBTOP_XGPU_BUSY_PERCENT     1
++#define GLIBTOP_XGPU_GTT_TOTAL        2
++#define GLIBTOP_XGPU_GTT_USED         3
++#define GLIBTOP_XGPU_VIS_VRAM_TOTAL   4
++#define GLIBTOP_XGPU_VIS_VRAM_USED    5
++#define GLIBTOP_XGPU_VRAM_TOTAL       6
++#define GLIBTOP_XGPU_VRAM_USED        7
++
++#define GLIBTOP_MAX_GPU               16
++#define GLIBTOP_GPU_DRIVER_NAME_SIZE  16
++
++typedef struct _glibtop_gpu glibtop_gpu;
++
++struct _glibtop_gpu
++{
++	guint64 flags;
++	guint64 ngpu;
++	gchar driver[GLIBTOP_MAX_GPU][GLIBTOP_GPU_DRIVER_NAME_SIZE];
++	guint64 xgpu_busy_percent[GLIBTOP_MAX_GPU];
++	guint64 xgpu_gtt_total[GLIBTOP_MAX_GPU];
++	guint64 xgpu_gtt_used[GLIBTOP_MAX_GPU];
++	guint64 xgpu_vis_vram_total[GLIBTOP_MAX_GPU];
++	guint64 xgpu_vis_vram_used[GLIBTOP_MAX_GPU];
++	guint64 xgpu_vram_total[GLIBTOP_MAX_GPU];
++	guint64 xgpu_vram_used[GLIBTOP_MAX_GPU];
++};
++
++void glibtop_get_gpu (glibtop_gpu *buf);
++
++#if GLIBTOP_SUID_GPU
++#define glibtop_get_gpu_r glibtop_get_gpu_p
++#else
++#define glibtop_get_gpu_r glibtop_get_gpu_s
++#endif
++
++void glibtop_get_gpu_l (glibtop *server, glibtop_gpu *buf);
++
++#if GLIBTOP_SUID_GPU
++void _glibtop_init_gpu_p (glibtop *server);
++void glibtop_get_gpu_p (glibtop *server, glibtop_gpu *buf);
++#else
++void _glibtop_init_gpu_s (glibtop *server);
++void glibtop_get_gpu_s (glibtop *server, glibtop_gpu *buf);
++#endif
++
++G_END_DECLS
++
++#endif
+diff --git a/include/glibtop/sysdeps.h b/include/glibtop/sysdeps.h
+index 1164d449..4e040c0d 100644
+--- a/include/glibtop/sysdeps.h
++++ b/include/glibtop/sysdeps.h
+@@ -55,13 +55,14 @@ G_BEGIN_DECLS
+ #define GLIBTOP_SYSDEPS_PROC_AFFINITY	26
+ #define GLIBTOP_SYSDEPS_PROC_IO	27
+ #define GLIBTOP_SYSDEPS_DISK	28
++#define GLIBTOP_SYSDEPS_GPU		29
+ 
+-#define GLIBTOP_MAX_SYSDEPS		29
++#define GLIBTOP_MAX_SYSDEPS		30
+ 
+ /* The 'features' args to glibtop_init_* is an unsigned long */
+ G_STATIC_ASSERT((1UL << (GLIBTOP_MAX_SYSDEPS - 1)) <= ULONG_MAX);
+ 
+-#define GLIBTOP_SYSDEPS_ALL		((1 << GLIBTOP_MAX_SYSDEPS) - 1)
++#define GLIBTOP_SYSDEPS_ALL		((1UL << GLIBTOP_MAX_SYSDEPS) - 1)
+ 
+ typedef struct _glibtop_sysdeps	glibtop_sysdeps;
+ 
+@@ -97,7 +98,7 @@ struct _glibtop_sysdeps
+ 	guint64	proc_affinity;		/* glibtop_proc_affinity */
+ 	guint64	proc_io;		/* glibtop_proc_io */
+ 	guint64 disk;			/* glibtop_disk		*/
+-	guint64	reserved1;
++	guint64 gpu;			/* glibtop_gpu		*/
+ 	guint64	reserved2;
+ 	guint64	reserved3;
+ 	guint64	reserved4;
+diff --git a/include/glibtop/union.h b/include/glibtop/union.h
+index eb57cfc0..c78a60d4 100644
+--- a/include/glibtop/union.h
++++ b/include/glibtop/union.h
+@@ -24,6 +24,7 @@
+ 
+ #include <glibtop/cpu.h>
+ #include <glibtop/disk.h>
++#include <glibtop/gpu.h>
+ #include <glibtop/mem.h>
+ #include <glibtop/swap.h>
+ #include <glibtop/uptime.h>
+@@ -62,6 +63,7 @@ union _glibtop_union
+ {
+ 	glibtop_cpu		cpu;
+ 	glibtop_disk	disk;
++	glibtop_gpu		gpu;
+ 	glibtop_mem		mem;
+ 	glibtop_swap		swap;
+ 	glibtop_uptime		uptime;
+diff --git a/lib/Makefile.am b/lib/Makefile.am
+index 5a6f6511..256b73d9 100644
+--- a/lib/Makefile.am
++++ b/lib/Makefile.am
+@@ -29,7 +29,7 @@ if HAVE_INTROSPECTION
+ introspection_sources = $(libgtop_2_0_la_SOURCES) lib.c ../glibtop.h ../libgtopconfig.h \
+ 			../include/glibtop/close.h ../include/glibtop/loadavg.h ../include/glibtop/prockernel.h ../include/glibtop/procstate.h \
+ 			../include/glibtop/sem_limits.h ../include/glibtop/uptime.h ../include/glibtop/command.h ../include/glibtop/mem.h ../include/glibtop/proclist.h \
+-			../include/glibtop/proctime.h ../include/glibtop/shm_limits.h ../include/glibtop/cpu.h ../include/glibtop/disk.h ../include/glibtop/msg_limits.h \
++			../include/glibtop/proctime.h ../include/glibtop/shm_limits.h ../include/glibtop/cpu.h ../include/glibtop/disk.h ../include/glibtop/gpu.h ../include/glibtop/msg_limits.h \
+ 			../include/glibtop/procmem.h ../include/glibtop/procuid.h ../include/glibtop/swap.h \
+ 			../include/glibtop/procsegment.h ../include/glibtop/sysdeps.h ../include/glibtop/global.h \
+ 			../include/glibtop/procsignal.h ../include/glibtop/union.h ../include/glibtop/gnuserv.h \
+diff --git a/lib/command.c b/lib/command.c
+index 00ff8826..2d715b54 100644
+--- a/lib/command.c
++++ b/lib/command.c
+@@ -44,6 +44,7 @@ glibtop_call_l (glibtop *server, unsigned command, size_t send_size,
+ 	  CHECK_CMND(GLIBTOP_CMND_SYSDEPS);
+ 	  CHECK_CMND(GLIBTOP_CMND_CPU);
+ 	  CHECK_CMND(GLIBTOP_CMND_DISK);
++	  CHECK_CMND(GLIBTOP_CMND_GPU);
+ 	  CHECK_CMND(GLIBTOP_CMND_MEM);
+ 	  CHECK_CMND(GLIBTOP_CMND_SWAP);
+ 	  CHECK_CMND(GLIBTOP_CMND_UPTIME);
+diff --git a/lib/libgtop.sym b/lib/libgtop.sym
+index 60316a72..8cd152ab 100644
+--- a/lib/libgtop.sym
++++ b/lib/libgtop.sym
+@@ -5,6 +5,8 @@ glibtop_get_cpu
+ glibtop_get_cpu_l
+ glibtop_get_disk
+ glibtop_get_disk_l
++glibtop_get_gpu
++glibtop_get_gpu_l
+ glibtop_get_fsusage
+ glibtop_get_fsusage_l
+ glibtop_get_loadavg
+diff --git a/lib/sysdeps.c b/lib/sysdeps.c
+index beb950e8..717604fc 100644
+--- a/lib/sysdeps.c
++++ b/lib/sysdeps.c
+@@ -28,6 +28,7 @@
+ const unsigned long glibtop_server_features =
+ GLIBTOP_SUID_CPU +
+ GLIBTOP_SUID_DISK +
++GLIBTOP_SUID_GPU +
+ GLIBTOP_SUID_MEM +
+ GLIBTOP_SUID_SWAP +
+ GLIBTOP_SUID_UPTIME +
+@@ -60,6 +61,9 @@ const _glibtop_init_func_t _glibtop_init_hook_s [] = {
+ #if !GLIBTOP_SUID_DISK
+ 	_glibtop_init_disk_s,
+ #endif
++#if !GLIBTOP_SUID_GPU
++	_glibtop_init_gpu_s,
++#endif
+ #if !GLIBTOP_SUID_MEM
+ 	_glibtop_init_mem_s,
+ #endif
+@@ -142,6 +146,9 @@ const _glibtop_init_func_t _glibtop_init_hook_p [] = {
+ #if GLIBTOP_SUID_DISK
+ 	_glibtop_init_disk_p,
+ #endif
++#if GLIBTOP_SUID_GPU
++	_glibtop_init_gpu_p,
++#endif
+ #if GLIBTOP_SUID_MEM
+ 	_glibtop_init_mem_p,
+ #endif
+diff --git a/src/daemon/main.c b/src/daemon/main.c
+index b7e72ead..fdf866ed 100644
+--- a/src/daemon/main.c
++++ b/src/daemon/main.c
+@@ -107,6 +107,10 @@ handle_parent_connection (int s)
+ 	    glibtop_get_disk_l (server, &resp->u.data.disk);
+ 	    do_output (s, resp, _offset_data (disk), 0, NULL);
+ 	    break;
++	case GLIBTOP_CMND_GPU:
++	    glibtop_get_gpu_l (server, &resp->u.data.gpu);
++	    do_output (s, resp, _offset_data (gpu), 0, NULL);
++	    break;
+ 	case GLIBTOP_CMND_MEM:
+ 	    glibtop_get_mem_l (server, &resp->u.data.mem);
+ 	    do_output (s, resp, _offset_data (mem), 0, NULL);
+diff --git a/src/daemon/slave.c b/src/daemon/slave.c
+index 113eb14e..e1f8a700 100644
+--- a/src/daemon/slave.c
++++ b/src/daemon/slave.c
+@@ -146,6 +146,12 @@ handle_slave_command (glibtop_command *cmnd, glibtop_response *resp,
+ 		resp->offset = _offset_data (disk);
+ 		break;
+ #endif
++#if GLIBTOP_SUID_GPU
++	case GLIBTOP_CMND_GPU:
++		glibtop_get_gpu_p (server, &resp->u.data.gpu);
++		resp->offset = _offset_data (gpu);
++		break;
++#endif
+ #if GLIBTOP_SUID_MEM
+ 	case GLIBTOP_CMND_MEM:
+ 		glibtop_get_mem_p (server, &resp->u.data.mem);
+diff --git a/sysdeps/aix/Makefile.am b/sysdeps/aix/Makefile.am
+index 6fc527e1..f94849af 100644
+--- a/sysdeps/aix/Makefile.am
++++ b/sysdeps/aix/Makefile.am
+@@ -7,7 +7,7 @@ libgtop_sysdeps_2_0_la_SOURCES  = siglist.c nosuid.c mem.c swap.c uptime.c \
+ 				  procargs.c prockernel.c proclist.c procmap.c \
+ 				  procmem.c procsegment.c procsignal.c disk.c \
+ 				  proctime.c procuid.c procmem.c utils.c \
+-				  procstate.c sysinfo.c netlist.c procio.c
++				  procstate.c sysinfo.c netlist.c procio.c $(top_srcdir)/sysdeps/common/gpu.c
+ 
+ 
+ libgtop_sysdeps_2_0_la_LDFLAGS	= $(LT_VERSION_INFO)
+diff --git a/sysdeps/aix/glibtop_server.h b/sysdeps/aix/glibtop_server.h
+index 705d4c13..5296b9c7 100644
+--- a/sysdeps/aix/glibtop_server.h
++++ b/sysdeps/aix/glibtop_server.h
+@@ -26,6 +26,7 @@ G_BEGIN_DECLS
+ 
+ #define GLIBTOP_SUID_CPU		(1 << GLIBTOP_SYSDEPS_CPU)
+ #define GLIBTOP_SUID_DISK		0
++#define GLIBTOP_SUID_GPU		0
+ #define GLIBTOP_SUID_MEM		0
+ #define GLIBTOP_SUID_SWAP		0
+ #define GLIBTOP_SUID_UPTIME		0
+diff --git a/sysdeps/bsd/Makefile.am b/sysdeps/bsd/Makefile.am
+index 1b973987..eb78f282 100644
+--- a/sysdeps/bsd/Makefile.am
++++ b/sysdeps/bsd/Makefile.am
+@@ -3,7 +3,7 @@ AM_CPPFLAGS			= @AM_CPPFLAGS@
+ 
+ noinst_LTLIBRARIES		= libgtop_sysdeps-2.0.la libgtop_sysdeps_suid-2.0.la
+ 
+-libgtop_sysdeps_2_0_la_SOURCES	= nosuid.c siglist.c sysinfo.c
++libgtop_sysdeps_2_0_la_SOURCES	= nosuid.c siglist.c sysinfo.c $(top_srcdir)/sysdeps/common/gpu.c
+ 
+ libgtop_sysdeps_2_0_la_LDFLAGS	= $(LT_VERSION_INFO)
+ 
+diff --git a/sysdeps/bsd/glibtop_server.h b/sysdeps/bsd/glibtop_server.h
+index 4e5fe35e..66cfcdf5 100644
+--- a/sysdeps/bsd/glibtop_server.h
++++ b/sysdeps/bsd/glibtop_server.h
+@@ -26,6 +26,7 @@ G_BEGIN_DECLS
+ 
+ #define GLIBTOP_SUID_CPU		(1 << GLIBTOP_SYSDEPS_CPU)
+ #define GLIBTOP_SUID_DISK		0
++#define GLIBTOP_SUID_GPU		0
+ #define GLIBTOP_SUID_MEM		(1 << GLIBTOP_SYSDEPS_MEM)
+ #define GLIBTOP_SUID_SWAP		(1 << GLIBTOP_SYSDEPS_SWAP)
+ #define GLIBTOP_SUID_UPTIME		(1 << GLIBTOP_SYSDEPS_UPTIME)
+diff --git a/sysdeps/common/default.c b/sysdeps/common/default.c
+index ff6c3ecd..b6ef1423 100644
+--- a/sysdeps/common/default.c
++++ b/sysdeps/common/default.c
+@@ -77,6 +77,18 @@ glibtop_get_disk (glibtop_disk *buf)
+ 	glibtop_get_disk_l (glibtop_global_server, buf);
+ }
+ 
++/**
++ * glibtop_get_gpu:
++ * @buf: a location to return GPU metrics.
++ *
++ * Reads the GPU metrics supported by the operating-system backend.
++ */
++void
++glibtop_get_gpu (glibtop_gpu *buf)
++{
++	glibtop_get_gpu_l (glibtop_global_server, buf);
++}
++
+ 
+ /**
+  * glibtop_get_fsusage:
+diff --git a/sysdeps/common/gpu.c b/sysdeps/common/gpu.c
+new file mode 100644
+index 00000000..1d9d2696
+--- /dev/null
++++ b/sysdeps/common/gpu.c
+@@ -0,0 +1,26 @@
++/* Copyright (C) 2026
++ *
++ * This file is part of LibGTop.
++ *
++ * LibGTop is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ */
++
++#include <config.h>
++#include <glibtop.h>
++#include <glibtop/gpu.h>
++
++void
++_glibtop_init_gpu_s (glibtop *server)
++{
++	server->sysdeps.gpu = 0;
++}
++
++void
++glibtop_get_gpu_s (glibtop *server, glibtop_gpu *buf)
++{
++	(void) server;
++	memset (buf, 0, sizeof (*buf));
++}
+diff --git a/sysdeps/cygwin/Makefile.am b/sysdeps/cygwin/Makefile.am
+index 4e983a6b..b52bb648 100644
+--- a/sysdeps/cygwin/Makefile.am
++++ b/sysdeps/cygwin/Makefile.am
+@@ -8,7 +8,7 @@ libgtop_sysdeps_2_0_la_SOURCES	= open.c close.c cpu.c disk.c mem.c swap.c \
+ 				  proctime.c procmem.c procsignal.c prockernel.c \
+ 				  procsegment.c procargs.c procmap.c siglist.c \
+ 				  sysinfo.c netload.c ppp.c glibtop_private.c \
+-				  netlist.c procaffinity.c procopenfiles.c procwd.c
++				  netlist.c procaffinity.c procopenfiles.c procwd.c $(top_srcdir)/sysdeps/common/gpu.c
+ 
+ libgtop_sysdeps_2_0_la_LIBADD	=  @GLIB_LIBS@
+ 
+diff --git a/sysdeps/cygwin/glibtop_server.h b/sysdeps/cygwin/glibtop_server.h
+index ea29c287..f1c558c4 100644
+--- a/sysdeps/cygwin/glibtop_server.h
++++ b/sysdeps/cygwin/glibtop_server.h
+@@ -24,6 +24,7 @@
+ 
+ #define GLIBTOP_SUID_CPU		0
+ #define GLIBTOP_SUID_DISK		0
++#define GLIBTOP_SUID_GPU		0
+ #define GLIBTOP_SUID_MEM		0
+ #define GLIBTOP_SUID_SWAP		0
+ #define GLIBTOP_SUID_UPTIME		0
+diff --git a/sysdeps/darwin/Makefile.am b/sysdeps/darwin/Makefile.am
+index 33a78353..7674c5aa 100644
+--- a/sysdeps/darwin/Makefile.am
++++ b/sysdeps/darwin/Makefile.am
+@@ -2,7 +2,7 @@ AM_CPPFLAGS			= @AM_CPPFLAGS@ @LIBGTOP_INCS@
+ 
+ noinst_LTLIBRARIES			= libgtop_sysdeps-2.0.la libgtop_sysdeps_suid-2.0.la
+ 
+-libgtop_sysdeps_2_0_la_SOURCES	= nosuid.c siglist.c sysinfo.c
++libgtop_sysdeps_2_0_la_SOURCES	= nosuid.c siglist.c sysinfo.c $(top_srcdir)/sysdeps/common/gpu.c
+ 
+ libgtop_sysdeps_suid_2_0_la_SOURCES = open.c close.c disk.c \
+ cpu.c mem.c swap.c uptime.c loadavg.c shm_limits.c msg_limits.c \
+diff --git a/sysdeps/darwin/glibtop_server.h b/sysdeps/darwin/glibtop_server.h
+index a6cd922b..2c77d116 100644
+--- a/sysdeps/darwin/glibtop_server.h
++++ b/sysdeps/darwin/glibtop_server.h
+@@ -24,6 +24,7 @@ G_BEGIN_DECLS
+ 
+ #define GLIBTOP_SUID_CPU		(1 << GLIBTOP_SYSDEPS_CPU)
+ #define GLIBTOP_SUID_DISK		0
++#define GLIBTOP_SUID_GPU		0
+ #define GLIBTOP_SUID_MEM		(1 << GLIBTOP_SYSDEPS_MEM)
+ #define GLIBTOP_SUID_SWAP		(1 << GLIBTOP_SYSDEPS_SWAP)
+ #define GLIBTOP_SUID_UPTIME		(1 << GLIBTOP_SYSDEPS_UPTIME)
+diff --git a/sysdeps/freebsd/Makefile.am b/sysdeps/freebsd/Makefile.am
+index 1a00506a..c38cee61 100644
+--- a/sysdeps/freebsd/Makefile.am
++++ b/sysdeps/freebsd/Makefile.am
+@@ -7,7 +7,7 @@ libgtop_sysdeps_2_0_la_SOURCES	= nosuid.c siglist.c sysinfo.c shm_limits.c \
+ 				  cpu.c msg_limits.c sem_limits.c loadavg.c \
+ 				  uptime.c netlist.c fsusage.c mem.c disk.c \
+ 				  mountlist.c procopenfiles.c procwd.c \
+-				  procaffinity.c glibtop_private.c open.c
++				  procaffinity.c glibtop_private.c open.c $(top_srcdir)/sysdeps/common/gpu.c
+ 
+ libgtop_sysdeps_2_0_la_LDFLAGS	= $(LT_VERSION_INFO)
+ 
+diff --git a/sysdeps/freebsd/glibtop_server.h b/sysdeps/freebsd/glibtop_server.h
+index 56b1a0d0..750d85c9 100644
+--- a/sysdeps/freebsd/glibtop_server.h
++++ b/sysdeps/freebsd/glibtop_server.h
+@@ -39,6 +39,7 @@ G_BEGIN_DECLS
+ #define GLIBTOP_SUID_PPP		(1 << GLIBTOP_SYSDEPS_PPP)
+ #define GLIBTOP_SUID_CPU		0
+ #define GLIBTOP_SUID_DISK		0
++#define GLIBTOP_SUID_GPU		0
+ #define GLIBTOP_SUID_MEM		0
+ #define GLIBTOP_SUID_UPTIME		0
+ #define GLIBTOP_SUID_LOADAVG		0
+diff --git a/sysdeps/linux/Makefile.am b/sysdeps/linux/Makefile.am
+index c51bb155..cc4be687 100644
+--- a/sysdeps/linux/Makefile.am
++++ b/sysdeps/linux/Makefile.am
+@@ -4,7 +4,7 @@ noinst_LTLIBRARIES		= libgtop_sysdeps-2.0.la libgtop_sysdeps_suid-2.0.la
+ 
+ EXTRA_DIST			= procmap_smaps.gperf procmap_smaps.c
+ 
+-libgtop_sysdeps_2_0_la_SOURCES	= open.c close.c cpu.c disk.c mem.c swap.c \
++libgtop_sysdeps_2_0_la_SOURCES	= open.c close.c cpu.c disk.c gpu.c mem.c swap.c \
+ 				  uptime.c loadavg.c shm_limits.c msg_limits.c \
+ 				  sem_limits.c proclist.c procstate.c procuid.c \
+ 				  proctime.c procmem.c procsignal.c prockernel.c \
+diff --git a/sysdeps/linux/glibtop_server.h b/sysdeps/linux/glibtop_server.h
+index 0d2788c8..34b52b48 100644
+--- a/sysdeps/linux/glibtop_server.h
++++ b/sysdeps/linux/glibtop_server.h
+@@ -24,6 +24,7 @@
+ 
+ #define GLIBTOP_SUID_CPU		0
+ #define GLIBTOP_SUID_DISK		0
++#define GLIBTOP_SUID_GPU		0
+ #define GLIBTOP_SUID_MEM		0
+ #define GLIBTOP_SUID_SWAP		0
+ #define GLIBTOP_SUID_UPTIME		0
+diff --git a/sysdeps/linux/gpu.c b/sysdeps/linux/gpu.c
+new file mode 100644
+index 00000000..22231086
+--- /dev/null
++++ b/sysdeps/linux/gpu.c
+@@ -0,0 +1,131 @@
++/* Copyright (C) 2026
++ *
++ * This file is part of LibGTop.
++ *
++ * LibGTop is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ */
++
++#include <config.h>
++#include <glibtop/gpu.h>
++
++#include <glib.h>
++
++#ifndef GLIBTOP_DRM_SYSFS_ROOT
++#define GLIBTOP_DRM_SYSFS_ROOT "/sys/class/drm"
++#endif
++#define AMDGPU_DRIVER "amdgpu"
++
++static const unsigned long _glibtop_sysdeps_gpu =
++	(1UL << GLIBTOP_NGPU) |
++	(1UL << GLIBTOP_XGPU_BUSY_PERCENT) |
++	(1UL << GLIBTOP_XGPU_GTT_TOTAL) |
++	(1UL << GLIBTOP_XGPU_GTT_USED) |
++	(1UL << GLIBTOP_XGPU_VIS_VRAM_TOTAL) |
++	(1UL << GLIBTOP_XGPU_VIS_VRAM_USED) |
++	(1UL << GLIBTOP_XGPU_VRAM_TOTAL) |
++	(1UL << GLIBTOP_XGPU_VRAM_USED);
++
++static gboolean
++read_metric (const gchar *card_path, const gchar *name, guint64 *value)
++{
++	g_autofree gchar *path = g_build_filename (card_path, "device", name, NULL);
++	g_autofree gchar *contents = NULL;
++
++	if (!g_file_get_contents (path, &contents, NULL, NULL))
++		return FALSE;
++
++	*value = g_ascii_strtoull (contents, NULL, 10);
++	return TRUE;
++}
++
++static gboolean
++is_amdgpu_card (const gchar *card_path)
++{
++	g_autofree gchar *path = g_build_filename (card_path, "device", "uevent", NULL);
++	g_autofree gchar *contents = NULL;
++	g_auto (GStrv) lines = NULL;
++
++	if (!g_file_get_contents (path, &contents, NULL, NULL))
++		return FALSE;
++
++	lines = g_strsplit (contents, "\n", -1);
++	for (guint i = 0; lines[i] != NULL; i++)
++		if (g_str_equal (lines[i], "DRIVER=" AMDGPU_DRIVER))
++			return TRUE;
++
++	return FALSE;
++}
++
++static gboolean
++is_card_name (const gchar *name)
++{
++	const gchar *suffix;
++
++	if (!g_str_has_prefix (name, "card"))
++		return FALSE;
++
++	suffix = name + strlen ("card");
++	return *suffix != '\0' && strspn (suffix, "0123456789") == strlen (suffix);
++}
++
++static void
++read_amdgpu_metrics (const gchar *card_path, glibtop_gpu *buf, guint index)
++{
++	if (read_metric (card_path, "gpu_busy_percent", &buf->xgpu_busy_percent[index]))
++		buf->flags |= 1UL << GLIBTOP_XGPU_BUSY_PERCENT;
++	if (read_metric (card_path, "mem_info_gtt_total", &buf->xgpu_gtt_total[index]))
++		buf->flags |= 1UL << GLIBTOP_XGPU_GTT_TOTAL;
++	if (read_metric (card_path, "mem_info_gtt_used", &buf->xgpu_gtt_used[index]))
++		buf->flags |= 1UL << GLIBTOP_XGPU_GTT_USED;
++	if (read_metric (card_path, "mem_info_vis_vram_total", &buf->xgpu_vis_vram_total[index]))
++		buf->flags |= 1UL << GLIBTOP_XGPU_VIS_VRAM_TOTAL;
++	if (read_metric (card_path, "mem_info_vis_vram_used", &buf->xgpu_vis_vram_used[index]))
++		buf->flags |= 1UL << GLIBTOP_XGPU_VIS_VRAM_USED;
++	if (read_metric (card_path, "mem_info_vram_total", &buf->xgpu_vram_total[index]))
++		buf->flags |= 1UL << GLIBTOP_XGPU_VRAM_TOTAL;
++	if (read_metric (card_path, "mem_info_vram_used", &buf->xgpu_vram_used[index]))
++		buf->flags |= 1UL << GLIBTOP_XGPU_VRAM_USED;
++}
++
++void
++_glibtop_init_gpu_s (glibtop *server)
++{
++	server->sysdeps.gpu = _glibtop_sysdeps_gpu;
++}
++
++void
++glibtop_get_gpu_s (glibtop *server, glibtop_gpu *buf)
++{
++	const gchar *name;
++	GDir *dir;
++
++	(void) server;
++	memset (buf, 0, sizeof (*buf));
++
++	dir = g_dir_open (GLIBTOP_DRM_SYSFS_ROOT, 0, NULL);
++	if (dir == NULL)
++		return;
++
++	while (buf->ngpu < GLIBTOP_MAX_GPU && (name = g_dir_read_name (dir)) != NULL) {
++		g_autofree gchar *card_path = NULL;
++		guint index;
++
++		if (!is_card_name (name))
++			continue;
++
++		card_path = g_build_filename (GLIBTOP_DRM_SYSFS_ROOT, name, NULL);
++		if (!is_amdgpu_card (card_path))
++			continue;
++
++		index = buf->ngpu++;
++		g_strlcpy (buf->driver[index], AMDGPU_DRIVER, sizeof (buf->driver[index]));
++		read_amdgpu_metrics (card_path, buf, index);
++	}
++
++	g_dir_close (dir);
++	if (buf->ngpu > 0)
++		buf->flags |= 1UL << GLIBTOP_NGPU;
++}
+diff --git a/sysdeps/openbsd/Makefile.am b/sysdeps/openbsd/Makefile.am
+index 97d5f8ad..72f4af63 100644
+--- a/sysdeps/openbsd/Makefile.am
++++ b/sysdeps/openbsd/Makefile.am
+@@ -6,7 +6,7 @@ libgtop_sysdeps_2_0_la_SOURCES	= nosuid.c siglist.c sysinfo.c \
+ 				  cpu.c loadavg.c disk.c \
+ 				  uptime.c netlist.c fsusage.c mem.c \
+ 				  mountlist.c procopenfiles.c procwd.c \
+-				  procaffinity.c glibtop_private.c open.c
++				  procaffinity.c glibtop_private.c open.c $(top_srcdir)/sysdeps/common/gpu.c
+ 
+ libgtop_sysdeps_2_0_la_LDFLAGS	= $(LT_VERSION_INFO)
+ 
+diff --git a/sysdeps/openbsd/glibtop_server.h b/sysdeps/openbsd/glibtop_server.h
+index 967bbe4a..d709efae 100644
+--- a/sysdeps/openbsd/glibtop_server.h
++++ b/sysdeps/openbsd/glibtop_server.h
+@@ -42,6 +42,7 @@ G_BEGIN_DECLS
+ #define GLIBTOP_SUID_PPP		(1 << GLIBTOP_SYSDEPS_PPP)
+ #define GLIBTOP_SUID_CPU		0
+ #define GLIBTOP_SUID_DISK		0
++#define GLIBTOP_SUID_GPU		0
+ #define GLIBTOP_SUID_MEM		0
+ #define GLIBTOP_SUID_UPTIME		0
+ #define GLIBTOP_SUID_LOADAVG		0
+diff --git a/sysdeps/osf1/Makefile.am b/sysdeps/osf1/Makefile.am
+index af2cecab..4f5eb061 100644
+--- a/sysdeps/osf1/Makefile.am
++++ b/sysdeps/osf1/Makefile.am
+@@ -5,7 +5,7 @@ noinst_LTLIBRARIES		= libgtop_sysdeps-2.0.la libgtop_sysdeps_suid-2.0.la
+ 
+ libgtop_sysdeps_2_0_la_SOURCES	= open.c close.c siglist.c cpu.c mem.c swap.c \
+ 				  uptime.c loadavg.c shm_limits.c msg_limits.c \
+-				  sem_limits.c ppp.c procio.c disk.c
++				  sem_limits.c ppp.c procio.c disk.c $(top_srcdir)/sysdeps/common/gpu.c
+ libgtop_sysdeps_2_0_la_LDFLAGS	= $(LT_VERSION_INFO)
+ libgtop_sysdeps_2_0_la_LIBADD	= -lmach
+ 
+diff --git a/sysdeps/osf1/glibtop_server.h b/sysdeps/osf1/glibtop_server.h
+index 70901a14..d910c4c0 100644
+--- a/sysdeps/osf1/glibtop_server.h
++++ b/sysdeps/osf1/glibtop_server.h
+@@ -26,6 +26,7 @@ G_BEGIN_DECLS
+ 
+ #define GLIBTOP_SUID_CPU		0
+ #define GLIBTOP_SUID_DISK		0
++#define GLIBTOP_SUID_GPU		0
+ #define GLIBTOP_SUID_MEM		0
+ #define GLIBTOP_SUID_SWAP		0
+ #define GLIBTOP_SUID_UPTIME		0
+diff --git a/sysdeps/solaris/Makefile.am b/sysdeps/solaris/Makefile.am
+index 663b4b18..38551fd7 100644
+--- a/sysdeps/solaris/Makefile.am
++++ b/sysdeps/solaris/Makefile.am
+@@ -9,7 +9,7 @@ libgtop_sysdeps_2_0_la_SOURCES	= open.c close.c siglist.c cpu.c mem.c \
+ 				  proctime.c procmem.c procsignal.c \
+ 				  prockernel.c procsegment.c procargs.c \
+ 				  procopenfiles.c procio.c disk.c \
+-				  procmap.c netload.c ppp.c procdata.c netlist.c
++				  procmap.c netload.c ppp.c procdata.c netlist.c $(top_srcdir)/sysdeps/common/gpu.c
+ 
+ libgtop_sysdeps_2_0_la_LDFLAGS	= $(LT_VERSION_INFO)
+ 
+@@ -26,4 +26,3 @@ libgtopinclude_HEADERS		= glibtop_server.h glibtop_machine.h
+ libgtopincludedir		= $(includedir)/libgtop-2.0
+ 
+ noinst_HEADERS			= glibtop_private.h glibtop_suid.h safeio.h
+-
+diff --git a/sysdeps/solaris/glibtop_server.h b/sysdeps/solaris/glibtop_server.h
+index cac573b5..bf0e60ba 100644
+--- a/sysdeps/solaris/glibtop_server.h
++++ b/sysdeps/solaris/glibtop_server.h
+@@ -26,6 +26,7 @@ G_BEGIN_DECLS
+ 
+ #define GLIBTOP_SUID_CPU		0
+ #define GLIBTOP_SUID_DISK		0
++#define GLIBTOP_SUID_GPU		0
+ #define GLIBTOP_SUID_MEM		0
+ #define GLIBTOP_SUID_SWAP		0
+ #define GLIBTOP_SUID_UPTIME		0
+diff --git a/sysdeps/stub/Makefile.am b/sysdeps/stub/Makefile.am
+index 6d9ce727..a05f24ca 100644
+--- a/sysdeps/stub/Makefile.am
++++ b/sysdeps/stub/Makefile.am
+@@ -9,7 +9,7 @@ libgtop_sysdeps_2_0_la_SOURCES	= open.c close.c siglist.c cpu.c disk.c mem.c swa
+ 				  proctime.c procmem.c procsignal.c prockernel.c \
+ 				  procsegment.c procargs.c procmap.c netload.c \
+ 				  ppp.c netlist.c procopenfiles.c procaffinity.c \
+-				  procwd.c sysinfo.c
++				  procwd.c sysinfo.c $(top_srcdir)/sysdeps/common/gpu.c
+ 
+ libgtop_sysdeps_2_0_la_LDFLAGS	= $(LT_VERSION_INFO)
+ 
+diff --git a/sysdeps/stub/glibtop_server.h b/sysdeps/stub/glibtop_server.h
+index 1307efa0..9bb476f5 100644
+--- a/sysdeps/stub/glibtop_server.h
++++ b/sysdeps/stub/glibtop_server.h
+@@ -26,6 +26,7 @@ G_BEGIN_DECLS
+ 
+ #define GLIBTOP_SUID_CPU		0
+ #define GLIBTOP_SUID_DISK		0
++#define GLIBTOP_SUID_GPU		0
+ #define GLIBTOP_SUID_MEM		0
+ #define GLIBTOP_SUID_SWAP		0
+ #define GLIBTOP_SUID_UPTIME		0
+diff --git a/sysdeps/sun4/Makefile.am b/sysdeps/sun4/Makefile.am
+index a92458b7..3063c03d 100644
+--- a/sysdeps/sun4/Makefile.am
++++ b/sysdeps/sun4/Makefile.am
+@@ -3,7 +3,7 @@ AM_CPPFLAGS			= @AM_CPPFLAGS@
+ 
+ noinst_LTLIBRARIES		= libgtop_sysdeps-2.0.la libgtop_sysdeps_suid-2.0.la
+ 
+-libgtop_sysdeps_2_0_la_SOURCES	= nosuid.c siglist.c disk.c procio.c
++libgtop_sysdeps_2_0_la_SOURCES	= nosuid.c siglist.c disk.c procio.c $(top_srcdir)/sysdeps/common/gpu.c
+ libgtop_sysdeps_2_0_la_LDFLAGS	= $(LT_VERSION_INFO)
+ libgtop_sysdeps_2_0_la_LIBADD	= -lkvm
+ 
+diff --git a/sysdeps/sun4/glibtop_server.h b/sysdeps/sun4/glibtop_server.h
+index 123bc429..efd83d26 100644
+--- a/sysdeps/sun4/glibtop_server.h
++++ b/sysdeps/sun4/glibtop_server.h
+@@ -26,6 +26,7 @@ G_BEGIN_DECLS
+ 
+ #define GLIBTOP_SUID_CPU		(1 << GLIBTOP_SYSDEPS_CPU)
+ #define GLIBTOP_SUID_DISK		0
++#define GLIBTOP_SUID_GPU		0
+ #define GLIBTOP_SUID_MEM		(1 << GLIBTOP_SYSDEPS_MEM)
+ #define GLIBTOP_SUID_SWAP		(1 << GLIBTOP_SYSDEPS_SWAP)
+ #define GLIBTOP_SUID_UPTIME		(1 << GLIBTOP_SYSDEPS_UPTIME)
+-- 
+2.53.0
+

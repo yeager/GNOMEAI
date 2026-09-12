@@ -1,0 +1,13 @@
+{
+  "project": "gnome-shell",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-shell.git",
+  "branch": "mpris-cleanup-isolated",
+  "base": "fa82d28c3b0dcfd27e49bac291b37b5ca9237dc7",
+  "tip": "05cac117a15ed3246669a00c35020c56784d3136",
+  "commits": [
+    "05cac117a15ed3246669a00c35020c56784d3136"
+  ],
+  "patches": [
+    "0001-mpris-Release-signal-connections-on-lock-screen-tear.patch"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "project": "gnome-shell",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-shell.git",
+  "branch": "work/screenshot-recent-files-fix",
+  "base": "0f6e549ce04ada21d72bd8d632e24e57dfdfbd38",
+  "tip": "a3e0c420a7a66a13ce4c91fda653ee97288e82e6",
+  "commits": [
+    "a3e0c420a7a66a13ce4c91fda653ee97288e82e6"
+  ],
+  "patches": [
+    "0001-screenshot-Handle-a-missing-recent-files-history.patch"
+  ]
+}

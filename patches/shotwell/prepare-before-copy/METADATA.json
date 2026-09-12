@@ -1,0 +1,13 @@
+{
+  "project": "shotwell",
+  "source_repository": "https://gitlab.gnome.org/GNOME/shotwell.git",
+  "branch": "prepare-before-copy",
+  "base": "62f8cca4319a6262173599aa1d03db9d7fbf0bd9",
+  "tip": "ae34254cd596096aeed08e6600ace315cc2131cc",
+  "commits": [
+    "ae34254cd596096aeed08e6600ace315cc2131cc"
+  ],
+  "patches": [
+    "0001-batch-import-Prepare-copied-photos-before-copying.patch"
+  ]
+}

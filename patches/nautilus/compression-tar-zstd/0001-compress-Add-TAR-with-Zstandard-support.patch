@@ -1,0 +1,186 @@
+From 5f8df94560fa740baa84498c127e26d8b295732f Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Fri, 11 Sep 2026 21:20:11 +0200
+Subject: [PATCH] compress: Add TAR with Zstandard support
+
+Expose the Zstandard filter added to gnome-autoar 0.5.0 as a TAR compression option. Add a displayless test for archive creation.
+
+Closes #1936
+---
+ data/org.gnome.nautilus.gschema.xml           |  1 +
+ meson.build                                   | 18 ++++++++----
+ src/nautilus-compress-dialog.c                |  6 ++++
+ src/nautilus-files-view.c                     |  7 +++++
+ src/nautilus-global-preferences.h             |  3 +-
+ subprojects/gnome-autoar.wrap                 |  7 +++++
+ .../test-file-operations-archive.c            | 29 +++++++++++++++++++
+ 7 files changed, 65 insertions(+), 6 deletions(-)
+ create mode 100644 subprojects/gnome-autoar.wrap
+
+diff --git a/data/org.gnome.nautilus.gschema.xml b/data/org.gnome.nautilus.gschema.xml
+index 3c14aa4..d5d1505 100644
+--- a/data/org.gnome.nautilus.gschema.xml
++++ b/data/org.gnome.nautilus.gschema.xml
+@@ -66,6 +66,7 @@
+     <value value="1" nick="tar.xz"/>
+     <value value="2" nick="7z"/>
+     <value value="3" nick="encrypted_zip"/>
++    <value value="4" nick="tar.zst"/>
+   </enum>
+ 
+   <schema path="/org/gnome/nautilus/" id="org.gnome.nautilus" gettext-domain="nautilus">
+diff --git a/meson.build b/meson.build
+index 8177821..052c231 100644
+--- a/meson.build
++++ b/meson.build
+@@ -116,7 +116,9 @@ glib = dependency('glib-2.0', version: glib_ver)
+ glycin = dependency('glycin-2', version: '>= 2')
+ glycin_gtk4 = dependency('glycin-gtk4-2', version: '>= 2')
+ gmodule = dependency('gmodule-no-export-2.0', version: glib_ver)
+-gnome_autoar = dependency('gnome-autoar-0', version: '>= 0.4.4')
++gnome_autoar = dependency('gnome-autoar-0', version: '>= 0.5.0',
++                          fallback: ['gnome-autoar', 'libgnome_autoar_dep'],
++                          default_options: ['c_std=gnu11'])
+ gnome_desktop = dependency('gnome-desktop-4', version: '>= 43')
+ gtk = dependency('gtk4', version: '>= 4.22.0')
+ libadwaita = dependency('libadwaita-1', version: '>= 1.8.alpha')
+@@ -207,10 +209,16 @@ config_h = declare_dependency(
+ # End configuration #
+ #####################
+ 
+-nautilus_include_dirs = include_directories(
+-  '.',
+-  'libnautilus-extension'
+-)
++nautilus_include_dirs = [
++  include_directories(
++    '.',
++    'libnautilus-extension'
++  )
++]
++
++if gnome_autoar.type_name() == 'internal'
++  nautilus_include_dirs += include_directories('subprojects/gnome-autoar')
++endif
+ 
+ #########
+ # Build #
+diff --git a/src/nautilus-compress-dialog.c b/src/nautilus-compress-dialog.c
+index d6b3e58..fda50d6 100644
+--- a/src/nautilus-compress-dialog.c
++++ b/src/nautilus-compress-dialog.c
+@@ -266,6 +266,12 @@ extension_combo_row_setup (NautilusCompressDialog *self)
+                                        _("Smaller archives but Linux and Mac only."));
+     g_list_store_append (store, item);
+     g_object_unref (item);
++    item = nautilus_compress_item_new (NAUTILUS_COMPRESSION_TAR_ZSTD,
++                                       ".tar.zst",
++                                       _("TAR (.tar.zst)"),
++                                       _("Smaller archives with faster compression."));
++    g_list_store_append (store, item);
++    g_object_unref (item);
+     item = nautilus_compress_item_new (NAUTILUS_COMPRESSION_7ZIP,
+                                        ".7z",
+                                        _("7Z (.7z)"),
+diff --git a/src/nautilus-files-view.c b/src/nautilus-files-view.c
+index 17b410b..6157c4a 100644
+--- a/src/nautilus-files-view.c
++++ b/src/nautilus-files-view.c
+@@ -2230,6 +2230,13 @@ create_archive_callback (const char *archive_name,
+         }
+         break;
+ 
++        case NAUTILUS_COMPRESSION_TAR_ZSTD:
++        {
++            format = AUTOAR_FORMAT_TAR;
++            filter = AUTOAR_FILTER_ZSTD;
++        }
++        break;
++
+         case NAUTILUS_COMPRESSION_7ZIP:
+         {
+             format = AUTOAR_FORMAT_7ZIP;
+diff --git a/src/nautilus-global-preferences.h b/src/nautilus-global-preferences.h
+index ca08bfa..4cbdcf8 100644
+--- a/src/nautilus-global-preferences.h
++++ b/src/nautilus-global-preferences.h
+@@ -68,7 +68,8 @@ typedef enum
+         NAUTILUS_COMPRESSION_ZIP = 0,
+         NAUTILUS_COMPRESSION_TAR_XZ,
+         NAUTILUS_COMPRESSION_7ZIP,
+-        NAUTILUS_COMPRESSION_ENCRYPTED_ZIP
++        NAUTILUS_COMPRESSION_ENCRYPTED_ZIP,
++        NAUTILUS_COMPRESSION_TAR_ZSTD
+ } NautilusCompressionFormat;
+ 
+ /* Icon View */
+diff --git a/subprojects/gnome-autoar.wrap b/subprojects/gnome-autoar.wrap
+new file mode 100644
+index 0000000..c473521
+--- /dev/null
++++ b/subprojects/gnome-autoar.wrap
+@@ -0,0 +1,7 @@
++[wrap-git]
++url = https://gitlab.gnome.org/GNOME/gnome-autoar.git
++revision = 100b05bd874708aefffc7cc246846ede6946067e
++depth = 1
++
++[provide]
++dependency_names = gnome-autoar-0
+diff --git a/test/displayless/test-file-operations-archive.c b/test/displayless/test-file-operations-archive.c
+index 1f4eb6e..fa18a65 100644
+--- a/test/displayless/test-file-operations-archive.c
++++ b/test/displayless/test-file-operations-archive.c
+@@ -29,6 +29,11 @@ mime_type_for_format (AutoarFormat format,
+     {
+         return "application/x-xz-compressed-tar";
+     }
++    if (format == AUTOAR_FORMAT_TAR &&
++        filter == AUTOAR_FILTER_ZSTD)
++    {
++        return "application/x-zstd-compressed-tar";
++    }
+ 
+     g_return_val_if_reached ("");
+ }
+@@ -233,6 +238,28 @@ test_archive_file (void)
+     test_clear_tmp_dir ();
+ }
+ 
++static void
++test_archive_file_zstd (void)
++{
++    const GStrv compressed_files_hier = (char *[])
++    {
++        "my_file",
++        NULL
++    };
++    g_autoptr (GFile) archive_file = g_file_new_build_filename (test_get_tmp_dir (),
++                                                                "archive.tar.zst",
++                                                                NULL);
++
++    file_hierarchy_create_compress (compressed_files_hier,
++                                    "",
++                                    archive_file,
++                                    AUTOAR_FORMAT_TAR,
++                                    AUTOAR_FILTER_ZSTD,
++                                    NULL);
++
++    test_clear_tmp_dir ();
++}
++
+ static void
+ test_archive_file_long (void)
+ {
+@@ -766,6 +793,8 @@ main (int   argc,
+ 
+     g_test_add_func ("/single_file/short",
+                      test_archive_file);
++    g_test_add_func ("/single_file/zstd",
++                     test_archive_file_zstd);
+     g_test_add_func ("/single_file/long",
+                      test_archive_file_long);
+     g_test_add_func ("/single_file/password",
+-- 
+2.53.0
+

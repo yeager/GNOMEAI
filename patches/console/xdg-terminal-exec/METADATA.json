@@ -1,0 +1,15 @@
+{
+  "project": "console",
+  "source_repository": "https://gitlab.gnome.org/GNOME/console.git",
+  "branch": "xdg-terminal-exec",
+  "base": "f304b7ca5197cc7898c23a14f28ce5a129a8c360",
+  "tip": "4ad9d2f0b402e8334b4e3e3c01f67f7149007474",
+  "commits": [
+    "6f83861e299c59ef71e10cd9ebc4edd8c079695e",
+    "4ad9d2f0b402e8334b4e3e3c01f67f7149007474"
+  ],
+  "patches": [
+    "0001-desktop-Advertise-command-execution-arguments.patch",
+    "0002-desktop-Use-the-xdg-terminal-exec-compatibility-key.patch"
+  ]
+}

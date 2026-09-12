@@ -1,0 +1,13 @@
+{
+  "project": "gimp",
+  "source_repository": "git@ssh.gitlab.gnome.org:yeager/gimp.git",
+  "branch": "fix-action-search-localized-menu-path",
+  "base": "d6cba36129c9080a72863ed4f8f4151a0668bf99",
+  "tip": "964bc521e648ffbe8ee7cda3b3cc69d10b417feb",
+  "commits": [
+    "964bc521e648ffbe8ee7cda3b3cc69d10b417feb"
+  ],
+  "patches": [
+    "0001-app-localize-action-search-menu-paths.patch"
+  ]
+}

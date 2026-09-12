@@ -1,0 +1,40 @@
+From 728726864f81924ed4d8021f8834eaf5a24048ec Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Fri, 11 Sep 2026 23:14:58 +0200
+Subject: [PATCH] search-provider: return metadata for results without icons
+
+---
+ src/searchProvider.js | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/src/searchProvider.js b/src/searchProvider.js
+index 9ebb6ab..dad5692 100644
+--- a/src/searchProvider.js
++++ b/src/searchProvider.js
+@@ -99,16 +99,17 @@ var SearchProvider = GObject.registerClass({
+             }
+ 
+             let iconData = Util.characterToIconData(character);
+-            if (!iconData)
+-                continue;
+-
+-            ret.push({
++            let meta = {
+                 name: new GLib.Variant('s', name),
+                 id: new GLib.Variant('s', identifiers[i]),
+                 description: new GLib.Variant('s', summary),
+                 clipboardText: new GLib.Variant('s', character),
+-                'icon-data': iconData,
+-            });
++            };
++
++            if (iconData)
++                meta['icon-data'] = iconData;
++
++            ret.push(meta);
+         }
+         this._app.release();
+         return ret;
+-- 
+2.53.0
+

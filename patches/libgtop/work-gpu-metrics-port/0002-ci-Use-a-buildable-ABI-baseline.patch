@@ -1,0 +1,25 @@
+From 4dbb68f24fbd40b56d4ccf3f16e5096f3d4494bb Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Fri, 11 Sep 2026 20:47:27 +0200
+Subject: [PATCH 2/2] ci: Use a buildable ABI baseline
+
+---
+ .gitlab-ci.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index dfa7d68b..9032192c 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -12,7 +12,7 @@ variables:
+   FEDORA_DEPENDENCIES_ABI_CHECK:
+     libabigail
+     intltool
+-  LAST_ABI_BREAK: "d4ac1eda0752d559db8737773d6894aadc700ce3"
++  LAST_ABI_BREAK: "df6393ac0cd785727329a97f731a4067334c0ace"
+   UBUNTU_DEPENDENCIES:
+     automake
+     autopoint
+-- 
+2.53.0
+

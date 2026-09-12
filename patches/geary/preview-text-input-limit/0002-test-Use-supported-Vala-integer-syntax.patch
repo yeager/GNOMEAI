@@ -1,0 +1,25 @@
+From 7491e05aaf4b3b07c379d81e83e72a8d4818f398 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Fri, 11 Sep 2026 22:48:41 +0200
+Subject: [PATCH 2/6] test: Use supported Vala integer syntax
+
+---
+ test/engine/rfc822/rfc822-utils-test.vala | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/test/engine/rfc822/rfc822-utils-test.vala b/test/engine/rfc822/rfc822-utils-test.vala
+index 9903693..6ad7c70 100644
+--- a/test/engine/rfc822/rfc822-utils-test.vala
++++ b/test/engine/rfc822/rfc822-utils-test.vala
+@@ -24,7 +24,7 @@ class Geary.RFC822.Utils.Test : TestCase {
+                HTML_BODY_EXPECTED);
+ 
+         var long_body = new GLib.StringBuilder();
+-        for (int i = 0; i < 20_000; i++) {
++        for (int i = 0; i < 20000; i++) {
+             long_body.append("åäö ");
+         }
+         string preview = Geary.RFC822.Utils.to_preview_text(
+-- 
+2.53.0
+

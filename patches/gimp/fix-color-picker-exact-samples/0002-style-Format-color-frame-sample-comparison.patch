@@ -1,0 +1,32 @@
+From 034faa06ce08ab5cd23d6315335f2e2bbfe783de Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 10:30:25 +0200
+Subject: [PATCH 2/3] style: Format color frame sample comparison
+
+---
+ app/widgets/gimpcolorframe.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/app/widgets/gimpcolorframe.c b/app/widgets/gimpcolorframe.c
+index 815803d666..c8fdee2d2e 100644
+--- a/app/widgets/gimpcolorframe.c
++++ b/app/widgets/gimpcolorframe.c
+@@ -623,11 +623,11 @@ gimp_color_frame_set_color (GimpColorFrame *frame,
+       gdouble new_rgba[4];
+ 
+       gegl_color_get_rgba (frame->color,
+-                            &old_rgba[0], &old_rgba[1],
+-                            &old_rgba[2], &old_rgba[3]);
++                           &old_rgba[0], &old_rgba[1],
++                           &old_rgba[2], &old_rgba[3]);
+       gegl_color_get_rgba (color,
+-                            &new_rgba[0], &new_rgba[1],
+-                            &new_rgba[2], &new_rgba[3]);
++                           &new_rgba[0], &new_rgba[1],
++                           &new_rgba[2], &new_rgba[3]);
+ 
+       if (old_rgba[0] == new_rgba[0] && old_rgba[1] == new_rgba[1] &&
+           old_rgba[2] == new_rgba[2] && old_rgba[3] == new_rgba[3])
+-- 
+2.53.0
+

@@ -1,0 +1,178 @@
+From 88f14d202d0a8527dd58acb434e1e8ae196d2090 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 10:10:14 +0200
+Subject: [PATCH] entry-row: Place apply button after suffixes
+
+---
+ src/adw-entry-row.c    | 22 ++++++----------------
+ src/adw-entry-row.ui   | 30 +++++++++++++++---------------
+ tests/test-entry-row.c | 25 +++++++++++++++++++++++++
+ 3 files changed, 46 insertions(+), 31 deletions(-)
+
+diff --git a/src/adw-entry-row.c b/src/adw-entry-row.c
+index 99becd66..40099084 100644
+--- a/src/adw-entry-row.c
++++ b/src/adw-entry-row.c
+@@ -288,7 +288,6 @@ measure_editable_area (GtkWidget      *widget,
+   int empty_min = 0, empty_nat = 0;
+   int indicator_min = 0, indicator_nat = 0;
+   int edit_icon_min = 0, edit_icon_nat = 0;
+-  int apply_btn_min = 0, apply_btn_nat = 0;
+   int icon_min = 0, icon_nat = 0;
+ 
+   gtk_widget_measure (priv->text, orientation, for_size,
+@@ -302,11 +301,8 @@ measure_editable_area (GtkWidget      *widget,
+                       &indicator_min, &indicator_nat, NULL, NULL);
+   gtk_widget_measure (priv->edit_icon, orientation, for_size,
+                       &edit_icon_min, &edit_icon_nat, NULL, NULL);
+-  gtk_widget_measure (priv->apply_button, orientation, for_size,
+-                      &apply_btn_min, &apply_btn_nat, NULL, NULL);
+-
+-  icon_min = MAX (indicator_min, MAX (edit_icon_min, apply_btn_min));
+-  icon_nat = MAX (indicator_nat, MAX (edit_icon_nat, apply_btn_nat));
++  icon_min = MAX (indicator_min, edit_icon_min);
++  icon_nat = MAX (indicator_nat, edit_icon_nat);
+ 
+   if (orientation == GTK_ORIENTATION_HORIZONTAL) {
+     if (minimum)
+@@ -333,16 +329,13 @@ get_icon_width (AdwEntryRow *self,
+                 int          height)
+ {
+   AdwEntryRowPrivate *priv = adw_entry_row_get_instance_private (self);
+-  int indicator_width, edit_icon_width, apply_btn_width, icon_width;
++  int indicator_width, edit_icon_width, icon_width;
+ 
+   gtk_widget_measure (priv->indicator, GTK_ORIENTATION_HORIZONTAL, height,
+                       NULL, &indicator_width, NULL, NULL);
+   gtk_widget_measure (priv->edit_icon, GTK_ORIENTATION_HORIZONTAL, height,
+                       NULL, &edit_icon_width, NULL, NULL);
+-  gtk_widget_measure (priv->apply_button, GTK_ORIENTATION_HORIZONTAL, height,
+-                      NULL, &apply_btn_width, NULL, NULL);
+-
+-  icon_width = MAX (indicator_width, MAX (edit_icon_width, apply_btn_width));
++  icon_width = MAX (indicator_width, edit_icon_width);
+ 
+   return MIN (icon_width, width);
+ }
+@@ -370,8 +363,7 @@ allocate_editable_area (GtkWidget *widget,
+                       NULL, &text_height, NULL, &text_baseline);
+ 
+   has_icon = gtk_widget_get_child_visible (priv->edit_icon) ||
+-             gtk_widget_get_child_visible (priv->indicator) ||
+-             gtk_widget_get_child_visible (priv->apply_button);
++             gtk_widget_get_child_visible (priv->indicator);
+ 
+   if (has_icon)
+     icon_width = get_icon_width (self, width, height);
+@@ -414,8 +406,7 @@ allocate_editable_area (GtkWidget *widget,
+       transform = gsk_transform_translate (NULL, &GRAPHENE_POINT_INIT (width - icon_width, 0));
+ 
+     gtk_widget_allocate (priv->edit_icon, icon_width, height, -1, gsk_transform_ref (transform));
+-    gtk_widget_allocate (priv->indicator, icon_width, height, -1, gsk_transform_ref (transform));
+-    gtk_widget_allocate (priv->apply_button, icon_width, height, -1, transform);
++    gtk_widget_allocate (priv->indicator, icon_width, height, -1, transform);
+   }
+ }
+ 
+@@ -427,7 +418,6 @@ snapshot_editable_area (GtkWidget   *widget,
+   AdwEntryRowPrivate *priv = adw_entry_row_get_instance_private (self);
+ 
+   gtk_widget_snapshot_child (widget, priv->indicator, snapshot);
+-  gtk_widget_snapshot_child (widget, priv->apply_button, snapshot);
+   gtk_widget_snapshot_child (widget, priv->edit_icon, snapshot);
+ 
+   gtk_snapshot_push_cross_fade (snapshot, 1 - priv->empty_progress);
+diff --git a/src/adw-entry-row.ui b/src/adw-entry-row.ui
+index 735722f7..7589b390 100644
+--- a/src/adw-entry-row.ui
++++ b/src/adw-entry-row.ui
+@@ -87,21 +87,6 @@
+                 </style>
+               </object>
+             </child>
+-            <child>
+-              <object class="GtkButton" id="apply_button">
+-                <property name="valign">center</property>
+-                <property name="icon-name">adw-entry-apply-symbolic</property>
+-                <!-- Translators: tooltip of the apply button in entry row -->
+-                <property name="tooltip-text" translatable="yes">Apply</property>
+-                <property name="focus-on-click">False</property>
+-                <signal name="clicked" handler="apply_button_clicked_cb" swapped="yes"/>
+-                 <style>
+-                  <class name="suggested-action"/>
+-                  <class name="circular"/>
+-                  <class name="apply-button"/>
+-                </style>
+-              </object>
+-            </child>
+             <child>
+               <object class="GtkImage" id="edit_icon">
+                 <property name="valign">center</property>
+@@ -123,6 +108,21 @@
+             </style>
+           </object>
+         </child>
++        <child>
++          <object class="GtkButton" id="apply_button">
++            <property name="valign">center</property>
++            <property name="icon-name">adw-entry-apply-symbolic</property>
++            <!-- Translators: tooltip of the apply button in entry row -->
++            <property name="tooltip-text" translatable="yes">Apply</property>
++            <property name="focus-on-click">False</property>
++            <signal name="clicked" handler="apply_button_clicked_cb" swapped="yes"/>
++            <style>
++              <class name="suggested-action"/>
++              <class name="circular"/>
++              <class name="apply-button"/>
++            </style>
++          </object>
++        </child>
+      </object>
+     </property>
+     <style>
+diff --git a/tests/test-entry-row.c b/tests/test-entry-row.c
+index a2ddeb65..86726582 100644
+--- a/tests/test-entry-row.c
++++ b/tests/test-entry-row.c
+@@ -37,6 +37,30 @@ test_adw_entry_row_add_remove (void)
+   g_assert_finalize_object (row);
+ }
+ 
++static void
++test_adw_entry_row_apply_button_order (void)
++{
++  AdwEntryRow *row = g_object_ref_sink (ADW_ENTRY_ROW (adw_entry_row_new ()));
++  GtkWidget *header;
++  GtkWidget *child;
++  GtkWidget *last_child = NULL;
++
++  g_assert_nonnull (row);
++
++  header = gtk_widget_get_first_child (GTK_WIDGET (row));
++  g_assert_nonnull (header);
++
++  for (child = gtk_widget_get_first_child (header);
++       child != NULL;
++       child = gtk_widget_get_next_sibling (child))
++    last_child = child;
++
++  g_assert_nonnull (last_child);
++  g_assert_true (gtk_widget_has_css_class (last_child, "apply-button"));
++
++  g_assert_finalize_object (row);
++}
++
+ static void
+ test_adw_entry_row_show_apply_button (void)
+ {
+@@ -73,6 +97,7 @@ main (int   argc,
+   adw_init ();
+ 
+   g_test_add_func("/Adwaita/EntryRow/add_remove", test_adw_entry_row_add_remove);
++  g_test_add_func("/Adwaita/EntryRow/apply_button_order", test_adw_entry_row_apply_button_order);
+   g_test_add_func("/Adwaita/EntryRow/show_apply_button", test_adw_entry_row_show_apply_button);
+ 
+   return g_test_run();
+-- 
+2.53.0
+

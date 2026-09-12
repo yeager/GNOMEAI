@@ -1,0 +1,13 @@
+{
+  "project": "gnome-shell",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-shell.git",
+  "branch": "notification-sender-grace",
+  "base": "fa82d28c3b0dcfd27e49bac291b37b5ca9237dc7",
+  "tip": "f4ac940c1b7bcb733bf8055068a9f7760fa19232",
+  "commits": [
+    "f4ac940c1b7bcb733bf8055068a9f7760fa19232"
+  ],
+  "patches": [
+    "0001-notificationDaemon-Keep-short-lived-app-senders.patch"
+  ]
+}

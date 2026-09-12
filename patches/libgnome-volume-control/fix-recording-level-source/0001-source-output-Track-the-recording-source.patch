@@ -1,0 +1,96 @@
+From 52b39e7034911dced8c57d39b3b2e76daf0469fb Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 11:37:18 +0200
+Subject: [PATCH] source-output: Track the recording source
+
+---
+ gvc-mixer-control.c       |  2 ++
+ gvc-mixer-source-output.c | 22 +++++++++++++++++++++-
+ gvc-mixer-source-output.h |  4 ++++
+ 3 files changed, 27 insertions(+), 1 deletion(-)
+
+diff --git a/gvc-mixer-control.c b/gvc-mixer-control.c
+index 099b8d9..1292467 100644
+--- a/gvc-mixer-control.c
++++ b/gvc-mixer-control.c
+@@ -1876,6 +1876,7 @@ update_source_output (GvcMixerControl             *control,
+                 map = gvc_channel_map_new_from_pa_channel_map (&info->channel_map);
+                 stream = gvc_mixer_source_output_new (control->priv->pa_context,
+                                                       info->index,
++                                                      info->source,
+                                                       map);
+                 g_object_unref (map);
+                 is_new = TRUE;
+@@ -1886,6 +1887,7 @@ update_source_output (GvcMixerControl             *control,
+ 
+         max_volume = pa_cvolume_max (&info->volume);
+ 
++        gvc_mixer_source_output_set_source_index (GVC_MIXER_SOURCE_OUTPUT (stream), info->source);
+         gvc_mixer_stream_set_name (stream, name);
+         gvc_mixer_stream_set_description (stream, info->name);
+         set_application_id_from_proplist (stream, info->proplist);
+diff --git a/gvc-mixer-source-output.c b/gvc-mixer-source-output.c
+index c4a275a..f2726c2 100644
+--- a/gvc-mixer-source-output.c
++++ b/gvc-mixer-source-output.c
+@@ -35,7 +35,7 @@
+ 
+ struct GvcMixerSourceOutputPrivate
+ {
+-        gpointer dummy;
++        guint source_index;
+ };
+ 
+ static void     gvc_mixer_source_output_finalize   (GObject            *object);
+@@ -146,6 +146,7 @@ gvc_mixer_source_output_finalize (GObject *object)
+ GvcMixerStream *
+ gvc_mixer_source_output_new (pa_context    *context,
+                              guint          index,
++                             guint          source_index,
+                              GvcChannelMap *channel_map)
+ {
+         GObject *object;
+@@ -156,5 +157,24 @@ gvc_mixer_source_output_new (pa_context    *context,
+                                "channel-map", channel_map,
+                                NULL);
+ 
++        GVC_MIXER_SOURCE_OUTPUT (object)->priv->source_index = source_index;
++
+         return GVC_MIXER_STREAM (object);
+ }
++
++guint
++gvc_mixer_source_output_get_source_index (GvcMixerSourceOutput *source_output)
++{
++        g_return_val_if_fail (GVC_IS_MIXER_SOURCE_OUTPUT (source_output), PA_INVALID_INDEX);
++
++        return source_output->priv->source_index;
++}
++
++void
++gvc_mixer_source_output_set_source_index (GvcMixerSourceOutput *source_output,
++                                          guint                 source_index)
++{
++        g_return_if_fail (GVC_IS_MIXER_SOURCE_OUTPUT (source_output));
++
++        source_output->priv->source_index = source_index;
++}
+diff --git a/gvc-mixer-source-output.h b/gvc-mixer-source-output.h
+index 4d9a6d6..26483ba 100644
+--- a/gvc-mixer-source-output.h
++++ b/gvc-mixer-source-output.h
+@@ -50,7 +50,11 @@ GType               gvc_mixer_source_output_get_type      (void);
+ 
+ GvcMixerStream *    gvc_mixer_source_output_new           (pa_context    *context,
+                                                            guint          index,
++                                                           guint          source_index,
+                                                            GvcChannelMap *channel_map);
++guint               gvc_mixer_source_output_get_source_index (GvcMixerSourceOutput *source_output);
++void                gvc_mixer_source_output_set_source_index (GvcMixerSourceOutput *source_output,
++                                                               guint                 source_index);
+ 
+ G_END_DECLS
+ 
+-- 
+2.53.0
+

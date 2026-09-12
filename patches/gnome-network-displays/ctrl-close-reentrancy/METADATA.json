@@ -1,0 +1,15 @@
+{
+  "project": "gnome-network-displays",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-network-displays.git",
+  "branch": "ctrl-close-reentrancy",
+  "base": "521caad089cafc6f1e7ef4f5838ead57d7374000",
+  "tip": "8d85c0a0a917574f749030efcf2da8f9139551ce",
+  "commits": [
+    "6bf665a83b2efaab7128aaa0f4fdd26ccd2dfa68",
+    "8d85c0a0a917574f749030efcf2da8f9139551ce"
+  ],
+  "patches": [
+    "0001-cc-Mark-control-connection-failed-before-ending-stre.patch",
+    "0002-po-Update-POT-file.patch"
+  ]
+}

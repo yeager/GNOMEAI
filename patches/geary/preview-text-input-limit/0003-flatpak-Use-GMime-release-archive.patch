@@ -1,0 +1,29 @@
+From f09bf645c7cb25f89575bb01d1ec2e963fd4b445 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 08:35:33 +0200
+Subject: [PATCH 3/6] flatpak: Use GMime release archive
+
+---
+ org.gnome.Geary.json | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/org.gnome.Geary.json b/org.gnome.Geary.json
+index f4ddf12..0e8e14b 100644
+--- a/org.gnome.Geary.json
++++ b/org.gnome.Geary.json
+@@ -209,9 +209,9 @@
+             "name": "gmime",
+             "sources": [
+                 {
+-                    "type": "git",
+-                    "url": "https://github.com/jstedfast/gmime.git",
+-                    "branch": "master"
++                    "type": "archive",
++                    "url": "https://github.com/jstedfast/gmime/releases/download/3.2.15/gmime-3.2.15.tar.xz",
++                    "sha256": "84cd2a481a27970ec39b5c95f72db026722904a2ccf3fdbd57b280cf2d02b5c4"
+                 }
+             ]
+         },
+-- 
+2.53.0
+

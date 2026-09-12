@@ -1,0 +1,13 @@
+{
+  "project": "gthumb",
+  "source_repository": "git@ssh.gitlab.gnome.org:GNOME/gthumb.git",
+  "branch": "clarify-video-orientation",
+  "base": "c479731a3ac4a102d198baef0ba693f28a08ba90",
+  "tip": "74134543f1da2ab1ca5d7178e8b61f5afbbeac40",
+  "commits": [
+    "74134543f1da2ab1ca5d7178e8b61f5afbbeac40"
+  ],
+  "patches": [
+    "0001-video-Clarify-the-orientation-preference.patch"
+  ]
+}

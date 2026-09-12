@@ -1,0 +1,606 @@
+[
+  {
+    "project": "console",
+    "source_repository": "https://gitlab.gnome.org/GNOME/console.git",
+    "branch": "xdg-terminal-exec",
+    "base": "f304b7ca5197cc7898c23a14f28ce5a129a8c360",
+    "tip": "4ad9d2f0b402e8334b4e3e3c01f67f7149007474",
+    "commits": [
+      "6f83861e299c59ef71e10cd9ebc4edd8c079695e",
+      "4ad9d2f0b402e8334b4e3e3c01f67f7149007474"
+    ],
+    "patches": [
+      "0001-desktop-Advertise-command-execution-arguments.patch",
+      "0002-desktop-Use-the-xdg-terminal-exec-compatibility-key.patch"
+    ]
+  },
+  {
+    "project": "epiphany",
+    "source_repository": "https://gitlab.gnome.org/GNOME/epiphany.git",
+    "branch": "webextension-null-message",
+    "base": "19f93b19eac5ba0269fa62acc235a8d57c46c9a3",
+    "tip": "b39be280623964bb810e304ffa44f433e831b430",
+    "commits": [
+      "b39be280623964bb810e304ffa44f433e831b430"
+    ],
+    "patches": [
+      "0001-webextension-Handle-unnamed-API-replies.patch"
+    ]
+  },
+  {
+    "project": "gdk-pixbuf",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gdk-pixbuf.git",
+    "branch": "icns-rle-bounds",
+    "base": "8c2942509b02fccabaefcef48d2e0328b497fc5d",
+    "tip": "80407c1ea3d60108ea5959ed39a4daa75ec626ba",
+    "commits": [
+      "80407c1ea3d60108ea5959ed39a4daa75ec626ba"
+    ],
+    "patches": [
+      "0001-icns-Validate-RLE-input-bounds.patch"
+    ]
+  },
+  {
+    "project": "geary",
+    "source_repository": "https://gitlab.gnome.org/GNOME/geary.git",
+    "branch": "preview-text-input-limit",
+    "base": "8dc940934e650280675627ec0e3816755fab5e60",
+    "tip": "f29d17f08d719e61a4bfc0448049967cfb6cb419",
+    "commits": [
+      "db8d6be5b81ff276834bce047c820a88a085811b",
+      "7491e05aaf4b3b07c379d81e83e72a8d4818f398",
+      "f09bf645c7cb25f89575bb01d1ec2e963fd4b445",
+      "2250f9bcaf5f105b6e13a0ba6b9f075f74de31b3",
+      "9129a732d3f76827fac66dc90d70d036bb5a13d7",
+      "f29d17f08d719e61a4bfc0448049967cfb6cb419"
+    ],
+    "patches": [
+      "0001-engine-Limit-text-normalized-for-message-previews.patch",
+      "0002-test-Use-supported-Vala-integer-syntax.patch",
+      "0003-flatpak-Use-GMime-release-archive.patch",
+      "0004-flatpak-Bundle-libhandy-source.patch",
+      "0005-flatpak-Update-bundled-libhandy.patch",
+      "0006-build-Fix-spell-check-language-ownership.patch"
+    ]
+  },
+  {
+    "project": "gimp",
+    "source_repository": "git@ssh.gitlab.gnome.org:yeager/gimp.git",
+    "branch": "addborder-opacity",
+    "base": "d6cba36129c9080a72863ed4f8f4151a0668bf99",
+    "tip": "1ffd3be159e07a732d28dc4ef7a830cc92921db4",
+    "commits": [
+      "1ffd3be159e07a732d28dc4ef7a830cc92921db4"
+    ],
+    "patches": [
+      "0001-plug-ins-script-fu-Reset-Add-Border-opacity.patch"
+    ]
+  },
+  {
+    "project": "gimp",
+    "source_repository": "git@ssh.gitlab.gnome.org:yeager/gimp.git",
+    "branch": "fix-color-picker-exact-samples",
+    "base": "d6cba36129c9080a72863ed4f8f4151a0668bf99",
+    "tip": "74ea32dd0f8e7ca2919cf45042b7aa353750ea0b",
+    "commits": [
+      "bf64ce966c342577f573e86f02ab87955f2131fa",
+      "034faa06ce08ab5cd23d6315335f2e2bbfe783de",
+      "74ea32dd0f8e7ca2919cf45042b7aa353750ea0b"
+    ],
+    "patches": [
+      "0001-app-widgets-update-exact-samples-at-one-position.patch",
+      "0002-style-Format-color-frame-sample-comparison.patch",
+      "0003-style-Format-color-frame-sample-condition.patch"
+    ]
+  },
+  {
+    "project": "gimp",
+    "source_repository": "git@ssh.gitlab.gnome.org:yeager/gimp.git",
+    "branch": "fix-action-search-localized-menu-path",
+    "base": "d6cba36129c9080a72863ed4f8f4151a0668bf99",
+    "tip": "964bc521e648ffbe8ee7cda3b3cc69d10b417feb",
+    "commits": [
+      "964bc521e648ffbe8ee7cda3b3cc69d10b417feb"
+    ],
+    "patches": [
+      "0001-app-localize-action-search-menu-paths.patch"
+    ]
+  },
+  {
+    "project": "gimp",
+    "source_repository": "git@ssh.gitlab.gnome.org:yeager/gimp.git",
+    "branch": "fix-raw-float-endianness",
+    "base": "d6cba36129c9080a72863ed4f8f4151a0668bf99",
+    "tip": "3ad34bd098d649e6b9cfd35c435b792aa0714cbb",
+    "commits": [
+      "3ad34bd098d649e6b9cfd35c435b792aa0714cbb"
+    ],
+    "patches": [
+      "0001-file-raw-Honor-endianness-for-floating-point-samples.patch"
+    ]
+  },
+  {
+    "project": "gnome-autoar",
+    "source_repository": "git@ssh.gitlab.gnome.org:GNOME/gnome-autoar.git",
+    "branch": "async-signal-return",
+    "base": "026d0b778fb4f600fd545d15b65b05f5a7a69e20",
+    "tip": "512a9c1b2bb9106c6013fca1e0b1773c47898013",
+    "commits": [
+      "512a9c1b2bb9106c6013fca1e0b1773c47898013"
+    ],
+    "patches": [
+      "0001-Wait-for-async-signal-return-values.patch"
+    ]
+  },
+  {
+    "project": "gnome-characters",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-characters.git",
+    "branch": "fix-search-result-metas",
+    "base": "4b422979084db0f7a242a265d627b682b27d4f98",
+    "tip": "728726864f81924ed4d8021f8834eaf5a24048ec",
+    "commits": [
+      "728726864f81924ed4d8021f8834eaf5a24048ec"
+    ],
+    "patches": [
+      "0001-search-provider-return-metadata-for-results-without-.patch"
+    ]
+  },
+  {
+    "project": "gnome-connections",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-connections.git",
+    "branch": "rdp-pass-f10",
+    "base": "529fc588a8f0c2f4853b95c03fb9a9fb3b7faabf",
+    "tip": "a21c59c8b5544a4ec8dd9ebd850491db237da7b6",
+    "commits": [
+      "a21c59c8b5544a4ec8dd9ebd850491db237da7b6"
+    ],
+    "patches": [
+      "0001-window-Keep-F10-in-remote-displays.patch"
+    ]
+  },
+  {
+    "project": "gnome-control-center",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
+    "branch": "fix-about-arm-cpu-info",
+    "base": "cd79a897190989ca395c6f00962f0929734103c7",
+    "tip": "03d9515710bd075d24801e1f6c27d57d82b29b79",
+    "commits": [
+      "31e401cdc729d6c76a840e28cffcfd628c0ada55",
+      "03d9515710bd075d24801e1f6c27d57d82b29b79"
+    ],
+    "patches": [
+      "0001-about-Show-a-CPU-fallback-on-systems-without-model-n.patch",
+      "0002-about-Use-uname-for-the-CPU-architecture-fallback.patch"
+    ]
+  },
+  {
+    "project": "gnome-control-center",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
+    "branch": "feature-default-terminal",
+    "base": "cd79a897190989ca395c6f00962f0929734103c7",
+    "tip": "5d4e2797ee3cda4772c0712de2b781c30aaf7884",
+    "commits": [
+      "ae9a113969e45187a30f7bc0700bf7398b629c15",
+      "5d4e2797ee3cda4772c0712de2b781c30aaf7884"
+    ],
+    "patches": [
+      "0001-applications-Support-default-terminal-selection.patch",
+      "0002-applications-Show-Terminal-in-Default-Apps.patch"
+    ]
+  },
+  {
+    "project": "gnome-control-center",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
+    "branch": "fix-global-shortcuts-wayland-shutdown",
+    "base": "cd79a897190989ca395c6f00962f0929734103c7",
+    "tip": "7cc09c2b5ea2f148f9b017034c0f2e4332cbc1b5",
+    "commits": [
+      "7cc09c2b5ea2f148f9b017034c0f2e4332cbc1b5"
+    ],
+    "patches": [
+      "0001-global-shortcuts-Avoid-destroying-dialogs-after-disp.patch"
+    ]
+  },
+  {
+    "project": "gnome-control-center",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
+    "branch": "fix-input-level-source",
+    "base": "cd79a897190989ca395c6f00962f0929734103c7",
+    "tip": "9cc6433834f03a60cfe5628919aae0fe95c90844",
+    "commits": [
+      "9cc6433834f03a60cfe5628919aae0fe95c90844"
+    ],
+    "patches": [
+      "0001-sound-Read-recording-levels-from-their-source.patch"
+    ]
+  },
+  {
+    "project": "gnome-control-center",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
+    "branch": "fix-sound-preserve-configured-sink",
+    "base": "cd79a897190989ca395c6f00962f0929734103c7",
+    "tip": "f416959f24b640b6c61b6704b488089909d89991",
+    "commits": [
+      "f416959f24b640b6c61b6704b488089909d89991"
+    ],
+    "patches": [
+      "0001-sound-Preserve-configured-output-when-a-device-is-re.patch"
+    ]
+  },
+  {
+    "project": "gnome-control-center",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
+    "branch": "fix-wwan-unspecified-sim",
+    "base": "cd79a897190989ca395c6f00962f0929734103c7",
+    "tip": "2ba8ac349613f82ae505bdc30ad14c87dbbd147a",
+    "commits": [
+      "2ba8ac349613f82ae505bdc30ad14c87dbbd147a"
+    ],
+    "patches": [
+      "0001-wwan-Reuse-active-connection-without-a-SIM-ID.patch"
+    ]
+  },
+  {
+    "project": "gnome-network-displays",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-network-displays.git",
+    "branch": "ctrl-close-reentrancy",
+    "base": "521caad089cafc6f1e7ef4f5838ead57d7374000",
+    "tip": "8d85c0a0a917574f749030efcf2da8f9139551ce",
+    "commits": [
+      "6bf665a83b2efaab7128aaa0f4fdd26ccd2dfa68",
+      "8d85c0a0a917574f749030efcf2da8f9139551ce"
+    ],
+    "patches": [
+      "0001-cc-Mark-control-connection-failed-before-ending-stre.patch",
+      "0002-po-Update-POT-file.patch"
+    ]
+  },
+  {
+    "project": "gnome-settings-daemon",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-settings-daemon.git",
+    "branch": "fix-power-saver-idle-dim",
+    "base": "f4882a714ae7ccedcc37dd4aab65e98767921e57",
+    "tip": "acb3ef68a582d8d7dd60b0a248efbb809daba42b",
+    "commits": [
+      "233cf2b656dc253b44d2ced365c9f4fc5dc4552b",
+      "acb3ef68a582d8d7dd60b0a248efbb809daba42b"
+    ],
+    "patches": [
+      "0001-power-Respect-idle-dim-setting-in-power-saver-mode.patch",
+      "0002-power-Test-idle-dim-setting-in-power-saver-mode.patch"
+    ]
+  },
+  {
+    "project": "gnome-shell",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-shell.git",
+    "branch": "app-folder-dialog-signal-cleanup",
+    "base": "fa82d28c3b0dcfd27e49bac291b37b5ca9237dc7",
+    "tip": "bcf9f80558a3bf221149f9f1b84aa52f1345c602",
+    "commits": [
+      "bcf9f80558a3bf221149f9f1b84aa52f1345c602"
+    ],
+    "patches": [
+      "0001-appDisplay-Disconnect-folder-name-handler-with-dialo.patch"
+    ]
+  },
+  {
+    "project": "gnome-shell",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-shell.git",
+    "branch": "mpris-cleanup-isolated",
+    "base": "fa82d28c3b0dcfd27e49bac291b37b5ca9237dc7",
+    "tip": "05cac117a15ed3246669a00c35020c56784d3136",
+    "commits": [
+      "05cac117a15ed3246669a00c35020c56784d3136"
+    ],
+    "patches": [
+      "0001-mpris-Release-signal-connections-on-lock-screen-tear.patch"
+    ]
+  },
+  {
+    "project": "gnome-shell",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-shell.git",
+    "branch": "mpris-metadata-unpack",
+    "base": "fa82d28c3b0dcfd27e49bac291b37b5ca9237dc7",
+    "tip": "0b10528cf183ba4c15199ca76fa8765542423a82",
+    "commits": [
+      "0b10528cf183ba4c15199ca76fa8765542423a82"
+    ],
+    "patches": [
+      "0001-mpris-Unpack-metadata-once-per-update.patch"
+    ]
+  },
+  {
+    "project": "gnome-shell",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-shell.git",
+    "branch": "notification-sender-grace",
+    "base": "fa82d28c3b0dcfd27e49bac291b37b5ca9237dc7",
+    "tip": "f4ac940c1b7bcb733bf8055068a9f7760fa19232",
+    "commits": [
+      "f4ac940c1b7bcb733bf8055068a9f7760fa19232"
+    ],
+    "patches": [
+      "0001-notificationDaemon-Keep-short-lived-app-senders.patch"
+    ]
+  },
+  {
+    "project": "gnome-shell",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-shell.git",
+    "branch": "work/screenshot-recent-files-fix",
+    "base": "0f6e549ce04ada21d72bd8d632e24e57dfdfbd38",
+    "tip": "a3e0c420a7a66a13ce4c91fda653ee97288e82e6",
+    "commits": [
+      "a3e0c420a7a66a13ce4c91fda653ee97288e82e6"
+    ],
+    "patches": [
+      "0001-screenshot-Handle-a-missing-recent-files-history.patch"
+    ]
+  },
+  {
+    "project": "gnome-shell",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-shell.git",
+    "branch": "work/screenshot-save-to-disk",
+    "base": "unrelated-history",
+    "tip": "8b21ff45649f1f3fd7c561e6c9f72797c9cc0786",
+    "commits": [
+      "8b21ff45649f1f3fd7c561e6c9f72797c9cc0786"
+    ],
+    "patches": [
+      "0001-screenshot-Add-persistent-save-to-disk-option.patch"
+    ]
+  },
+  {
+    "project": "gnome-terminal",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-terminal.git",
+    "branch": "fix-fullscreen-menu-popover",
+    "base": "3116b897d105e7b367338e9ace2639492035d00d",
+    "tip": "da47e67bd14e458338fa8d4898526c273cdd2483",
+    "commits": [
+      "da47e67bd14e458338fa8d4898526c273cdd2483"
+    ],
+    "patches": [
+      "0001-window-close-the-header-menu-before-fullscreen.patch"
+    ]
+  },
+  {
+    "project": "gthumb",
+    "source_repository": "git@ssh.gitlab.gnome.org:GNOME/gthumb.git",
+    "branch": "clarify-video-orientation",
+    "base": "c479731a3ac4a102d198baef0ba693f28a08ba90",
+    "tip": "74134543f1da2ab1ca5d7178e8b61f5afbbeac40",
+    "commits": [
+      "74134543f1da2ab1ca5d7178e8b61f5afbbeac40"
+    ],
+    "patches": [
+      "0001-video-Clarify-the-orientation-preference.patch"
+    ]
+  },
+  {
+    "project": "gtk-frdp",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gtk-frdp.git",
+    "branch": "close-on-event-check-failure",
+    "base": "83854a24e31d1c07519f6e4393fe280d3b59e080",
+    "tip": "b7beb9dafbf10498a8e2211461b9983ac74d6948",
+    "commits": [
+      "b7beb9dafbf10498a8e2211461b9983ac74d6948"
+    ],
+    "patches": [
+      "0001-session-Close-after-event-handle-failures.patch"
+    ]
+  },
+  {
+    "project": "gtk",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gtk.git",
+    "branch": "avoid-svg-preload",
+    "base": "9a950181e1dc800beb2c4a2da2cf2c798b19b80e",
+    "tip": "b23a531d85fef8afe5e6aa834fc7720525c79bfc",
+    "commits": [
+      "b23a531d85fef8afe5e6aa834fc7720525c79bfc"
+    ],
+    "patches": [
+      "0001-icontheme-Avoid-preloading-SVG-icons-in-worker-threa.patch"
+    ]
+  },
+  {
+    "project": "libadwaita",
+    "source_repository": "https://gitlab.gnome.org/GNOME/libadwaita.git",
+    "branch": "entry-row-apply-after-suffix",
+    "base": "6fd61bf4f85c5fd55f8988578deb4fb1736e96ca",
+    "tip": "88f14d202d0a8527dd58acb434e1e8ae196d2090",
+    "commits": [
+      "88f14d202d0a8527dd58acb434e1e8ae196d2090"
+    ],
+    "patches": [
+      "0001-entry-row-Place-apply-button-after-suffixes.patch"
+    ]
+  },
+  {
+    "project": "libgnome-games-support",
+    "source_repository": "https://gitlab.gnome.org/GNOME/libgnome-games-support.git",
+    "branch": "fix-score-dialog-row-factory",
+    "base": "4ad6b54d1e31b9fb757554315991e9a1d50012ed",
+    "tip": "d8ebd578b3a9cd960f1a5dbdb9169d5a1d0e9878",
+    "commits": [
+      "d8ebd578b3a9cd960f1a5dbdb9169d5a1d0e9878"
+    ],
+    "patches": [
+      "0001-scores-create-player-cells-during-factory-setup.patch"
+    ]
+  },
+  {
+    "project": "libgnome-volume-control",
+    "source_repository": "https://gitlab.gnome.org/GNOME/libgnome-volume-control.git",
+    "branch": "fix-recording-level-source",
+    "base": "0a4eda0cdc2deb352bebc70ec697c42af46094e4",
+    "tip": "52b39e7034911dced8c57d39b3b2e76daf0469fb",
+    "commits": [
+      "52b39e7034911dced8c57d39b3b2e76daf0469fb"
+    ],
+    "patches": [
+      "0001-source-output-Track-the-recording-source.patch"
+    ]
+  },
+  {
+    "project": "libgtop",
+    "source_repository": "https://gitlab.gnome.org/GNOME/libgtop.git",
+    "branch": "work/gpu-metrics-port",
+    "base": "ebd49f21e36fd4344c622e3d1e1428df86bf05bb",
+    "tip": "4dbb68f24fbd40b56d4ccf3f16e5096f3d4494bb",
+    "commits": [
+      "ae06b3bd1d15c0a084d292dd51acbb2f366322aa",
+      "4dbb68f24fbd40b56d4ccf3f16e5096f3d4494bb"
+    ],
+    "patches": [
+      "0001-gpu-Add-AMDGPU-metrics.patch",
+      "0002-ci-Use-a-buildable-ABI-baseline.patch"
+    ]
+  },
+  {
+    "project": "libgtop",
+    "source_repository": "https://gitlab.gnome.org/GNOME/libgtop.git",
+    "branch": "procmap-smaps-values",
+    "base": "ebd49f21e36fd4344c622e3d1e1428df86bf05bb",
+    "tip": "f217de2c81b4d33e125ea7f6262bc0b2ec3cf64b",
+    "commits": [
+      "2164a3dd05280f6b4574544703343d685c3a170b",
+      "f217de2c81b4d33e125ea7f6262bc0b2ec3cf64b"
+    ],
+    "patches": [
+      "0001-procmap-Parse-smaps-values-after-colon.patch",
+      "0002-ci-Use-a-buildable-ABI-baseline.patch"
+    ]
+  },
+  {
+    "project": "libmanette",
+    "source_repository": "git@ssh.gitlab.gnome.org:GNOME/libmanette.git",
+    "branch": "thread-main-context",
+    "base": "006e17b2184a3098a14081d50d2b5303c5cf172c",
+    "tip": "e6daef50d7f6a5359a37ac6ed3ea2001be53ee8e",
+    "commits": [
+      "e6daef50d7f6a5359a37ac6ed3ea2001be53ee8e"
+    ],
+    "patches": [
+      "0001-backends-Use-the-thread-default-main-context.patch"
+    ]
+  },
+  {
+    "project": "nautilus",
+    "source_repository": "https://gitlab.gnome.org/GNOME/nautilus.git",
+    "branch": "compression-tar-zstd",
+    "base": "7674c26523c0cbac5b908d42008d7117494d19bc",
+    "tip": "5f8df94560fa740baa84498c127e26d8b295732f",
+    "commits": [
+      "5f8df94560fa740baa84498c127e26d8b295732f"
+    ],
+    "patches": [
+      "0001-compress-Add-TAR-with-Zstandard-support.patch"
+    ]
+  },
+  {
+    "project": "nautilus",
+    "source_repository": "https://gitlab.gnome.org/GNOME/nautilus.git",
+    "branch": "focus-conflict-replace",
+    "base": "7674c26523c0cbac5b908d42008d7117494d19bc",
+    "tip": "bb7a56ecfd8c7a7a6c54b384a3c45dd81769a937",
+    "commits": [
+      "bb7a56ecfd8c7a7a6c54b384a3c45dd81769a937"
+    ],
+    "patches": [
+      "0001-file-conflict-dialog-Focus-Replace-when-shown.patch"
+    ]
+  },
+  {
+    "project": "nautilus",
+    "source_repository": "https://gitlab.gnome.org/GNOME/nautilus.git",
+    "branch": "cut-recent-feedback",
+    "base": "138de8619510988e528acd413393fc009804f4d9",
+    "tip": "23ff2405ebc3acb116e455c547d891d19686a45b",
+    "commits": [
+      "23ff2405ebc3acb116e455c547d891d19686a45b"
+    ],
+    "patches": [
+      "0001-files-view-Explain-why-cut-is-unavailable-in-Recent.patch"
+    ]
+  },
+  {
+    "project": "NetworkManager-openvpn",
+    "source_repository": "git@ssh.gitlab.gnome.org:GNOME/NetworkManager-openvpn.git",
+    "branch": "openvpn-2-6-dns-options",
+    "base": "7fb52f40ec23d2da91e2259302a50390ee20bc13",
+    "tip": "d0da830cb0ff7d97fd39031b5d3f550209bcd5f6",
+    "commits": [
+      "d0da830cb0ff7d97fd39031b5d3f550209bcd5f6"
+    ],
+    "patches": [
+      "0001-helper-Parse-OpenVPN-2.6-DNS-options.patch"
+    ]
+  },
+  {
+    "project": "NetworkManager-openvpn",
+    "source_repository": "git@ssh.gitlab.gnome.org:GNOME/NetworkManager-openvpn.git",
+    "branch": "ci-const-correctness",
+    "base": "7fb52f40ec23d2da91e2259302a50390ee20bc13",
+    "tip": "5eb1273928ca895a3de2c05a56e637f56de64e72",
+    "commits": [
+      "5eb1273928ca895a3de2c05a56e637f56de64e72"
+    ],
+    "patches": [
+      "0001-Fix-const-correctness-in-Fedora-build.patch"
+    ]
+  },
+  {
+    "project": "pango",
+    "source_repository": "https://gitlab.gnome.org/GNOME/pango.git",
+    "branch": "clang23-unused-global",
+    "base": "8e74c27c113c98664b77272d16b14bbce542c184",
+    "tip": "d759ec18b50c71cd6cbc2bdd0c9bde8dcbf2b6fb",
+    "commits": [
+      "fefc524a5b4156cb1fc4145a6ab0d7c1628572e3",
+      "0eef67d3c1d38f09d2987e5f5935f30642dc6c2b",
+      "d759ec18b50c71cd6cbc2bdd0c9bde8dcbf2b6fb"
+    ],
+    "patches": [
+      "0001-build-Do-not-promote-unused-globals-to-errors-with-C.patch",
+      "0002-build-Probe-unused-global-warning-override.patch",
+      "0003-ci-Enable-Fontconfig-in-MSYS2-tests.patch"
+    ]
+  },
+  {
+    "project": "pango",
+    "source_repository": "https://gitlab.gnome.org/GNOME/pango.git",
+    "branch": "ci-windows-fontconfig",
+    "base": "8e74c27c113c98664b77272d16b14bbce542c184",
+    "tip": "6077d2715f72358b58a7f5f328b994e5798c59c2",
+    "commits": [
+      "6077d2715f72358b58a7f5f328b994e5798c59c2"
+    ],
+    "patches": [
+      "0001-ci-Enable-Fontconfig-in-MSYS2-tests.patch"
+    ]
+  },
+  {
+    "project": "shotwell",
+    "source_repository": "https://gitlab.gnome.org/GNOME/shotwell.git",
+    "branch": "prepare-before-copy",
+    "base": "62f8cca4319a6262173599aa1d03db9d7fbf0bd9",
+    "tip": "ae34254cd596096aeed08e6600ace315cc2131cc",
+    "commits": [
+      "ae34254cd596096aeed08e6600ace315cc2131cc"
+    ],
+    "patches": [
+      "0001-batch-import-Prepare-copied-photos-before-copying.patch"
+    ]
+  },
+  {
+    "project": "xdg-desktop-portal-gnome",
+    "source_repository": "https://gitlab.gnome.org/GNOME/xdg-desktop-portal-gnome.git",
+    "branch": "fix-input-capture-version-50",
+    "base": "5176d452df0dc078f470b6e4b8884d88f34ec474",
+    "tip": "a629b1c5a03204354265656e7faefd460df110a4",
+    "commits": [
+      "a629b1c5a03204354265656e7faefd460df110a4"
+    ],
+    "patches": [
+      "0001-inputcapture-Advertise-version-2-on-gnome-50.patch"
+    ]
+  }
+]

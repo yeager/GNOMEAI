@@ -1,0 +1,15 @@
+{
+  "project": "gnome-control-center",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
+  "branch": "feature-default-terminal",
+  "base": "cd79a897190989ca395c6f00962f0929734103c7",
+  "tip": "5d4e2797ee3cda4772c0712de2b781c30aaf7884",
+  "commits": [
+    "ae9a113969e45187a30f7bc0700bf7398b629c15",
+    "5d4e2797ee3cda4772c0712de2b781c30aaf7884"
+  ],
+  "patches": [
+    "0001-applications-Support-default-terminal-selection.patch",
+    "0002-applications-Show-Terminal-in-Default-Apps.patch"
+  ]
+}

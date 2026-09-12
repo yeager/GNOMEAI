@@ -1,0 +1,13 @@
+{
+  "project": "gimp",
+  "source_repository": "git@ssh.gitlab.gnome.org:yeager/gimp.git",
+  "branch": "fix-raw-float-endianness",
+  "base": "d6cba36129c9080a72863ed4f8f4151a0668bf99",
+  "tip": "3ad34bd098d649e6b9cfd35c435b792aa0714cbb",
+  "commits": [
+    "3ad34bd098d649e6b9cfd35c435b792aa0714cbb"
+  ],
+  "patches": [
+    "0001-file-raw-Honor-endianness-for-floating-point-samples.patch"
+  ]
+}

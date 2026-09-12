@@ -1,0 +1,24 @@
+From d759ec18b50c71cd6cbc2bdd0c9bde8dcbf2b6fb Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 10:39:03 +0200
+Subject: [PATCH 3/3] ci: Enable Fontconfig in MSYS2 tests
+
+---
+ .gitlab-ci/test-msys2.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/.gitlab-ci/test-msys2.sh b/.gitlab-ci/test-msys2.sh
+index 52e2d71..3c6cb3d 100644
+--- a/.gitlab-ci/test-msys2.sh
++++ b/.gitlab-ci/test-msys2.sh
+@@ -22,6 +22,6 @@ pacman --noconfirm -S --needed \
+     mingw-w64-$MSYS2_ARCH-toolchain \
+     mingw-w64-$MSYS2_ARCH-cantarell-fonts
+ 
+-meson setup --buildtype debug _build
++meson setup --buildtype debug -Dfontconfig=enabled _build
+ meson compile -C _build
+ meson test -C _build -t "$MESON_TEST_TIMEOUT_MULTIPLIER" --print-errorlogs --suite pango
+-- 
+2.53.0
+

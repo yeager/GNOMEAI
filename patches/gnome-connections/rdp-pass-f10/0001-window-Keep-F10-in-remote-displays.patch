@@ -1,0 +1,26 @@
+From a21c59c8b5544a4ec8dd9ebd850491db237da7b6 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 10:16:47 +0200
+Subject: [PATCH] window: Keep F10 in remote displays
+
+---
+ src/window.vala | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/window.vala b/src/window.vala
+index f9dfce1..5f65183 100644
+--- a/src/window.vala
++++ b/src/window.vala
+@@ -149,6 +149,9 @@ namespace Connections {
+                 fullscreened = !fullscreened;
+ 
+                 return true;
++            } else if (event.keyval == Gdk.Key.F10 &&
++                       stack.visible_child == display_view) {
++                return true;
+             } else if (event.keyval == Gdk.Key.q &&
+                        (event.state & default_modifiers) == Gdk.ModifierType.CONTROL_MASK) {
+                 Application.application.quit_app ();
+-- 
+2.53.0
+

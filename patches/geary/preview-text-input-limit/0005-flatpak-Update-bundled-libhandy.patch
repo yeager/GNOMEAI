@@ -1,0 +1,27 @@
+From 9129a732d3f76827fac66dc90d70d036bb5a13d7 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 08:52:02 +0200
+Subject: [PATCH 5/6] flatpak: Update bundled libhandy
+
+---
+ org.gnome.Geary.json | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/org.gnome.Geary.json b/org.gnome.Geary.json
+index abcd18c..fddd090 100644
+--- a/org.gnome.Geary.json
++++ b/org.gnome.Geary.json
+@@ -225,8 +225,8 @@
+             "sources": [
+                 {
+                     "type": "archive",
+-                    "url": "https://gitlab.gnome.org/GNOME/libhandy/-/archive/1.2.1/libhandy-1.2.1.tar.gz",
+-                    "sha256": "90cee074048310926a1c66278fa10043a220953cc6be03f9f5eb756b6bcd1043"
++                    "url": "https://gitlab.gnome.org/GNOME/libhandy/-/archive/1.6.4/libhandy-1.6.4.tar.gz",
++                    "sha256": "2451d3a2f3f575b2380f38ab52134f2000d32103132a25ee006e549ee652c40a"
+                 }
+             ]
+         },
+-- 
+2.53.0
+

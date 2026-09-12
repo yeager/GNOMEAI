@@ -1,0 +1,165 @@
+From 05cac117a15ed3246669a00c35020c56784d3136 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Fri, 11 Sep 2026 22:45:24 +0200
+Subject: [PATCH] mpris: Release signal connections on lock screen teardown
+
+---
+ js/ui/mpris.js        | 55 +++++++++++++++++++++++++++++++++++++------
+ js/ui/unlockDialog.js |  2 ++
+ 2 files changed, 50 insertions(+), 7 deletions(-)
+
+diff --git a/js/ui/mpris.js b/js/ui/mpris.js
+index 5523155..aecb54e 100644
+--- a/js/ui/mpris.js
++++ b/js/ui/mpris.js
+@@ -5,6 +5,7 @@ import Shell from 'gi://Shell';
+ import * as MessageList from './messageList.js';
+ 
+ import {loadInterfaceXML} from '../misc/fileUtils.js';
++import * as SignalTracker from '../misc/signalTracker.js';
+ 
+ const DBusIface = loadInterfaceXML('org.freedesktop.DBus');
+ const DBusProxy = Gio.DBusProxy.makeProxyWrapper(DBusIface);
+@@ -26,6 +27,7 @@ export const MprisPlayer = GObject.registerClass({
+     },
+     Signals: {
+         'changed': {},
++        'destroy': {},
+     },
+ }, class MprisPlayer extends GObject.Object {
+     constructor(busName) {
+@@ -99,15 +101,31 @@ export const MprisPlayer = GObject.registerClass({
+             this._mprisProxy.RaiseAsync().catch(logError);
+     }
+ 
++    destroy() {
++        if (this._destroyed)
++            return;
++
++        this._destroyed = true;
++        this._close();
++        this.source.destroy();
++        this.emit('destroy');
++    }
++
+     _close() {
+-        this._mprisProxy.disconnectObject(this);
+-        this._mprisProxy = null;
++        if (this._mprisProxy) {
++            this._mprisProxy.disconnectObject(this);
++            this._mprisProxy = null;
++        }
+ 
+-        this._playerProxy.disconnectObject(this);
+-        this._playerProxy = null;
++        if (this._playerProxy) {
++            this._playerProxy.disconnectObject(this);
++            this._playerProxy = null;
++        }
+     }
+ 
+     _onMprisProxyReady() {
++        if (this._destroyed)
++            return;
+         this._mprisProxy.connectObject('notify::g-name-owner',
+             () => {
+                 if (!this._mprisProxy.g_name_owner)
+@@ -121,6 +139,9 @@ export const MprisPlayer = GObject.registerClass({
+     }
+ 
+     _onPlayerProxyReady() {
++        if (this._destroyed)
++            return;
++
+         this._playerProxy.connectObject(
+             'g-properties-changed', this._updateState.bind(this), this);
+         this._updateState();
+@@ -185,11 +206,13 @@ export const MprisPlayer = GObject.registerClass({
+         this.emit('changed');
+     }
+ });
++SignalTracker.registerDestroyableType(MprisPlayer);
+ 
+ export const MprisSource = GObject.registerClass({
+     Signals: {
+         'player-added': {param_types: [MprisPlayer]},
+         'player-removed': {param_types: [MprisPlayer]},
++        'destroy': {},
+     },
+ }, class MprisSource extends GObject.Object {
+     _init() {
+@@ -203,6 +226,18 @@ export const MprisSource = GObject.registerClass({
+             this._onProxyReady.bind(this));
+     }
+ 
++    destroy() {
++        if (this._destroyed)
++            return;
++
++        this._destroyed = true;
++        if (this._nameOwnerChangedId)
++            this._proxy.disconnectSignal(this._nameOwnerChangedId);
++        this._players.forEach(player => player.destroy());
++        this._players.clear();
++        this.emit('destroy');
++    }
++
+     get players() {
+         return [...this._players.values()].filter(player => player.canPlay);
+     }
+@@ -224,26 +259,31 @@ export const MprisSource = GObject.registerClass({
+     }
+ 
+     async _onProxyReady() {
++        if (this._destroyed)
++            return;
++
+         const [names] = await this._proxy.ListNamesAsync();
++        if (this._destroyed)
++            return;
+         names.forEach(name => {
+             if (!name.startsWith(MPRIS_PLAYER_PREFIX))
+                 return;
+ 
+             this._addPlayer(name);
+         });
+-        this._proxy.connectSignal('NameOwnerChanged',
++        this._nameOwnerChangedId = this._proxy.connectSignal('NameOwnerChanged',
+             this._onNameOwnerChanged.bind(this));
+     }
+ 
+     _onNameOwnerChanged(proxy, sender, [name, oldOwner, newOwner]) {
+-        if (!name.startsWith(MPRIS_PLAYER_PREFIX))
++        if (this._destroyed || !name.startsWith(MPRIS_PLAYER_PREFIX))
+             return;
+ 
+         if (oldOwner) {
+             const player = this._players.get(name);
+             if (player) {
+                 this._players.delete(name);
+-                player.disconnectObject(this);
++                player.destroy();
+ 
+                 // if !canPlay, the player has already been removed
+                 // or was never exposed in our public players list
+@@ -256,3 +296,4 @@ export const MprisSource = GObject.registerClass({
+             this._addPlayer(name);
+     }
+ });
++SignalTracker.registerDestroyableType(MprisSource);
+diff --git a/js/ui/unlockDialog.js b/js/ui/unlockDialog.js
+index 21b4736..df0116d 100644
+--- a/js/ui/unlockDialog.js
++++ b/js/ui/unlockDialog.js
+@@ -85,6 +85,8 @@ const NotificationsBox = GObject.registerClass({
+     }
+ 
+     _onDestroy() {
++        this._mediaSource.destroy();
++
+         const items = this._sources.entries();
+         for (const [source, obj] of items)
+             this._removeSource(source, obj);
+-- 
+2.53.0
+

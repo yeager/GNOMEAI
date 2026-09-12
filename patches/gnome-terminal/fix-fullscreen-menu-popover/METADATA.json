@@ -1,0 +1,13 @@
+{
+  "project": "gnome-terminal",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-terminal.git",
+  "branch": "fix-fullscreen-menu-popover",
+  "base": "3116b897d105e7b367338e9ace2639492035d00d",
+  "tip": "da47e67bd14e458338fa8d4898526c273cdd2483",
+  "commits": [
+    "da47e67bd14e458338fa8d4898526c273cdd2483"
+  ],
+  "patches": [
+    "0001-window-close-the-header-menu-before-fullscreen.patch"
+  ]
+}

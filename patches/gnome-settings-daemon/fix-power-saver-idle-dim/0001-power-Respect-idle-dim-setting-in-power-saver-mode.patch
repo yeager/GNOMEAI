@@ -1,0 +1,33 @@
+From 233cf2b656dc253b44d2ced365c9f4fc5dc4552b Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 11:49:13 +0200
+Subject: [PATCH 1/2] power: Respect idle dim setting in power saver mode
+
+---
+ plugins/power/gsd-power-manager.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/plugins/power/gsd-power-manager.c b/plugins/power/gsd-power-manager.c
+index a905ccf..0d13248 100644
+--- a/plugins/power/gsd-power-manager.c
++++ b/plugins/power/gsd-power-manager.c
+@@ -2104,11 +2104,11 @@ idle_configure (GsdPowerManager *manager)
+         timeout_dim = 0;
+         if (manager->screensaver_active) {
+                 /* Don't dim when the screen lock is active */
+-        } else if (is_power_save_active (manager)) {
+-                /* Try to save power by dimming agressively */
+-                timeout_dim = SCREENSAVER_TIMEOUT_BLANK;
+-        } else {
+-                if (g_settings_get_boolean (manager->settings, "idle-dim")) {
++        } else if (g_settings_get_boolean (manager->settings, "idle-dim")) {
++                if (is_power_save_active (manager)) {
++                        /* Try to save power by dimming aggressively. */
++                        timeout_dim = SCREENSAVER_TIMEOUT_BLANK;
++                } else {
+                         timeout_dim = g_settings_get_uint (manager->settings_bus,
+                                                            "idle-delay");
+                         if (timeout_dim == 0) {
+-- 
+2.53.0
+

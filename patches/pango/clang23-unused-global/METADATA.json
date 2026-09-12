@@ -1,0 +1,17 @@
+{
+  "project": "pango",
+  "source_repository": "https://gitlab.gnome.org/GNOME/pango.git",
+  "branch": "clang23-unused-global",
+  "base": "8e74c27c113c98664b77272d16b14bbce542c184",
+  "tip": "d759ec18b50c71cd6cbc2bdd0c9bde8dcbf2b6fb",
+  "commits": [
+    "fefc524a5b4156cb1fc4145a6ab0d7c1628572e3",
+    "0eef67d3c1d38f09d2987e5f5935f30642dc6c2b",
+    "d759ec18b50c71cd6cbc2bdd0c9bde8dcbf2b6fb"
+  ],
+  "patches": [
+    "0001-build-Do-not-promote-unused-globals-to-errors-with-C.patch",
+    "0002-build-Probe-unused-global-warning-override.patch",
+    "0003-ci-Enable-Fontconfig-in-MSYS2-tests.patch"
+  ]
+}

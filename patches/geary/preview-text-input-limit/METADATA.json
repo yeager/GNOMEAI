@@ -1,0 +1,23 @@
+{
+  "project": "geary",
+  "source_repository": "https://gitlab.gnome.org/GNOME/geary.git",
+  "branch": "preview-text-input-limit",
+  "base": "8dc940934e650280675627ec0e3816755fab5e60",
+  "tip": "f29d17f08d719e61a4bfc0448049967cfb6cb419",
+  "commits": [
+    "db8d6be5b81ff276834bce047c820a88a085811b",
+    "7491e05aaf4b3b07c379d81e83e72a8d4818f398",
+    "f09bf645c7cb25f89575bb01d1ec2e963fd4b445",
+    "2250f9bcaf5f105b6e13a0ba6b9f075f74de31b3",
+    "9129a732d3f76827fac66dc90d70d036bb5a13d7",
+    "f29d17f08d719e61a4bfc0448049967cfb6cb419"
+  ],
+  "patches": [
+    "0001-engine-Limit-text-normalized-for-message-previews.patch",
+    "0002-test-Use-supported-Vala-integer-syntax.patch",
+    "0003-flatpak-Use-GMime-release-archive.patch",
+    "0004-flatpak-Bundle-libhandy-source.patch",
+    "0005-flatpak-Update-bundled-libhandy.patch",
+    "0006-build-Fix-spell-check-language-ownership.patch"
+  ]
+}

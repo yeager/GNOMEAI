@@ -1,0 +1,25 @@
+From 2164a3dd05280f6b4574544703343d685c3a170b Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Fri, 11 Sep 2026 22:22:00 +0200
+Subject: [PATCH 1/2] procmap: Parse smaps values after colon
+
+---
+ sysdeps/linux/procmap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sysdeps/linux/procmap.c b/sysdeps/linux/procmap.c
+index 05eb2ddd..7c7a43dd 100644
+--- a/sysdeps/linux/procmap.c
++++ b/sysdeps/linux/procmap.c
+@@ -112,7 +112,7 @@ parse_smaps(glibtop_map_entry *entry, const char* line)
+ 		offset += smap->offset;
+ 		value = (void*) offset;
+ 
+-		*value = get_scaled(line + len, NULL);
++		*value = get_scaled(line + len + 1, NULL);
+ 	}
+ 
+ 	return TRUE;
+-- 
+2.53.0
+

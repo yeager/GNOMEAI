@@ -1,0 +1,17 @@
+{
+  "project": "gimp",
+  "source_repository": "git@ssh.gitlab.gnome.org:yeager/gimp.git",
+  "branch": "fix-color-picker-exact-samples",
+  "base": "d6cba36129c9080a72863ed4f8f4151a0668bf99",
+  "tip": "74ea32dd0f8e7ca2919cf45042b7aa353750ea0b",
+  "commits": [
+    "bf64ce966c342577f573e86f02ab87955f2131fa",
+    "034faa06ce08ab5cd23d6315335f2e2bbfe783de",
+    "74ea32dd0f8e7ca2919cf45042b7aa353750ea0b"
+  ],
+  "patches": [
+    "0001-app-widgets-update-exact-samples-at-one-position.patch",
+    "0002-style-Format-color-frame-sample-comparison.patch",
+    "0003-style-Format-color-frame-sample-condition.patch"
+  ]
+}

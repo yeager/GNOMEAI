@@ -1,0 +1,67 @@
+From 8b21ff45649f1f3fd7c561e6c9f72797c9cc0786 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Barnab=C3=A1s=20P=C5=91cze?= <pobrn@protonmail.com>
+Date: Wed, 22 Oct 2025 23:00:40 +0200
+Subject: [PATCH] screenshot: Add persistent `save-to-disk` option
+
+Having an option to disable the automatic saving of screenshots to disk appears
+to be highly desired[0]. However, it is currently not easily possible. A
+workaround exists: enabling the `disable-save-to-disk` lockdown option,
+however, that has other (often undesirable) effects.
+
+So introduce a new gsettings options to control whether screenshots should be
+saved automatically. When the newly added `save-to-disk` option is set to
+false, the screenshot is only copied to the clipboard, and the notification
+is shown without the actions that require the presence of a file. This
+behaviour matches that of the lockdown option, in fact, they use the same
+code paths as well.
+
+No attempts are made to expose this option on the user interface as discussions
+are numerous and not yet concluded.
+
+[0]: https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/5208
+---
+ data/org.gnome.shell.gschema.xml.in | 11 +++++++++++
+ js/ui/screenshot.js                 |  6 +++++-
+ 2 files changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/data/org.gnome.shell.gschema.xml.in b/data/org.gnome.shell.gschema.xml.in
+index 9a55ee7..f1ceb8f 100644
+--- a/data/org.gnome.shell.gschema.xml.in
++++ b/data/org.gnome.shell.gschema.xml.in
+@@ -373,4 +373,15 @@
+       <default>[]</default>
+     </key>
+   </schema>
++
++  <schema id="org.gnome.shell.screenshot" path="/org/gnome/shell/screenshot/"
++          gettext-domain="@GETTEXT_PACKAGE@">
++    <key name="save-to-disk" type="b">
++      <summary>Save screenshots to disk</summary>
++      <description>
++        Whether to save screenshots to disk automatically when they are taken
++      </description>
++      <default>true</default>
++    </key>
++  </schema>
+ </schemalist>
+diff --git a/js/ui/screenshot.js b/js/ui/screenshot.js
+index 2e6b2cf..d5a0259 100644
+--- a/js/ui/screenshot.js
++++ b/js/ui/screenshot.js
+@@ -2280,8 +2280,12 @@ function _storeScreenshot(bytes, pixbuf) {
+ 
+     const lockdownSettings =
+         new Gio.Settings({schema_id: 'org.gnome.desktop.lockdown'});
++    const screenshotSettings =
++        new Gio.Settings({schema_id: 'org.gnome.shell.screenshot'});
++
+     const disableSaveToDisk =
+-        lockdownSettings.get_boolean('disable-save-to-disk');
++        lockdownSettings.get_boolean('disable-save-to-disk') ||
++        !screenshotSettings.get_boolean('save-to-disk');
+ 
+     if (!disableSaveToDisk) {
+         const dir = Gio.File.new_for_path(GLib.build_filenamev([
+-- 
+2.53.0
+

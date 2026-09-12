@@ -1,0 +1,13 @@
+{
+  "project": "epiphany",
+  "source_repository": "https://gitlab.gnome.org/GNOME/epiphany.git",
+  "branch": "webextension-null-message",
+  "base": "19f93b19eac5ba0269fa62acc235a8d57c46c9a3",
+  "tip": "b39be280623964bb810e304ffa44f433e831b430",
+  "commits": [
+    "b39be280623964bb810e304ffa44f433e831b430"
+  ],
+  "patches": [
+    "0001-webextension-Handle-unnamed-API-replies.patch"
+  ]
+}

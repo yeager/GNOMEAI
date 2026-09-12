@@ -1,0 +1,47 @@
+From 31e401cdc729d6c76a840e28cffcfd628c0ada55 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 11:28:30 +0200
+Subject: [PATCH 1/2] about: Show a CPU fallback on systems without model names
+
+---
+ panels/system/about/cc-about-page.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/panels/system/about/cc-about-page.c b/panels/system/about/cc-about-page.c
+index 3f006ada0..fc086c337 100644
+--- a/panels/system/about/cc-about-page.c
++++ b/panels/system/about/cc-about-page.c
+@@ -527,6 +527,20 @@ get_kernel_version_string ()
+     return g_strdup_printf ("%s %s", kernel_name, kernel_release);
+ }
+ 
++static char *
++get_cpu_info_fallback (void)
++{
++    g_autofree char *model = NULL;
++
++    if (g_file_get_contents ("/sys/firmware/devicetree/base/model", &model, NULL, NULL)) {
++        g_strstrip (model);
++        if (*model != '\0')
++            return g_steal_pointer (&model);
++    }
++
++    return g_strdup (g_get_host_cpu_architecture ());
++}
++
+ char *
+ get_cpu_info ()
+ {
+@@ -579,6 +593,9 @@ get_cpu_info ()
+             g_string_append_printf (cpu, "%s", cleanedup);
+     }
+ 
++    if (cpu->len == 0)
++        return get_cpu_info_fallback ();
++
+     return g_strdup (cpu->str);
+ }
+ 
+-- 
+2.53.0
+

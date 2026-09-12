@@ -1,0 +1,13 @@
+{
+  "project": "NetworkManager-openvpn",
+  "source_repository": "git@ssh.gitlab.gnome.org:GNOME/NetworkManager-openvpn.git",
+  "branch": "ci-const-correctness",
+  "base": "7fb52f40ec23d2da91e2259302a50390ee20bc13",
+  "tip": "5eb1273928ca895a3de2c05a56e637f56de64e72",
+  "commits": [
+    "5eb1273928ca895a3de2c05a56e637f56de64e72"
+  ],
+  "patches": [
+    "0001-Fix-const-correctness-in-Fedora-build.patch"
+  ]
+}

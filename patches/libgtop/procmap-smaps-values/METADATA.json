@@ -1,0 +1,15 @@
+{
+  "project": "libgtop",
+  "source_repository": "https://gitlab.gnome.org/GNOME/libgtop.git",
+  "branch": "procmap-smaps-values",
+  "base": "ebd49f21e36fd4344c622e3d1e1428df86bf05bb",
+  "tip": "f217de2c81b4d33e125ea7f6262bc0b2ec3cf64b",
+  "commits": [
+    "2164a3dd05280f6b4574544703343d685c3a170b",
+    "f217de2c81b4d33e125ea7f6262bc0b2ec3cf64b"
+  ],
+  "patches": [
+    "0001-procmap-Parse-smaps-values-after-colon.patch",
+    "0002-ci-Use-a-buildable-ABI-baseline.patch"
+  ]
+}

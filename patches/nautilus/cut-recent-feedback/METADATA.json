@@ -1,0 +1,13 @@
+{
+  "project": "nautilus",
+  "source_repository": "https://gitlab.gnome.org/GNOME/nautilus.git",
+  "branch": "cut-recent-feedback",
+  "base": "138de8619510988e528acd413393fc009804f4d9",
+  "tip": "23ff2405ebc3acb116e455c547d891d19686a45b",
+  "commits": [
+    "23ff2405ebc3acb116e455c547d891d19686a45b"
+  ],
+  "patches": [
+    "0001-files-view-Explain-why-cut-is-unavailable-in-Recent.patch"
+  ]
+}

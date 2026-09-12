@@ -1,0 +1,13 @@
+{
+  "project": "libadwaita",
+  "source_repository": "https://gitlab.gnome.org/GNOME/libadwaita.git",
+  "branch": "entry-row-apply-after-suffix",
+  "base": "6fd61bf4f85c5fd55f8988578deb4fb1736e96ca",
+  "tip": "88f14d202d0a8527dd58acb434e1e8ae196d2090",
+  "commits": [
+    "88f14d202d0a8527dd58acb434e1e8ae196d2090"
+  ],
+  "patches": [
+    "0001-entry-row-Place-apply-button-after-suffixes.patch"
+  ]
+}
