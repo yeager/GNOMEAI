@@ -34,3 +34,7 @@ Some series depend on other series. Read `PLAN.md` and the relevant metadata bef
 ## Contribute
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md). Always state the target project, upstream base, problem addressed, validation performed, and known limitations. The contributor is responsible for the final diff.
+
+## Apps
+
+- [Clip Shelf](apps/clip-shelf/): a manual, local clipboard-text shelf for GTK 4.

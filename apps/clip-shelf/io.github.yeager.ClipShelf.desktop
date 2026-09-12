@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Clip Shelf
+Comment=Manually capture and reuse clipboard text
+Exec=clip-shelf
+Terminal=false
+Type=Application
+Categories=Utility;GTK;
