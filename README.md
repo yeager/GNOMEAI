@@ -39,3 +39,4 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md). Always state the target project, upstre
 
 - [Clip Shelf](apps/clip-shelf/): a manual, local clipboard-text shelf for GTK 4.
 - [Focus Block](apps/focus-block/): a local focus and break timer.
+- [Command Shelf](apps/command-shelf/): a local library of copyable command snippets.

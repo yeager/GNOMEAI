@@ -7,4 +7,6 @@ Screenshots show the current local build in English.
 | Focus Block | [focus-block.png](screenshots/focus-block.png) | Focus and break durations, countdown, start, and reset controls. |
 | Clip Shelf | [clip-shelf.png](screenshots/clip-shelf.png) | The manual local clipboard shelf UI. |
 
+| Command Shelf | [command-shelf.png](screenshots/command-shelf.png) | Named local snippets and explicit clipboard copying. |
+
 For patches without a visible interface, `VALIDATION.md` records the testable behavior and commands instead of inventing a visual result.
