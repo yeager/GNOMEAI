@@ -14,4 +14,5 @@ This file records checks that prevent duplicate patches and separates a small, t
 | 39 | GTK: spellchecking | Needs provider API | GTK renders `spelling-error` styling supplied by Wayland IME, but has no general dictionary provider, word-range API, or replacement-menu contract for applications. |
 | 43 | VTE: OSC 52 | Needs explicit clipboard authorization | The terminal parser recognizes OSC 52, but a safe implementation requires a visible authorization policy before a remote program can write the local clipboard. |
 | 48 | GNOME Calendar: flexible recurrence intervals | Archived | `patches/gnome-calendar/recurrence-interval/` adds the numeric interval control and preserves iCalendar `INTERVAL`. |
+| 65 | Control Center: Applications list does not populate | No source defect reproduced | The panel rebuilds from `g_app_info_get_all()` and refreshes on `GAppInfoMonitor::changed`. The reported symptom needs a reproducer with its desktop-file and session context. |
 | 49 | GNOME Software: screenshot zoom | Archived | `patches/gnome-software/screenshot-zoom/` opens the selected screenshot at its original size in an Adwaita dialog. |
