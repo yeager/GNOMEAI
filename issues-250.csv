@@ -1,4 +1,4 @@
-placering,urval,projekt,arende,titel,status,upvotes,downvotes,uppdaterat,url
+rank,selection,project,issue,title,status,upvotes,downvotes,updated,url
 1,globally vote-sorted,mutter,37,Separate workspaces on multiple monitors,opened,207,1,2026-08-03T08:18:20.646Z,https://gitlab.gnome.org/GNOME/mutter/-/work_items/37
 2,globally vote-sorted,nautilus,1157,"Implement ""Jump to file"" feature (type ahead / type to seek)",opened,135,0,2026-01-12T14:21:44.681Z,https://gitlab.gnome.org/GNOME/nautilus/-/work_items/1157
 3,globally vote-sorted,geary,53,Unified inbox,opened,92,1,2024-02-19T11:20:54.770Z,https://gitlab.gnome.org/GNOME/geary/-/work_items/53
