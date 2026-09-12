@@ -284,6 +284,7 @@ Each series is stored below `patches/` and can be applied locally with `git am`.
 | gimp | `fix-raw-float-endianness` | 1 | [`fix-raw-float-endianness`](patches/gimp/fix-raw-float-endianness) |
 | gnome-autoar | `async-signal-return` | 1 | [`async-signal-return`](patches/gnome-autoar/async-signal-return) |
 | gnome-bluetooth | `master` | 1 | [`device-alias`](patches/gnome-bluetooth/device-alias) |
+| gnome-calendar | `main` | 1 | [`default-reminders`](patches/gnome-calendar/default-reminders) |
 | gnome-characters | `fix-search-result-metas` | 1 | [`fix-search-result-metas`](patches/gnome-characters/fix-search-result-metas) |
 | gnome-connections | `rdp-pass-f10` | 1 | [`rdp-pass-f10`](patches/gnome-connections/rdp-pass-f10) |
 | gnome-control-center | `feature-default-terminal` | 2 | [`feature-default-terminal`](patches/gnome-control-center/feature-default-terminal) |

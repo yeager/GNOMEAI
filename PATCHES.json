@@ -674,5 +674,19 @@
       "0001-settings-Allow-renaming-Bluetooth-devices.patch"
     ],
     "archive_directory": "device-alias"
+  },
+  {
+    "project": "gnome-calendar",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-calendar.git",
+    "branch": "main",
+    "base": "89ff82924b092302e8be36bf569ac614d248bd77",
+    "tip": "7c78cc07ca3f290813480c8212932cb58eb32909",
+    "commits": [
+      "7c78cc07ca3f290813480c8212932cb58eb32909"
+    ],
+    "patches": [
+      "0001-calendar-Add-per-calendar-default-reminders.patch"
+    ],
+    "archive_directory": "default-reminders"
   }
 ]

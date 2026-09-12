@@ -1,0 +1,23 @@
+{
+  "project": "gnome-calendar",
+  "series": "default-reminders",
+  "source_branch": "main",
+  "base": "89ff82924b092302e8be36bf569ac614d248bd77",
+  "tip": "7c78cc07ca3f290813480c8212932cb58eb32909",
+  "commits": [
+    "7c78cc07ca3f290813480c8212932cb58eb32909"
+  ],
+  "patches": [
+    "0001-calendar-Add-per-calendar-default-reminders.patch"
+  ],
+  "archive_directory": "patches/gnome-calendar/default-reminders",
+  "validation": {
+    "commands": [
+      "meson setup build --wipe",
+      "manual compilation of the two modified C files using Meson's generated compiler commands",
+      "glib-compile-schemas --strict on an isolated schema containing the new key",
+      "GSETTINGS_BACKEND=keyfile gsettings set/get org.gnome.calendar calendar-default-reminders"
+    ],
+    "result": "Configuration, both modified C files, schema validation, and GSettings round trip passed. Full project compilation is blocked by three pre-existing Blueprint 0.19 incompatibilities outside this patch."
+  }
+}

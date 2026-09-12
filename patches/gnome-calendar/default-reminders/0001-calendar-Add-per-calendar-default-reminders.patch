@@ -1,0 +1,244 @@
+From 7c78cc07ca3f290813480c8212932cb58eb32909 Mon Sep 17 00:00:00 2001
+From: yeager <yeager@users.noreply.github.com>
+Date: Sat, 12 Sep 2026 14:15:21 +0200
+Subject: [PATCH] calendar: Add per-calendar default reminders
+
+---
+ data/org.gnome.calendar.gschema.xml.in        |  5 ++
+ .../gcal-edit-calendar-page.blp               | 22 +++++++
+ .../gcal-edit-calendar-page.c                 | 57 ++++++++++++++++++
+ .../event-editor/gcal-event-editor-dialog.c   | 59 +++++++++++++++++++
+ 4 files changed, 143 insertions(+)
+
+diff --git a/data/org.gnome.calendar.gschema.xml.in b/data/org.gnome.calendar.gschema.xml.in
+index 569a607..ba9d1e5 100644
+--- a/data/org.gnome.calendar.gschema.xml.in
++++ b/data/org.gnome.calendar.gschema.xml.in
+@@ -26,5 +26,10 @@
+       <summary>Zoom level of the week grid</summary>
+       <description>The current zoom level of the week grid</description>
+     </key>
++    <key name="calendar-default-reminders" type="a{si}">
++      <default>{}</default>
++      <summary>Default reminder for each calendar</summary>
++      <description>Maps calendar identifiers to reminder offsets in minutes. A missing entry means that new events have no default reminder.</description>
++    </key>
+   </schema>
+ </schemalist>
+diff --git a/src/gui/calendar-management/gcal-edit-calendar-page.blp b/src/gui/calendar-management/gcal-edit-calendar-page.blp
+index d5643da..f907ad1 100644
+--- a/src/gui/calendar-management/gcal-edit-calendar-page.blp
++++ b/src/gui/calendar-management/gcal-edit-calendar-page.blp
+@@ -77,6 +77,28 @@ template $GcalEditCalendarPage: Adw.NavigationPage {
+         }
+       }
+ 
++      Adw.PreferencesGroup {
++        title: _("New Events");
++
++        Adw.ComboRow default_reminder_row {
++          title: _("Default Reminder");
++
++          model: StringList {
++            strings [
++              _("No Default Reminder"),
++              _("At Event Start"),
++              _("5 Minutes Before"),
++              _("10 Minutes Before"),
++              _("15 Minutes Before"),
++              _("30 Minutes Before"),
++              _("1 Hour Before"),
++              _("1 Day Before"),
++              _("1 Week Before"),
++            ]
++          };
++        }
++      }
++
+       Adw.PreferencesGroup {
+         Adw.ButtonRow {
+           title: _("_Export Calendar");
+diff --git a/src/gui/calendar-management/gcal-edit-calendar-page.c b/src/gui/calendar-management/gcal-edit-calendar-page.c
+index 2ecabc0..6d4c9eb 100644
+--- a/src/gui/calendar-management/gcal-edit-calendar-page.c
++++ b/src/gui/calendar-management/gcal-edit-calendar-page.c
+@@ -36,6 +36,7 @@ struct _GcalEditCalendarPage
+   GtkColorDialogButton *calendar_color_button;
+   AdwSwitchRow       *calendar_visible_row;
+   AdwActionRow       *calendar_url_row;
++  AdwComboRow        *default_reminder_row;
+   AdwEntryRow        *name_entry;
+   GtkWidget          *remove_button_row;
+ 
+@@ -53,6 +54,53 @@ G_DEFINE_TYPE_WITH_CODE (GcalEditCalendarPage, gcal_edit_calendar_page, ADW_TYPE
+  * Auxiliary methods
+  */
+ 
++static const gint default_reminder_minutes[] = { -1, 0, 5, 10, 15, 30, 60, 1440, 10080 };
++
++static guint
++get_default_reminder_selection (GSettings  *settings,
++                                const gchar *calendar_id)
++{
++  g_autoptr (GVariant) reminders = NULL;
++  gint minutes = -1;
++
++  reminders = g_settings_get_value (settings, "calendar-default-reminders");
++  g_variant_lookup (reminders, calendar_id, "i", &minutes);
++
++  for (guint i = 0; i < G_N_ELEMENTS (default_reminder_minutes); i++)
++    if (default_reminder_minutes[i] == minutes)
++      return i;
++
++  return 0;
++}
++
++static void
++set_default_reminder_selection (GSettings   *settings,
++                                const gchar *calendar_id,
++                                guint        selection)
++{
++  g_autoptr (GVariant) reminders = NULL;
++  GVariantBuilder builder;
++  GVariantIter iter;
++  const gchar *id;
++  gint minutes;
++
++  g_return_if_fail (selection < G_N_ELEMENTS (default_reminder_minutes));
++
++  reminders = g_settings_get_value (settings, "calendar-default-reminders");
++  g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{si}"));
++  g_variant_iter_init (&iter, reminders);
++
++  while (g_variant_iter_next (&iter, "{&si}", &id, &minutes))
++    if (g_strcmp0 (id, calendar_id) != 0)
++      g_variant_builder_add (&builder, "{si}", id, minutes);
++
++  minutes = default_reminder_minutes[selection];
++  if (minutes >= 0)
++    g_variant_builder_add (&builder, "{si}", calendar_id, minutes);
++
++  g_settings_set_value (settings, "calendar-default-reminders", g_variant_builder_end (&builder));
++}
++
+ static gboolean
+ is_goa_calendar (GcalEditCalendarPage *self,
+                  GcalCalendar         *calendar)
+@@ -116,6 +164,7 @@ setup_calendar (GcalEditCalendarPage *self,
+                 GcalCalendar         *calendar)
+ {
+   ESource *source;
++  GSettings *settings;
+   gboolean is_remote;
+   gboolean is_file;
+   gboolean is_goa;
+@@ -192,7 +241,11 @@ setup_calendar (GcalEditCalendarPage *self,
+       adw_action_row_set_subtitle (self->calendar_url_row, _("On This Computer"));
+     }
+ 
++  settings = gcal_context_get_settings (gcal_application_get_context (GCAL_DEFAULT_APPLICATION));
++
+   gtk_color_dialog_button_set_rgba (self->calendar_color_button, gcal_calendar_get_color (calendar));
++  adw_combo_row_set_selected (self->default_reminder_row,
++                              get_default_reminder_selection (settings, gcal_calendar_get_id (calendar)));
+   gtk_editable_set_text (GTK_EDITABLE (self->name_entry), gcal_calendar_get_name (calendar));
+   adw_switch_row_set_active (self->calendar_visible_row, gcal_calendar_get_visible (calendar));
+ 
+@@ -421,6 +474,9 @@ gcal_edit_calendar_page_deactivate (GcalCalendarManagementPage *page)
+   gcal_calendar_set_name (self->calendar, gtk_editable_get_text (GTK_EDITABLE (self->name_entry)));
+ 
+   context = gcal_application_get_context (GCAL_DEFAULT_APPLICATION);
++  set_default_reminder_selection (gcal_context_get_settings (context),
++                                  gcal_calendar_get_id (self->calendar),
++                                  adw_combo_row_get_selected (self->default_reminder_row));
+   manager = gcal_context_get_manager (context);
+   gcal_manager_save_source (manager, gcal_calendar_get_source (self->calendar));
+ 
+@@ -476,6 +532,7 @@ gcal_edit_calendar_page_class_init (GcalEditCalendarPageClass *klass)
+   gtk_widget_class_bind_template_child (widget_class, GcalEditCalendarPage, account_row);
+   gtk_widget_class_bind_template_child (widget_class, GcalEditCalendarPage, calendar_color_button);
+   gtk_widget_class_bind_template_child (widget_class, GcalEditCalendarPage, calendar_url_row);
++  gtk_widget_class_bind_template_child (widget_class, GcalEditCalendarPage, default_reminder_row);
+   gtk_widget_class_bind_template_child (widget_class, GcalEditCalendarPage, calendar_visible_row);
+   gtk_widget_class_bind_template_child (widget_class, GcalEditCalendarPage, name_entry);
+   gtk_widget_class_bind_template_child (widget_class, GcalEditCalendarPage, remove_button_row);
+diff --git a/src/gui/event-editor/gcal-event-editor-dialog.c b/src/gui/event-editor/gcal-event-editor-dialog.c
+index 5700265..a0f65a2 100644
+--- a/src/gui/event-editor/gcal-event-editor-dialog.c
++++ b/src/gui/event-editor/gcal-event-editor-dialog.c
+@@ -114,6 +114,63 @@ validate (GcalEventEditorDialog *self)
+   gtk_widget_action_set_enabled (GTK_WIDGET (self), "event-editor.save", gcal_is_valid_event_name (event_name));
+ }
+ 
++static gint
++get_default_reminder_minutes (GcalCalendar *calendar)
++{
++  g_autoptr (GVariant) reminders = NULL;
++  GcalContext *context;
++  gint minutes = -1;
++
++  context = gcal_application_get_context (GCAL_DEFAULT_APPLICATION);
++  reminders = g_settings_get_value (gcal_context_get_settings (context),
++                                    "calendar-default-reminders");
++  g_variant_lookup (reminders, gcal_calendar_get_id (calendar), "i", &minutes);
++
++  return minutes;
++}
++
++static ECalComponentAlarm *
++create_default_reminder (guint minutes)
++{
++  ICalDuration *duration;
++  ECalComponentAlarmTrigger *trigger;
++  ECalComponentAlarm *alarm;
++
++  duration = i_cal_duration_new_null_duration ();
++  i_cal_duration_set_is_neg (duration, TRUE);
++  i_cal_duration_set_minutes (duration, minutes);
++  trigger = e_cal_component_alarm_trigger_new_relative (E_CAL_COMPONENT_ALARM_TRIGGER_RELATIVE_START, duration);
++  g_clear_object (&duration);
++
++  alarm = e_cal_component_alarm_new ();
++  e_cal_component_alarm_take_trigger (alarm, trigger);
++  e_cal_component_alarm_set_action (alarm, E_CAL_COMPONENT_ALARM_DISPLAY);
++
++  return alarm;
++}
++
++static void
++apply_default_reminder (GcalEvent *event)
++{
++  g_autoptr (GList) alarms = NULL;
++  ECalComponentAlarm *alarm;
++  GcalCalendar *calendar;
++  gint minutes;
++
++  alarms = gcal_event_get_alarms (event);
++  if (alarms != NULL)
++    return;
++
++  calendar = gcal_event_get_calendar (event);
++  minutes = get_default_reminder_minutes (calendar);
++  if (minutes < 0)
++    return;
++
++  alarm = create_default_reminder (minutes);
++  gcal_event_add_alarm (event, alarm);
++  e_cal_component_alarm_free (alarm);
++}
++
+ static void
+ set_writable (GcalEventEditorDialog *self,
+               gboolean               writable)
+@@ -149,6 +206,8 @@ set_event (GcalEventEditorDialog *self,
+   self->edited_event = gcal_event_new_from_event (self->event);
+ 
+   calendar = gcal_event_get_calendar (self->edited_event);
++  if (new_event)
++    apply_default_reminder (self->edited_event);
+ 
+   /* dialog's title */
+   if (new_event)
+-- 
+2.53.0
+

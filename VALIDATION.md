@@ -1,3 +1,13 @@
+## GNOME Calendar: per-calendar default reminders
+
+Patch archive: `patches/gnome-calendar/default-reminders/`
+
+- `meson setup build --wipe` configured successfully.
+- The two modified C files compiled with Meson's generated compiler commands.
+- The generated calendar-management UI includes the nine reminder choices.
+- An isolated `glib-compile-schemas --strict` run and a keyfile-backed GSettings round trip stored `{'work': 15}`.
+- A complete build remains blocked by three pre-existing Blueprint 0.19 compatibility errors in unrelated Calendar views.
+
 # Validation
 
 ## GNOME Shell: persistent screenshot save-to-disk option
