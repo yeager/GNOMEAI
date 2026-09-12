@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Flatpak Remove
-Comment=Remove user-installed Flatpak applications
-Exec=python3 /opt/gnomeai/flatpak-remove/flatpak_remove.py
-Icon=user-trash
-Terminal=false
-Categories=Settings;System;
