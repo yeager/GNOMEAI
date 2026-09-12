@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Name Shift
+Comment=Preview and apply local batch file renames
+Exec=python3 /usr/share/gnomeai/name-shift/name_shift.py
+Terminal=false
+Categories=Utility;FileTools;
