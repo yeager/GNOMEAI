@@ -19,6 +19,7 @@ AI-assisted contributions are welcome here. They must be factual, tested where p
 - [`patches/`](patches) contains one directory per work branch. Each directory has an ordered `git format-patch` series and `METADATA.json` with the source project, upstream base, commit IDs, and archive directory.
 - [`PATCHES.json`](PATCHES.json) is a machine-readable index of every patch series.
 - [`PLAN.md`](PLAN.md) contains the working review and implementation plan for 250 GNOME issues.
+- [`TRIAGE.md`](TRIAGE.md) records verified top-50 findings and avoids duplicate patches.
 - [`issues-250.csv`](issues-250.csv) is the issue inventory used by the plan.
 
 ## Apply a patch series
