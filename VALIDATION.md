@@ -1,3 +1,11 @@
+## GNOME Software: full-size screenshots
+
+Patch archive: `patches/gnome-software/screenshot-zoom/`
+
+- `git diff --check` passed.
+- `meson setup build --wipe` reached dependency validation and stopped because the local development environment lacks `packagekit-glib2`.
+- No runtime screenshot is claimed: the patch opens a clicked carousel image in a fixed-size Adwaita dialog and asks the existing image loader for its original dimensions.
+
 ## Nautilus: rename files created from templates
 
 Patch archive: `patches/nautilus/rename-template-file/`

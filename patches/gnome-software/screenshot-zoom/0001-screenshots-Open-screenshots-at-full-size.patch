@@ -1,0 +1,47 @@
+From 3e657d1f63defc4a2c3d4beeaf9fb9db635ebf9c Mon Sep 17 00:00:00 2001
+From: yeager <yeager@users.noreply.github.com>
+Date: Sat, 12 Sep 2026 14:29:07 +0200
+Subject: [PATCH] screenshots: Open screenshots at full size
+
+---
+ src/gs-screenshot-carousel.c | 24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
+
+diff --git a/src/gs-screenshot-carousel.c b/src/gs-screenshot-carousel.c
+index 28c2869..c0588c6 100644
+--- a/src/gs-screenshot-carousel.c
++++ b/src/gs-screenshot-carousel.c
+@@ -83,7 +83,29 @@ gs_screenshot_carousel_img_clicked_cb (GtkWidget *ssimg,
+ 				       gpointer user_data)
+ {
+ 	GsScreenshotCarousel *self = user_data;
+-	adw_carousel_scroll_to (ADW_CAROUSEL (self->carousel), ssimg, TRUE);
++	AdwDialog *dialog;
++	GtkWidget *image;
++	AsScreenshot *screenshot;
++
++	screenshot = gs_screenshot_image_get_screenshot (GS_SCREENSHOT_IMAGE (ssimg));
++	if (screenshot == NULL)
++		return;
++
++	dialog = adw_dialog_new ();
++	adw_dialog_set_title (dialog, _("Screenshot"));
++	adw_dialog_set_follows_content_size (dialog, FALSE);
++	adw_dialog_set_content_width (dialog, 1100);
++	adw_dialog_set_content_height (dialog, 750);
++
++	image = gs_screenshot_image_new (self->session);
++	gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (image), screenshot);
++	gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (image),
++				      G_MAXUINT, G_MAXUINT);
++	gs_screenshot_image_set_description (GS_SCREENSHOT_IMAGE (image),
++				      as_screenshot_get_caption (screenshot));
++	gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (image), NULL);
++	adw_dialog_set_child (dialog, image);
++	adw_dialog_present (dialog, GTK_WIDGET (self));
+ }
+ 
+ static gboolean
+-- 
+2.53.0
+

@@ -302,6 +302,7 @@ Each series is stored below `patches/` and can be applied locally with `git am`.
 | gnome-shell | `notification-sender-grace` | 1 | [`notification-sender-grace`](patches/gnome-shell/notification-sender-grace) |
 | gnome-shell | `work/screenshot-recent-files-fix` | 1 | [`work-screenshot-recent-files-fix`](patches/gnome-shell/work-screenshot-recent-files-fix) |
 | gnome-shell | `work/screenshot-save-to-disk` | 1 | [`work-screenshot-save-to-disk`](patches/gnome-shell/work-screenshot-save-to-disk) |
+| gnome-software | `main` | 1 | [`screenshot-zoom`](patches/gnome-software/screenshot-zoom) |
 | gnome-terminal | `fix-fullscreen-menu-popover` | 1 | [`fix-fullscreen-menu-popover`](patches/gnome-terminal/fix-fullscreen-menu-popover) |
 | gthumb | `clarify-video-orientation` | 1 | [`clarify-video-orientation`](patches/gthumb/clarify-video-orientation) |
 | gtk | `avoid-svg-preload` | 1 | [`avoid-svg-preload`](patches/gtk/avoid-svg-preload) |

@@ -716,5 +716,19 @@
       "0001-view-Start-renaming-new-files-from-templates.patch"
     ],
     "archive_directory": "rename-template-file"
+  },
+  {
+    "project": "gnome-software",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-software.git",
+    "branch": "main",
+    "base": "efa0ca5df84a4a3715f2da2c9d2c5619e233149f",
+    "tip": "3e657d1f63defc4a2c3d4beeaf9fb9db635ebf9c",
+    "commits": [
+      "3e657d1f63defc4a2c3d4beeaf9fb9db635ebf9c"
+    ],
+    "patches": [
+      "0001-screenshots-Open-screenshots-at-full-size.patch"
+    ],
+    "archive_directory": "screenshot-zoom"
   }
 ]

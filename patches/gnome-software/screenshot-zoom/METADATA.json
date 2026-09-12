@@ -1,0 +1,21 @@
+{
+  "project": "gnome-software",
+  "series": "screenshot-zoom",
+  "source_branch": "main",
+  "base": "efa0ca5df84a4a3715f2da2c9d2c5619e233149f",
+  "tip": "3e657d1f63defc4a2c3d4beeaf9fb9db635ebf9c",
+  "commits": [
+    "3e657d1f63defc4a2c3d4beeaf9fb9db635ebf9c"
+  ],
+  "patches": [
+    "0001-screenshots-Open-screenshots-at-full-size.patch"
+  ],
+  "archive_directory": "patches/gnome-software/screenshot-zoom",
+  "validation": {
+    "commands": [
+      "git diff --check",
+      "meson setup build --wipe"
+    ],
+    "result": "Whitespace validation passed. Meson reached dependency validation, then stopped because the local development environment lacks packagekit-glib2; no full build or runtime screenshot is claimed."
+  }
+}
