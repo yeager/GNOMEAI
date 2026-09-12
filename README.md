@@ -44,3 +44,4 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md). Always state the target project, base r
 - [Name Shift](apps/name-shift/): local batch renaming with a validated file-name preview.
 - [Extension Pack Installer](apps/extension-pack-installer/): local GNOME Shell extension ZIP installation with archive validation.
 - [Flatpak Remove](apps/flatpak-remove/): explicit removal of user-installed Flatpak applications.
+- [Spell Lens](apps/spell-lens/): local Hunspell-backed GTK spelling checks.
