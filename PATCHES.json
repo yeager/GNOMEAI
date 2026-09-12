@@ -702,5 +702,19 @@
       "0001-alarms-Keep-active-alarms-running-after-window-close.patch"
     ],
     "archive_directory": "background-alarms"
+  },
+  {
+    "project": "nautilus",
+    "source_repository": "https://gitlab.gnome.org/GNOME/nautilus.git",
+    "branch": "compression-tar-zstd",
+    "base": "5f8df94560fa740baa84498c127e26d8b295732f",
+    "tip": "c647fc2a33bd3214666bc7f6dc47424060df2647",
+    "commits": [
+      "c647fc2a33bd3214666bc7f6dc47424060df2647"
+    ],
+    "patches": [
+      "0001-view-Start-renaming-new-files-from-templates.patch"
+    ],
+    "archive_directory": "rename-template-file"
   }
 ]

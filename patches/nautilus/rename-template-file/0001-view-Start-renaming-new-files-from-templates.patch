@@ -1,0 +1,115 @@
+From c647fc2a33bd3214666bc7f6dc47424060df2647 Mon Sep 17 00:00:00 2001
+From: yeager <yeager@users.noreply.github.com>
+Date: Sat, 12 Sep 2026 14:23:25 +0200
+Subject: [PATCH] view: Start renaming new files from templates
+
+---
+ src/nautilus-files-view.c | 35 +++++++++++++++++++++++++++++------
+ 1 file changed, 29 insertions(+), 6 deletions(-)
+
+diff --git a/src/nautilus-files-view.c b/src/nautilus-files-view.c
+index 6157c4a..1f45d88 100644
+--- a/src/nautilus-files-view.c
++++ b/src/nautilus-files-view.c
+@@ -1842,6 +1842,7 @@ typedef struct
+     NautilusFilesView *directory_view;
+     GHashTable *added_locations;
+     NautilusFileList *selection;
++    gboolean rename_new_file;
+ } NewFolderData;
+ 
+ static void
+@@ -1884,6 +1885,18 @@ track_newly_added_locations (NautilusFilesView *view,
+     }
+ }
+ 
++static void real_action_rename (NautilusFilesView *view);
++
++static gboolean
++rename_new_file_idle_cb (gpointer user_data)
++{
++    NautilusFilesView *view = user_data;
++
++    real_action_rename (view);
++
++    return G_SOURCE_REMOVE;
++}
++
+ static void
+ new_folder_done (GFile    *new_folder,
+                  gboolean  success,
+@@ -1938,6 +1951,13 @@ new_folder_done (GFile    *new_folder,
+         nautilus_files_view_call_set_selection (directory_view,
+                                                 &(NautilusFileList){ .data = file },
+                                                 NAUTILUS_SELECTION_SOURCE_OP_DONE);
++        if (data->rename_new_file)
++        {
++            g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
++                             rename_new_file_idle_cb,
++                             g_object_ref (directory_view),
++                             g_object_unref);
++        }
+     }
+     else
+     {
+@@ -1948,12 +1968,14 @@ new_folder_done (GFile    *new_folder,
+ 
+ static NewFolderData *
+ new_folder_data_new (NautilusFilesView *directory_view,
+-                     gboolean           with_selection)
++                     gboolean           with_selection,
++                     gboolean           rename_new_file)
+ {
+     NewFolderData *data;
+ 
+     data = g_new (NewFolderData, 1);
+     data->directory_view = directory_view;
++    data->rename_new_file = rename_new_file;
+     data->added_locations = g_hash_table_new_full (g_file_hash, (GEqualFunc) g_file_equal,
+                                                    g_object_unref, NULL);
+     if (with_selection)
+@@ -2046,7 +2068,7 @@ create_new_folder_callback (const char *folder_name,
+ 
+     view = NAUTILUS_FILES_VIEW (user_data);
+ 
+-    data = new_folder_data_new (view, with_selection);
++    data = new_folder_data_new (view, with_selection, FALSE);
+ 
+     g_signal_connect_data (view,
+                            "add-files",
+@@ -2322,11 +2344,12 @@ nautilus_files_view_new_folder (NautilusFilesView *directory_view,
+ }
+ 
+ static NewFolderData *
+-setup_new_folder_data (NautilusFilesView *directory_view)
++setup_new_folder_data (NautilusFilesView *directory_view,
++                       gboolean           rename_new_file)
+ {
+     NewFolderData *data;
+ 
+-    data = new_folder_data_new (directory_view, FALSE);
++    data = new_folder_data_new (directory_view, FALSE, rename_new_file);
+ 
+     g_signal_connect_data (directory_view,
+                            "add-files",
+@@ -2349,7 +2372,7 @@ nautilus_files_view_new_file_with_initial_contents (NautilusFilesView *view,
+ 
+     g_assert (parent_uri != NULL);
+ 
+-    data = setup_new_folder_data (view);
++    data = setup_new_folder_data (view, FALSE);
+ 
+     nautilus_file_operations_new_file (GTK_WIDGET (view),
+                                        parent_uri, filename,
+@@ -2385,7 +2408,7 @@ nautilus_files_view_new_file (NautilusFilesView *directory_view,
+         return;
+     }
+ 
+-    data = setup_new_folder_data (directory_view);
++    data = setup_new_folder_data (directory_view, source != NULL);
+ 
+     source_uri = nautilus_file_get_uri (source);
+ 
+-- 
+2.53.0
+

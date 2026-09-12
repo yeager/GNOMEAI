@@ -1,3 +1,11 @@
+## Nautilus: rename files created from templates
+
+Patch archive: `patches/nautilus/rename-template-file/`
+
+- `git diff --check` passed.
+- Meson configuration reached dependency validation but stopped because this Nautilus 51 source requires `gio-2.0 >= 2.89.0`; the local system has 2.88.0.
+- The patch reuses Nautilus’s existing rename popover after the newly created template file has been selected. It does not change empty-file or folder creation.
+
 ## GNOME Clocks: active alarms after closing the window
 
 Patch archive: `patches/gnome-clocks/background-alarms/`

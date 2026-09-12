@@ -315,6 +315,7 @@ Each series is stored below `patches/` and can be applied locally with `git am`.
 | nautilus | `compression-tar-zstd` | 1 | [`compression-tar-zstd`](patches/nautilus/compression-tar-zstd) |
 | nautilus | `cut-recent-feedback` | 1 | [`cut-recent-feedback`](patches/nautilus/cut-recent-feedback) |
 | nautilus | `focus-conflict-replace` | 1 | [`focus-conflict-replace`](patches/nautilus/focus-conflict-replace) |
+| nautilus | `compression-tar-zstd` | 1 | [`rename-template-file`](patches/nautilus/rename-template-file) |
 | NetworkManager-openvpn | `ci-const-correctness` | 1 | [`ci-const-correctness`](patches/NetworkManager-openvpn/ci-const-correctness) |
 | NetworkManager-openvpn | `openvpn-2-6-dns-options` | 1 | [`openvpn-2-6-dns-options`](patches/NetworkManager-openvpn/openvpn-2-6-dns-options) |
 | pango | `ci-windows-fontconfig` | 1 | [`ci-windows-fontconfig`](patches/pango/ci-windows-fontconfig) |
