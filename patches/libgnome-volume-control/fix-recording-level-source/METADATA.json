@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-source-output-Track-the-recording-source.patch"
-  ]
+  ],
+  "archive_directory": "fix-recording-level-source"
 }

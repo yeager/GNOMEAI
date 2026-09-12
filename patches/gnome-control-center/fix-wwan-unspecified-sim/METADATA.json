@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-wwan-Reuse-active-connection-without-a-SIM-ID.patch"
-  ]
+  ],
+  "archive_directory": "fix-wwan-unspecified-sim"
 }

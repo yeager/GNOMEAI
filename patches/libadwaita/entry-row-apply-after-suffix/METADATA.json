@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-entry-row-Place-apply-button-after-suffixes.patch"
-  ]
+  ],
+  "archive_directory": "entry-row-apply-after-suffix"
 }

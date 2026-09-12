@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-Fix-const-correctness-in-Fedora-build.patch"
-  ]
+  ],
+  "archive_directory": "ci-const-correctness"
 }

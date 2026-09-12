@@ -11,5 +11,6 @@
   "patches": [
     "0001-procmap-Parse-smaps-values-after-colon.patch",
     "0002-ci-Use-a-buildable-ABI-baseline.patch"
-  ]
+  ],
+  "archive_directory": "procmap-smaps-values"
 }

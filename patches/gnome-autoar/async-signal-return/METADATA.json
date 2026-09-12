@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-Wait-for-async-signal-return-values.patch"
-  ]
+  ],
+  "archive_directory": "async-signal-return"
 }

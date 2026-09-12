@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-screenshot-Handle-a-missing-recent-files-history.patch"
-  ]
+  ],
+  "archive_directory": "work-screenshot-recent-files-fix"
 }

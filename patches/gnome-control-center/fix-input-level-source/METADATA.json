@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-sound-Read-recording-levels-from-their-source.patch"
-  ]
+  ],
+  "archive_directory": "fix-input-level-source"
 }

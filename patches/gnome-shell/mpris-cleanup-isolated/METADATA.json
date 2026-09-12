@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-mpris-Release-signal-connections-on-lock-screen-tear.patch"
-  ]
+  ],
+  "archive_directory": "mpris-cleanup-isolated"
 }

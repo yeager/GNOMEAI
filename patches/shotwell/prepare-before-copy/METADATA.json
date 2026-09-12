@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-batch-import-Prepare-copied-photos-before-copying.patch"
-  ]
+  ],
+  "archive_directory": "prepare-before-copy"
 }

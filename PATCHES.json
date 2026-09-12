@@ -1,5 +1,33 @@
 [
   {
+    "project": "NetworkManager-openvpn",
+    "source_repository": "git@ssh.gitlab.gnome.org:GNOME/NetworkManager-openvpn.git",
+    "branch": "ci-const-correctness",
+    "base": "7fb52f40ec23d2da91e2259302a50390ee20bc13",
+    "tip": "5eb1273928ca895a3de2c05a56e637f56de64e72",
+    "commits": [
+      "5eb1273928ca895a3de2c05a56e637f56de64e72"
+    ],
+    "patches": [
+      "0001-Fix-const-correctness-in-Fedora-build.patch"
+    ],
+    "archive_directory": "ci-const-correctness"
+  },
+  {
+    "project": "NetworkManager-openvpn",
+    "source_repository": "git@ssh.gitlab.gnome.org:GNOME/NetworkManager-openvpn.git",
+    "branch": "openvpn-2-6-dns-options",
+    "base": "7fb52f40ec23d2da91e2259302a50390ee20bc13",
+    "tip": "d0da830cb0ff7d97fd39031b5d3f550209bcd5f6",
+    "commits": [
+      "d0da830cb0ff7d97fd39031b5d3f550209bcd5f6"
+    ],
+    "patches": [
+      "0001-helper-Parse-OpenVPN-2.6-DNS-options.patch"
+    ],
+    "archive_directory": "openvpn-2-6-dns-options"
+  },
+  {
     "project": "console",
     "source_repository": "https://gitlab.gnome.org/GNOME/console.git",
     "branch": "xdg-terminal-exec",
@@ -12,7 +40,8 @@
     "patches": [
       "0001-desktop-Advertise-command-execution-arguments.patch",
       "0002-desktop-Use-the-xdg-terminal-exec-compatibility-key.patch"
-    ]
+    ],
+    "archive_directory": "xdg-terminal-exec"
   },
   {
     "project": "epiphany",
@@ -25,7 +54,8 @@
     ],
     "patches": [
       "0001-webextension-Handle-unnamed-API-replies.patch"
-    ]
+    ],
+    "archive_directory": "webextension-null-message"
   },
   {
     "project": "gdk-pixbuf",
@@ -38,7 +68,8 @@
     ],
     "patches": [
       "0001-icns-Validate-RLE-input-bounds.patch"
-    ]
+    ],
+    "archive_directory": "icns-rle-bounds"
   },
   {
     "project": "geary",
@@ -61,7 +92,8 @@
       "0004-flatpak-Bundle-libhandy-source.patch",
       "0005-flatpak-Update-bundled-libhandy.patch",
       "0006-build-Fix-spell-check-language-ownership.patch"
-    ]
+    ],
+    "archive_directory": "preview-text-input-limit"
   },
   {
     "project": "gimp",
@@ -74,7 +106,22 @@
     ],
     "patches": [
       "0001-plug-ins-script-fu-Reset-Add-Border-opacity.patch"
-    ]
+    ],
+    "archive_directory": "addborder-opacity"
+  },
+  {
+    "project": "gimp",
+    "source_repository": "git@ssh.gitlab.gnome.org:yeager/gimp.git",
+    "branch": "fix-action-search-localized-menu-path",
+    "base": "d6cba36129c9080a72863ed4f8f4151a0668bf99",
+    "tip": "964bc521e648ffbe8ee7cda3b3cc69d10b417feb",
+    "commits": [
+      "964bc521e648ffbe8ee7cda3b3cc69d10b417feb"
+    ],
+    "patches": [
+      "0001-app-localize-action-search-menu-paths.patch"
+    ],
+    "archive_directory": "fix-action-search-localized-menu-path"
   },
   {
     "project": "gimp",
@@ -91,20 +138,8 @@
       "0001-app-widgets-update-exact-samples-at-one-position.patch",
       "0002-style-Format-color-frame-sample-comparison.patch",
       "0003-style-Format-color-frame-sample-condition.patch"
-    ]
-  },
-  {
-    "project": "gimp",
-    "source_repository": "git@ssh.gitlab.gnome.org:yeager/gimp.git",
-    "branch": "fix-action-search-localized-menu-path",
-    "base": "d6cba36129c9080a72863ed4f8f4151a0668bf99",
-    "tip": "964bc521e648ffbe8ee7cda3b3cc69d10b417feb",
-    "commits": [
-      "964bc521e648ffbe8ee7cda3b3cc69d10b417feb"
     ],
-    "patches": [
-      "0001-app-localize-action-search-menu-paths.patch"
-    ]
+    "archive_directory": "fix-color-picker-exact-samples"
   },
   {
     "project": "gimp",
@@ -117,7 +152,8 @@
     ],
     "patches": [
       "0001-file-raw-Honor-endianness-for-floating-point-samples.patch"
-    ]
+    ],
+    "archive_directory": "fix-raw-float-endianness"
   },
   {
     "project": "gnome-autoar",
@@ -130,7 +166,8 @@
     ],
     "patches": [
       "0001-Wait-for-async-signal-return-values.patch"
-    ]
+    ],
+    "archive_directory": "async-signal-return"
   },
   {
     "project": "gnome-characters",
@@ -143,7 +180,8 @@
     ],
     "patches": [
       "0001-search-provider-return-metadata-for-results-without-.patch"
-    ]
+    ],
+    "archive_directory": "fix-search-result-metas"
   },
   {
     "project": "gnome-connections",
@@ -156,22 +194,8 @@
     ],
     "patches": [
       "0001-window-Keep-F10-in-remote-displays.patch"
-    ]
-  },
-  {
-    "project": "gnome-control-center",
-    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
-    "branch": "fix-about-arm-cpu-info",
-    "base": "cd79a897190989ca395c6f00962f0929734103c7",
-    "tip": "03d9515710bd075d24801e1f6c27d57d82b29b79",
-    "commits": [
-      "31e401cdc729d6c76a840e28cffcfd628c0ada55",
-      "03d9515710bd075d24801e1f6c27d57d82b29b79"
     ],
-    "patches": [
-      "0001-about-Show-a-CPU-fallback-on-systems-without-model-n.patch",
-      "0002-about-Use-uname-for-the-CPU-architecture-fallback.patch"
-    ]
+    "archive_directory": "rdp-pass-f10"
   },
   {
     "project": "gnome-control-center",
@@ -186,7 +210,24 @@
     "patches": [
       "0001-applications-Support-default-terminal-selection.patch",
       "0002-applications-Show-Terminal-in-Default-Apps.patch"
-    ]
+    ],
+    "archive_directory": "feature-default-terminal"
+  },
+  {
+    "project": "gnome-control-center",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
+    "branch": "fix-about-arm-cpu-info",
+    "base": "cd79a897190989ca395c6f00962f0929734103c7",
+    "tip": "03d9515710bd075d24801e1f6c27d57d82b29b79",
+    "commits": [
+      "31e401cdc729d6c76a840e28cffcfd628c0ada55",
+      "03d9515710bd075d24801e1f6c27d57d82b29b79"
+    ],
+    "patches": [
+      "0001-about-Show-a-CPU-fallback-on-systems-without-model-n.patch",
+      "0002-about-Use-uname-for-the-CPU-architecture-fallback.patch"
+    ],
+    "archive_directory": "fix-about-arm-cpu-info"
   },
   {
     "project": "gnome-control-center",
@@ -199,7 +240,8 @@
     ],
     "patches": [
       "0001-global-shortcuts-Avoid-destroying-dialogs-after-disp.patch"
-    ]
+    ],
+    "archive_directory": "fix-global-shortcuts-wayland-shutdown"
   },
   {
     "project": "gnome-control-center",
@@ -212,7 +254,8 @@
     ],
     "patches": [
       "0001-sound-Read-recording-levels-from-their-source.patch"
-    ]
+    ],
+    "archive_directory": "fix-input-level-source"
   },
   {
     "project": "gnome-control-center",
@@ -225,7 +268,8 @@
     ],
     "patches": [
       "0001-sound-Preserve-configured-output-when-a-device-is-re.patch"
-    ]
+    ],
+    "archive_directory": "fix-sound-preserve-configured-sink"
   },
   {
     "project": "gnome-control-center",
@@ -238,7 +282,8 @@
     ],
     "patches": [
       "0001-wwan-Reuse-active-connection-without-a-SIM-ID.patch"
-    ]
+    ],
+    "archive_directory": "fix-wwan-unspecified-sim"
   },
   {
     "project": "gnome-network-displays",
@@ -253,7 +298,8 @@
     "patches": [
       "0001-cc-Mark-control-connection-failed-before-ending-stre.patch",
       "0002-po-Update-POT-file.patch"
-    ]
+    ],
+    "archive_directory": "ctrl-close-reentrancy"
   },
   {
     "project": "gnome-settings-daemon",
@@ -268,7 +314,8 @@
     "patches": [
       "0001-power-Respect-idle-dim-setting-in-power-saver-mode.patch",
       "0002-power-Test-idle-dim-setting-in-power-saver-mode.patch"
-    ]
+    ],
+    "archive_directory": "fix-power-saver-idle-dim"
   },
   {
     "project": "gnome-shell",
@@ -281,7 +328,8 @@
     ],
     "patches": [
       "0001-appDisplay-Disconnect-folder-name-handler-with-dialo.patch"
-    ]
+    ],
+    "archive_directory": "app-folder-dialog-signal-cleanup"
   },
   {
     "project": "gnome-shell",
@@ -294,7 +342,8 @@
     ],
     "patches": [
       "0001-mpris-Release-signal-connections-on-lock-screen-tear.patch"
-    ]
+    ],
+    "archive_directory": "mpris-cleanup-isolated"
   },
   {
     "project": "gnome-shell",
@@ -307,7 +356,8 @@
     ],
     "patches": [
       "0001-mpris-Unpack-metadata-once-per-update.patch"
-    ]
+    ],
+    "archive_directory": "mpris-metadata-unpack"
   },
   {
     "project": "gnome-shell",
@@ -320,7 +370,8 @@
     ],
     "patches": [
       "0001-notificationDaemon-Keep-short-lived-app-senders.patch"
-    ]
+    ],
+    "archive_directory": "notification-sender-grace"
   },
   {
     "project": "gnome-shell",
@@ -333,7 +384,8 @@
     ],
     "patches": [
       "0001-screenshot-Handle-a-missing-recent-files-history.patch"
-    ]
+    ],
+    "archive_directory": "work-screenshot-recent-files-fix"
   },
   {
     "project": "gnome-shell",
@@ -346,7 +398,8 @@
     ],
     "patches": [
       "0001-screenshot-Add-persistent-save-to-disk-option.patch"
-    ]
+    ],
+    "archive_directory": "work-screenshot-save-to-disk"
   },
   {
     "project": "gnome-terminal",
@@ -359,7 +412,8 @@
     ],
     "patches": [
       "0001-window-close-the-header-menu-before-fullscreen.patch"
-    ]
+    ],
+    "archive_directory": "fix-fullscreen-menu-popover"
   },
   {
     "project": "gthumb",
@@ -372,20 +426,8 @@
     ],
     "patches": [
       "0001-video-Clarify-the-orientation-preference.patch"
-    ]
-  },
-  {
-    "project": "gtk-frdp",
-    "source_repository": "https://gitlab.gnome.org/GNOME/gtk-frdp.git",
-    "branch": "close-on-event-check-failure",
-    "base": "83854a24e31d1c07519f6e4393fe280d3b59e080",
-    "tip": "b7beb9dafbf10498a8e2211461b9983ac74d6948",
-    "commits": [
-      "b7beb9dafbf10498a8e2211461b9983ac74d6948"
     ],
-    "patches": [
-      "0001-session-Close-after-event-handle-failures.patch"
-    ]
+    "archive_directory": "clarify-video-orientation"
   },
   {
     "project": "gtk",
@@ -398,7 +440,22 @@
     ],
     "patches": [
       "0001-icontheme-Avoid-preloading-SVG-icons-in-worker-threa.patch"
-    ]
+    ],
+    "archive_directory": "avoid-svg-preload"
+  },
+  {
+    "project": "gtk-frdp",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gtk-frdp.git",
+    "branch": "close-on-event-check-failure",
+    "base": "83854a24e31d1c07519f6e4393fe280d3b59e080",
+    "tip": "b7beb9dafbf10498a8e2211461b9983ac74d6948",
+    "commits": [
+      "b7beb9dafbf10498a8e2211461b9983ac74d6948"
+    ],
+    "patches": [
+      "0001-session-Close-after-event-handle-failures.patch"
+    ],
+    "archive_directory": "close-on-event-check-failure"
   },
   {
     "project": "libadwaita",
@@ -411,7 +468,8 @@
     ],
     "patches": [
       "0001-entry-row-Place-apply-button-after-suffixes.patch"
-    ]
+    ],
+    "archive_directory": "entry-row-apply-after-suffix"
   },
   {
     "project": "libgnome-games-support",
@@ -424,7 +482,8 @@
     ],
     "patches": [
       "0001-scores-create-player-cells-during-factory-setup.patch"
-    ]
+    ],
+    "archive_directory": "fix-score-dialog-row-factory"
   },
   {
     "project": "libgnome-volume-control",
@@ -437,22 +496,8 @@
     ],
     "patches": [
       "0001-source-output-Track-the-recording-source.patch"
-    ]
-  },
-  {
-    "project": "libgtop",
-    "source_repository": "https://gitlab.gnome.org/GNOME/libgtop.git",
-    "branch": "work/gpu-metrics-port",
-    "base": "ebd49f21e36fd4344c622e3d1e1428df86bf05bb",
-    "tip": "4dbb68f24fbd40b56d4ccf3f16e5096f3d4494bb",
-    "commits": [
-      "ae06b3bd1d15c0a084d292dd51acbb2f366322aa",
-      "4dbb68f24fbd40b56d4ccf3f16e5096f3d4494bb"
     ],
-    "patches": [
-      "0001-gpu-Add-AMDGPU-metrics.patch",
-      "0002-ci-Use-a-buildable-ABI-baseline.patch"
-    ]
+    "archive_directory": "fix-recording-level-source"
   },
   {
     "project": "libgtop",
@@ -467,7 +512,24 @@
     "patches": [
       "0001-procmap-Parse-smaps-values-after-colon.patch",
       "0002-ci-Use-a-buildable-ABI-baseline.patch"
-    ]
+    ],
+    "archive_directory": "procmap-smaps-values"
+  },
+  {
+    "project": "libgtop",
+    "source_repository": "https://gitlab.gnome.org/GNOME/libgtop.git",
+    "branch": "work/gpu-metrics-port",
+    "base": "ebd49f21e36fd4344c622e3d1e1428df86bf05bb",
+    "tip": "4dbb68f24fbd40b56d4ccf3f16e5096f3d4494bb",
+    "commits": [
+      "ae06b3bd1d15c0a084d292dd51acbb2f366322aa",
+      "4dbb68f24fbd40b56d4ccf3f16e5096f3d4494bb"
+    ],
+    "patches": [
+      "0001-gpu-Add-AMDGPU-metrics.patch",
+      "0002-ci-Use-a-buildable-ABI-baseline.patch"
+    ],
+    "archive_directory": "work-gpu-metrics-port"
   },
   {
     "project": "libmanette",
@@ -480,7 +542,8 @@
     ],
     "patches": [
       "0001-backends-Use-the-thread-default-main-context.patch"
-    ]
+    ],
+    "archive_directory": "thread-main-context"
   },
   {
     "project": "nautilus",
@@ -493,20 +556,8 @@
     ],
     "patches": [
       "0001-compress-Add-TAR-with-Zstandard-support.patch"
-    ]
-  },
-  {
-    "project": "nautilus",
-    "source_repository": "https://gitlab.gnome.org/GNOME/nautilus.git",
-    "branch": "focus-conflict-replace",
-    "base": "7674c26523c0cbac5b908d42008d7117494d19bc",
-    "tip": "bb7a56ecfd8c7a7a6c54b384a3c45dd81769a937",
-    "commits": [
-      "bb7a56ecfd8c7a7a6c54b384a3c45dd81769a937"
     ],
-    "patches": [
-      "0001-file-conflict-dialog-Focus-Replace-when-shown.patch"
-    ]
+    "archive_directory": "compression-tar-zstd"
   },
   {
     "project": "nautilus",
@@ -519,33 +570,36 @@
     ],
     "patches": [
       "0001-files-view-Explain-why-cut-is-unavailable-in-Recent.patch"
-    ]
+    ],
+    "archive_directory": "cut-recent-feedback"
   },
   {
-    "project": "NetworkManager-openvpn",
-    "source_repository": "git@ssh.gitlab.gnome.org:GNOME/NetworkManager-openvpn.git",
-    "branch": "openvpn-2-6-dns-options",
-    "base": "7fb52f40ec23d2da91e2259302a50390ee20bc13",
-    "tip": "d0da830cb0ff7d97fd39031b5d3f550209bcd5f6",
+    "project": "nautilus",
+    "source_repository": "https://gitlab.gnome.org/GNOME/nautilus.git",
+    "branch": "focus-conflict-replace",
+    "base": "7674c26523c0cbac5b908d42008d7117494d19bc",
+    "tip": "bb7a56ecfd8c7a7a6c54b384a3c45dd81769a937",
     "commits": [
-      "d0da830cb0ff7d97fd39031b5d3f550209bcd5f6"
+      "bb7a56ecfd8c7a7a6c54b384a3c45dd81769a937"
     ],
     "patches": [
-      "0001-helper-Parse-OpenVPN-2.6-DNS-options.patch"
-    ]
+      "0001-file-conflict-dialog-Focus-Replace-when-shown.patch"
+    ],
+    "archive_directory": "focus-conflict-replace"
   },
   {
-    "project": "NetworkManager-openvpn",
-    "source_repository": "git@ssh.gitlab.gnome.org:GNOME/NetworkManager-openvpn.git",
-    "branch": "ci-const-correctness",
-    "base": "7fb52f40ec23d2da91e2259302a50390ee20bc13",
-    "tip": "5eb1273928ca895a3de2c05a56e637f56de64e72",
+    "project": "pango",
+    "source_repository": "https://gitlab.gnome.org/GNOME/pango.git",
+    "branch": "ci-windows-fontconfig",
+    "base": "8e74c27c113c98664b77272d16b14bbce542c184",
+    "tip": "6077d2715f72358b58a7f5f328b994e5798c59c2",
     "commits": [
-      "5eb1273928ca895a3de2c05a56e637f56de64e72"
+      "6077d2715f72358b58a7f5f328b994e5798c59c2"
     ],
     "patches": [
-      "0001-Fix-const-correctness-in-Fedora-build.patch"
-    ]
+      "0001-ci-Enable-Fontconfig-in-MSYS2-tests.patch"
+    ],
+    "archive_directory": "ci-windows-fontconfig"
   },
   {
     "project": "pango",
@@ -562,20 +616,8 @@
       "0001-build-Do-not-promote-unused-globals-to-errors-with-C.patch",
       "0002-build-Probe-unused-global-warning-override.patch",
       "0003-ci-Enable-Fontconfig-in-MSYS2-tests.patch"
-    ]
-  },
-  {
-    "project": "pango",
-    "source_repository": "https://gitlab.gnome.org/GNOME/pango.git",
-    "branch": "ci-windows-fontconfig",
-    "base": "8e74c27c113c98664b77272d16b14bbce542c184",
-    "tip": "6077d2715f72358b58a7f5f328b994e5798c59c2",
-    "commits": [
-      "6077d2715f72358b58a7f5f328b994e5798c59c2"
     ],
-    "patches": [
-      "0001-ci-Enable-Fontconfig-in-MSYS2-tests.patch"
-    ]
+    "archive_directory": "clang23-unused-global"
   },
   {
     "project": "shotwell",
@@ -588,7 +630,8 @@
     ],
     "patches": [
       "0001-batch-import-Prepare-copied-photos-before-copying.patch"
-    ]
+    ],
+    "archive_directory": "prepare-before-copy"
   },
   {
     "project": "xdg-desktop-portal-gnome",
@@ -601,6 +644,7 @@
     ],
     "patches": [
       "0001-inputcapture-Advertise-version-2-on-gnome-50.patch"
-    ]
+    ],
+    "archive_directory": "fix-input-capture-version-50"
   }
 ]

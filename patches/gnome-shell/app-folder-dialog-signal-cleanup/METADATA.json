@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-appDisplay-Disconnect-folder-name-handler-with-dialo.patch"
-  ]
+  ],
+  "archive_directory": "app-folder-dialog-signal-cleanup"
 }

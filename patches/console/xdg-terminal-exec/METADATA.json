@@ -11,5 +11,6 @@
   "patches": [
     "0001-desktop-Advertise-command-execution-arguments.patch",
     "0002-desktop-Use-the-xdg-terminal-exec-compatibility-key.patch"
-  ]
+  ],
+  "archive_directory": "xdg-terminal-exec"
 }

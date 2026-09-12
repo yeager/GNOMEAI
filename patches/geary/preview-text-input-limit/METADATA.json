@@ -19,5 +19,6 @@
     "0004-flatpak-Bundle-libhandy-source.patch",
     "0005-flatpak-Update-bundled-libhandy.patch",
     "0006-build-Fix-spell-check-language-ownership.patch"
-  ]
+  ],
+  "archive_directory": "preview-text-input-limit"
 }

@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-helper-Parse-OpenVPN-2.6-DNS-options.patch"
-  ]
+  ],
+  "archive_directory": "openvpn-2-6-dns-options"
 }

@@ -6,7 +6,7 @@ This repository explicitly accepts AI-assisted submissions. Every contribution m
 
 ## Contents
 
-- [`patches/`](patches): one directory per local contribution branch. Each contains an ordered `git format-patch` series and `METADATA.json` with its source project, upstream base and commit IDs.
+- [`patches/`](patches): one directory per local contribution branch. Each contains an ordered `git format-patch` series and `METADATA.json` with its source project, upstream base, commit IDs and archive-directory name.
 - [`PATCHES.json`](PATCHES.json): machine-readable index of all patch series.
 - [`PLAN.md`](PLAN.md): the live review and implementation plan for the 250 GNOME issues examined so far.
 - [`issues-250.csv`](issues-250.csv): issue inventory used by that plan.

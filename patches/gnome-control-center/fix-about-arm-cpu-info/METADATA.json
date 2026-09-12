@@ -11,5 +11,6 @@
   "patches": [
     "0001-about-Show-a-CPU-fallback-on-systems-without-model-n.patch",
     "0002-about-Use-uname-for-the-CPU-architecture-fallback.patch"
-  ]
+  ],
+  "archive_directory": "fix-about-arm-cpu-info"
 }

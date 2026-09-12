@@ -11,5 +11,6 @@
   "patches": [
     "0001-cc-Mark-control-connection-failed-before-ending-stre.patch",
     "0002-po-Update-POT-file.patch"
-  ]
+  ],
+  "archive_directory": "ctrl-close-reentrancy"
 }

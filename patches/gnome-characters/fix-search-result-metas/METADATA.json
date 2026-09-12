@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-search-provider-return-metadata-for-results-without-.patch"
-  ]
+  ],
+  "archive_directory": "fix-search-result-metas"
 }

@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-screenshot-Add-persistent-save-to-disk-option.patch"
-  ]
+  ],
+  "archive_directory": "work-screenshot-save-to-disk"
 }

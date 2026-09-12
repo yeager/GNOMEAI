@@ -11,5 +11,6 @@
   "patches": [
     "0001-gpu-Add-AMDGPU-metrics.patch",
     "0002-ci-Use-a-buildable-ABI-baseline.patch"
-  ]
+  ],
+  "archive_directory": "work-gpu-metrics-port"
 }

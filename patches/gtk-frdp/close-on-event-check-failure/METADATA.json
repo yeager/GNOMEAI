@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-session-Close-after-event-handle-failures.patch"
-  ]
+  ],
+  "archive_directory": "close-on-event-check-failure"
 }

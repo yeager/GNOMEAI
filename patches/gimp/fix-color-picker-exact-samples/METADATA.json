@@ -13,5 +13,6 @@
     "0001-app-widgets-update-exact-samples-at-one-position.patch",
     "0002-style-Format-color-frame-sample-comparison.patch",
     "0003-style-Format-color-frame-sample-condition.patch"
-  ]
+  ],
+  "archive_directory": "fix-color-picker-exact-samples"
 }

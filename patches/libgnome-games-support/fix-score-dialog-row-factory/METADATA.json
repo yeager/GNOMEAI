@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-scores-create-player-cells-during-factory-setup.patch"
-  ]
+  ],
+  "archive_directory": "fix-score-dialog-row-factory"
 }

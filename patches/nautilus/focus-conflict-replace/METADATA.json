@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-file-conflict-dialog-Focus-Replace-when-shown.patch"
-  ]
+  ],
+  "archive_directory": "focus-conflict-replace"
 }

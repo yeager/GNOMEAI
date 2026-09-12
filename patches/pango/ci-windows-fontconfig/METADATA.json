@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-ci-Enable-Fontconfig-in-MSYS2-tests.patch"
-  ]
+  ],
+  "archive_directory": "ci-windows-fontconfig"
 }

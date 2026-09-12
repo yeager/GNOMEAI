@@ -11,5 +11,6 @@
   "patches": [
     "0001-power-Respect-idle-dim-setting-in-power-saver-mode.patch",
     "0002-power-Test-idle-dim-setting-in-power-saver-mode.patch"
-  ]
+  ],
+  "archive_directory": "fix-power-saver-idle-dim"
 }

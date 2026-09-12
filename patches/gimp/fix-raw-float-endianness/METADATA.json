@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-file-raw-Honor-endianness-for-floating-point-samples.patch"
-  ]
+  ],
+  "archive_directory": "fix-raw-float-endianness"
 }

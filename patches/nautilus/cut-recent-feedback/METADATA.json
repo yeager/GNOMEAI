@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-files-view-Explain-why-cut-is-unavailable-in-Recent.patch"
-  ]
+  ],
+  "archive_directory": "cut-recent-feedback"
 }

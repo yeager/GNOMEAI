@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-global-shortcuts-Avoid-destroying-dialogs-after-disp.patch"
-  ]
+  ],
+  "archive_directory": "fix-global-shortcuts-wayland-shutdown"
 }

@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-video-Clarify-the-orientation-preference.patch"
-  ]
+  ],
+  "archive_directory": "clarify-video-orientation"
 }

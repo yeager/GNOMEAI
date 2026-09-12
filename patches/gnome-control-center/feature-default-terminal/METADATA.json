@@ -11,5 +11,6 @@
   "patches": [
     "0001-applications-Support-default-terminal-selection.patch",
     "0002-applications-Show-Terminal-in-Default-Apps.patch"
-  ]
+  ],
+  "archive_directory": "feature-default-terminal"
 }

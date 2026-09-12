@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-plug-ins-script-fu-Reset-Add-Border-opacity.patch"
-  ]
+  ],
+  "archive_directory": "addborder-opacity"
 }

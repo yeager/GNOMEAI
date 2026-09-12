@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-inputcapture-Advertise-version-2-on-gnome-50.patch"
-  ]
+  ],
+  "archive_directory": "fix-input-capture-version-50"
 }

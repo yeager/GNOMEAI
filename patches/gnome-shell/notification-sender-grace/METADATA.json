@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-notificationDaemon-Keep-short-lived-app-senders.patch"
-  ]
+  ],
+  "archive_directory": "notification-sender-grace"
 }

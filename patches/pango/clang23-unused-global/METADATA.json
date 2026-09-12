@@ -13,5 +13,6 @@
     "0001-build-Do-not-promote-unused-globals-to-errors-with-C.patch",
     "0002-build-Probe-unused-global-warning-override.patch",
     "0003-ci-Enable-Fontconfig-in-MSYS2-tests.patch"
-  ]
+  ],
+  "archive_directory": "clang23-unused-global"
 }

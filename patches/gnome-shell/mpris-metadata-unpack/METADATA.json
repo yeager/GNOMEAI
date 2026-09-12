@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-mpris-Unpack-metadata-once-per-update.patch"
-  ]
+  ],
+  "archive_directory": "mpris-metadata-unpack"
 }

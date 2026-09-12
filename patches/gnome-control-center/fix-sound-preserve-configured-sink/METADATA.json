@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-sound-Preserve-configured-output-when-a-device-is-re.patch"
-  ]
+  ],
+  "archive_directory": "fix-sound-preserve-configured-sink"
 }

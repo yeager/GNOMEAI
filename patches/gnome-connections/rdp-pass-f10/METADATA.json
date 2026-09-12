@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-window-Keep-F10-in-remote-displays.patch"
-  ]
+  ],
+  "archive_directory": "rdp-pass-f10"
 }

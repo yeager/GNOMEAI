@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-app-localize-action-search-menu-paths.patch"
-  ]
+  ],
+  "archive_directory": "fix-action-search-localized-menu-path"
 }

@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-icns-Validate-RLE-input-bounds.patch"
-  ]
+  ],
+  "archive_directory": "icns-rle-bounds"
 }

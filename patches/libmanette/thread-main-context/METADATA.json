@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-backends-Use-the-thread-default-main-context.patch"
-  ]
+  ],
+  "archive_directory": "thread-main-context"
 }

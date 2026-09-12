@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-webextension-Handle-unnamed-API-replies.patch"
-  ]
+  ],
+  "archive_directory": "webextension-null-message"
 }

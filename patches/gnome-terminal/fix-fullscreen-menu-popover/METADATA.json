@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-window-close-the-header-menu-before-fullscreen.patch"
-  ]
+  ],
+  "archive_directory": "fix-fullscreen-menu-popover"
 }

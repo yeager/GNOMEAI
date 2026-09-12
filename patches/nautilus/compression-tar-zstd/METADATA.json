@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-compress-Add-TAR-with-Zstandard-support.patch"
-  ]
+  ],
+  "archive_directory": "compression-tar-zstd"
 }

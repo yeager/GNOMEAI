@@ -9,5 +9,6 @@
   ],
   "patches": [
     "0001-icontheme-Avoid-preloading-SVG-icons-in-worker-threa.patch"
-  ]
+  ],
+  "archive_directory": "avoid-svg-preload"
 }
