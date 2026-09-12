@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Extension Pack Installer
+Comment=Install validated GNOME Shell extension archives
+Exec=python3 /opt/gnomeai/extension-pack-installer/extension_pack_installer.py
+Icon=package-x-generic
+Terminal=false
+Categories=Settings;Utility;
