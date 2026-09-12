@@ -688,5 +688,19 @@
       "0001-calendar-Add-per-calendar-default-reminders.patch"
     ],
     "archive_directory": "default-reminders"
+  },
+  {
+    "project": "gnome-clocks",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-clocks.git",
+    "branch": "master",
+    "base": "3f9b6e873f04070ef39df81cc1c90d18c3708c51",
+    "tip": "04e7748a7d18be2aa4d9a3cb6eb60860ecd39d18",
+    "commits": [
+      "04e7748a7d18be2aa4d9a3cb6eb60860ecd39d18"
+    ],
+    "patches": [
+      "0001-alarms-Keep-active-alarms-running-after-window-close.patch"
+    ],
+    "archive_directory": "background-alarms"
   }
 ]

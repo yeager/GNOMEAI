@@ -1,0 +1,87 @@
+From 04e7748a7d18be2aa4d9a3cb6eb60860ecd39d18 Mon Sep 17 00:00:00 2001
+From: yeager <yeager@users.noreply.github.com>
+Date: Sat, 12 Sep 2026 14:19:00 +0200
+Subject: [PATCH] alarms: Keep active alarms running after window closes
+
+---
+ src/alarm-face.vala  | 18 ++++++++++++++++++
+ src/application.vala | 14 ++++++++++++++
+ 2 files changed, 32 insertions(+)
+
+diff --git a/src/alarm-face.vala b/src/alarm-face.vala
+index 48a1a30..cf7f480 100644
+--- a/src/alarm-face.vala
++++ b/src/alarm-face.vala
+@@ -103,6 +103,7 @@ public class Face : Adw.Bin, Clocks.Clock {
+         alarms.items_changed.connect ((position, removed, added) => {
+             save ();
+             reset_view ();
++            update_alarm_hold ();
+         });
+ 
+         reset_view ();
+@@ -126,12 +127,29 @@ public class Face : Adw.Bin, Clocks.Clock {
+         item.notify["time"].connect (() => {
+             sorted_alarms.sorter.changed (DIFFERENT);
+         });
++        item.notify["active"].connect (() => {
++            update_alarm_hold ();
++        });
++    }
++
++    private void update_alarm_hold () {
++        var app = (Clocks.Application) GLib.Application.get_default ();
++        var has_active_alarm = false;
++
++        alarms.foreach ((item) => {
++            if (((Item) item).active) {
++                has_active_alarm = true;
++            }
++        });
++
++        app.set_alarm_hold (has_active_alarm);
+     }
+ 
+     private void load () {
+         alarms.deserialize (settings.get_value ("alarms"), Item.deserialize);
+ 
+         alarms.foreach (item => connect_item ((Item) item));
++        update_alarm_hold ();
+     }
+ 
+     private void save () {
+diff --git a/src/application.vala b/src/application.vala
+index 6cbb1a3..753ddfe 100644
+--- a/src/application.vala
++++ b/src/application.vala
+@@ -37,6 +37,7 @@ public class Application : Adw.Application {
+     private uint world_clocks_id = 0;
+     private Window? window;
+     private List<string> system_notifications;
++    private bool alarm_hold;
+ 
+     private Window ensure_window () ensures (window != null) {
+         if (window == null) {
+@@ -144,6 +145,19 @@ public class Application : Adw.Application {
+         }
+     }
+ 
++    public void set_alarm_hold (bool active) {
++        if (active == alarm_hold) {
++            return;
++        }
++
++        alarm_hold = active;
++        if (alarm_hold) {
++            hold ();
++        } else {
++            release ();
++        }
++    }
++
+     public new void send_notification (string notification_id, GLib.Notification notification) {
+         base.send_notification (notification_id, notification);
+ 
+-- 
+2.53.0
+

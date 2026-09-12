@@ -1,3 +1,11 @@
+## GNOME Clocks: active alarms after closing the window
+
+Patch archive: `patches/gnome-clocks/background-alarms/`
+
+- `meson setup build --wipe`, `meson compile -C build`, and `meson test -C build --print-errorlogs` passed.
+- The project completed all three supplied checks: desktop entry, GSettings schema, and metainfo validation.
+- The behavior has no new visible control: an active alarm keeps the application alive after the last window closes, and the hold is released when the final alarm becomes inactive.
+
 ## GNOME Calendar: per-calendar default reminders
 
 Patch archive: `patches/gnome-calendar/default-reminders/`

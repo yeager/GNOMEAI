@@ -286,6 +286,7 @@ Each series is stored below `patches/` and can be applied locally with `git am`.
 | gnome-bluetooth | `master` | 1 | [`device-alias`](patches/gnome-bluetooth/device-alias) |
 | gnome-calendar | `main` | 1 | [`default-reminders`](patches/gnome-calendar/default-reminders) |
 | gnome-characters | `fix-search-result-metas` | 1 | [`fix-search-result-metas`](patches/gnome-characters/fix-search-result-metas) |
+| gnome-clocks | `master` | 1 | [`background-alarms`](patches/gnome-clocks/background-alarms) |
 | gnome-connections | `rdp-pass-f10` | 1 | [`rdp-pass-f10`](patches/gnome-connections/rdp-pass-f10) |
 | gnome-control-center | `feature-default-terminal` | 2 | [`feature-default-terminal`](patches/gnome-control-center/feature-default-terminal) |
 | gnome-control-center | `fix-about-arm-cpu-info` | 2 | [`fix-about-arm-cpu-info`](patches/gnome-control-center/fix-about-arm-cpu-info) |
