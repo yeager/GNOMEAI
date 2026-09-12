@@ -42,3 +42,4 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md). Always state the target project, base r
 - [Focus Block](apps/focus-block/): a local focus and break timer.
 - [Command Shelf](apps/command-shelf/): a local library of copyable command snippets.
 - [Name Shift](apps/name-shift/): local batch renaming with a validated file-name preview.
+- [Extension Pack Installer](apps/extension-pack-installer/): local GNOME Shell extension ZIP installation with archive validation.
