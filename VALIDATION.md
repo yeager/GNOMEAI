@@ -1,3 +1,11 @@
+## GNOME System Monitor: per-process swap usage
+
+Patch archive: `patches/gnome-system-monitor/process-swap/`
+
+- `git diff --check` passed.
+- `meson setup build --wipe` stopped before compilation because the local development environment lacks `giomm-2.68`.
+- The Processes table gains a sortable **Swap Memory** column and summary. It reads each process’s `VmSwap` value from `/proc/<pid>/status`; inaccessible or unsupported process entries display zero.
+
 ## Seahorse: retain import action for importable data
 
 Patch archive: `patches/seahorse/importable-items/`

@@ -744,5 +744,19 @@
       "0001-import-Keep-import-action-enabled-for-importable-items.patch"
     ],
     "archive_directory": "importable-items"
+  },
+  {
+    "project": "gnome-system-monitor",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-system-monitor.git",
+    "branch": "main",
+    "base": "dac1260ee6698981b6b51044eb4453c41b9f53b6",
+    "tip": "1a97ed0b53dcd811d454e71a9410ba20be63ec19",
+    "commits": [
+      "1a97ed0b53dcd811d454e71a9410ba20be63ec19"
+    ],
+    "patches": [
+      "0001-processes-Display-per-process-swap-usage.patch"
+    ],
+    "archive_directory": "process-swap"
   }
 ]

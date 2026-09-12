@@ -310,6 +310,7 @@ Each series is stored below `patches/` and can be applied locally with `git am`.
 | libadwaita | `entry-row-apply-after-suffix` | 1 | [`entry-row-apply-after-suffix`](patches/libadwaita/entry-row-apply-after-suffix) |
 | libgnome-games-support | `fix-score-dialog-row-factory` | 1 | [`fix-score-dialog-row-factory`](patches/libgnome-games-support/fix-score-dialog-row-factory) |
 | libgnome-volume-control | `fix-recording-level-source` | 1 | [`fix-recording-level-source`](patches/libgnome-volume-control/fix-recording-level-source) |
+| gnome-system-monitor | `main` | 1 | [`process-swap`](patches/gnome-system-monitor/process-swap) |
 | libgtop | `procmap-smaps-values` | 2 | [`procmap-smaps-values`](patches/libgtop/procmap-smaps-values) |
 | libgtop | `work/gpu-metrics-port` | 2 | [`work-gpu-metrics-port`](patches/libgtop/work-gpu-metrics-port) |
 | libmanette | `thread-main-context` | 1 | [`thread-main-context`](patches/libmanette/thread-main-context) |

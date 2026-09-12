@@ -1,0 +1,21 @@
+{
+  "project": "gnome-system-monitor",
+  "series": "process-swap",
+  "source_branch": "main",
+  "base": "dac1260ee6698981b6b51044eb4453c41b9f53b6",
+  "tip": "1a97ed0b53dcd811d454e71a9410ba20be63ec19",
+  "commits": [
+    "1a97ed0b53dcd811d454e71a9410ba20be63ec19"
+  ],
+  "patches": [
+    "0001-processes-Display-per-process-swap-usage.patch"
+  ],
+  "archive_directory": "patches/gnome-system-monitor/process-swap",
+  "validation": {
+    "commands": [
+      "git diff --check",
+      "meson setup build --wipe"
+    ],
+    "result": "Whitespace validation passed. Meson stopped before compilation because the local development environment lacks giomm-2.68; no full build or runtime result is claimed."
+  }
+}
