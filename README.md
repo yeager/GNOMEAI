@@ -1,36 +1,36 @@
 # GNOMEAI
 
-GNOMEAI är ett öppet arkiv för GNOME-relaterade patchserier, felsökning och implementationsplaner där AI får användas som ett produktivt utvecklingsverktyg.
+GNOMEAI is an open archive for GNOME-related patch series, debugging notes, and implementation plans where AI may be used as a productive development tool.
 
-AI är inte ett hot mot programvaruutveckling. Rätt använd kan den korta tiden från felrapport till begriplig reproduktion, hjälpa till att läsa stora kodbaser, föreslå avgränsade ändringar och hitta testfall som annars lätt missas. Den frigör tid för det arbete som fortfarande kräver omdöme: att förstå användarbehov, välja rätt arkitektur, granska risker och ta ansvar för resultatet.
+AI is not a threat to software development. Used well, it shortens the path from a bug report to a clear reproduction, helps people navigate large codebases, suggests focused changes, and finds tests that might otherwise be missed. It leaves more time for work that still needs judgment: understanding user needs, choosing architecture, reviewing risk, and taking responsibility for the result.
 
-Ett bra bidrag bedöms efter samma saker oavsett vilka verktyg som användes för att skapa det:
+A contribution is judged by the same standards regardless of the tools used to create it:
 
-- Löser det ett verkligt problem?
-- Är ändringen liten nog att förstå och granska?
-- Finns en reproduktion eller ett relevant test?
-- Fungerar den med projektets design, API:er och underhållsbehov?
-- Är upphov, licens och begränsningar tydliga?
+- Does it solve a real problem?
+- Is the change small enough to understand and review?
+- Is there a reproduction or relevant test?
+- Does it fit the project's design, APIs, and maintenance needs?
+- Are authorship, licensing, and limitations clear?
 
-AI-assisterade bidrag är välkomna här. De ska vara sakliga, testade där det är möjligt och möjliga att granska rad för rad. Inga hemligheter, byggkataloger eller oinspekterade genererade ändringar hör hemma i repot.
+AI-assisted contributions are welcome here. They must be factual, tested where practical, and reviewable line by line. Do not add secrets, build directories, or generated changes that have not been inspected.
 
-## Innehåll
+## Contents
 
-- [`patches/`](patches) innehåller en katalog per arbetsgren. Varje katalog har en ordnad `git format-patch`-serie och `METADATA.json` med källprojekt, upstream-bas, commit-ID:n och arkivkatalog.
-- [`PATCHES.json`](PATCHES.json) är ett maskinläsbart index över alla patchserier.
-- [`PLAN.md`](PLAN.md) innehåller den löpande granskningen och implementationsplanen för 250 GNOME-ärenden.
-- [`issues-250.csv`](issues-250.csv) är ärendeinventeringen som planen bygger på.
+- [`patches/`](patches) contains one directory per work branch. Each directory has an ordered `git format-patch` series and `METADATA.json` with the source project, upstream base, commit IDs, and archive directory.
+- [`PATCHES.json`](PATCHES.json) is a machine-readable index of every patch series.
+- [`PLAN.md`](PLAN.md) contains the working review and implementation plan for 250 GNOME issues.
+- [`issues-250.csv`](issues-250.csv) is the issue inventory used by the plan.
 
-## Använd en patchserie
+## Apply a patch series
 
-Klona källprojektet från `METADATA.json`, checka ut en kompatibel upstream-revision och tillämpa serien:
+Clone the source project listed in `METADATA.json`, check out a compatible upstream revision, and apply the series:
 
 ```sh
-git am /sökväg/till/GNOMEAI/patches/PROJEKT/ARKIVKATALOG/*.patch
+git am /path/to/GNOMEAI/patches/PROJECT/ARCHIVE-DIRECTORY/*.patch
 ```
 
-Vissa serier beror på andra serier. Se `PLAN.md` och respektive metadata innan de skickas uppströms.
+Some series depend on other series. Read `PLAN.md` and the relevant metadata before submitting a series upstream.
 
-## Bidra
+## Contribute
 
-Läs [CONTRIBUTING.md](CONTRIBUTING.md). Ange alltid målprojekt, upstream-bas, vad ändringen löser, hur den har validerats och kända begränsningar. Den som skickar ett bidrag ansvarar för den slutliga diffen.
+Read [CONTRIBUTING.md](CONTRIBUTING.md). Always state the target project, upstream base, problem addressed, validation performed, and known limitations. The contributor is responsible for the final diff.

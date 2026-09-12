@@ -1,297 +1,326 @@
-# GNOME: arbetsstatus för 250 ärenden
-
-Mål: granska och arbeta med samtliga 250 högst prioriterade GNOME-ärenden, ta fram verifierade lösningar och skicka bidrag upstream. GNOME Shell !4405 är mergad. libgtop !54 är verifierad och öppen. Nautilus !2125 är inskickad och väntar på CI.
-
-| # | Ärende | Status |
-|---|---|---|
-| 1 | [Separate workspaces on multiple monitors](https://gitlab.gnome.org/GNOME/mutter/-/work_items/37) | Ej kodgranskat |
-| 2 | [Implement "Jump to file" feature (type ahead / type to seek)](https://gitlab.gnome.org/GNOME/nautilus/-/work_items/1157) | Detaljerat användningsfall för tangentstyrd prefixnavigering. Sökning bland öppna MR:er för ”typeahead” gav inga träffar. Nuvarande fönsterhändelse skickar tangenttryck till QueryEditor och öppnar rekursiv sökning; typeahead behöver därför en ny interaktionsmodell och list-/grid-fokusering, inte bara en ny genväg. |
-| 3 | [Unified inbox](https://gitlab.gnome.org/GNOME/geary/-/work_items/53) | 92 röster men märkt Needs Design och Help Wanted. Implementationen kräver ny sidofältsmodell och kontoidentifiering i konversationsvyn; inte en liten separat patch. |
-| 4 | [Ability to save screenshots to clipboard only (without saving to disk)](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/5208) | Befintlig MR !3928 hämtad (8b21ff45649f). Sju lagringstester passerar med MR !3928 + separat historikfix i isolerad Shell 50.1. Ingen MR skickad. Full main-build och UI-tester återstår. |
-| 5 | [Tracking: Transparent encryption and signing with GPG](https://gitlab.gnome.org/GNOME/geary/-/work_items/6) | Ej kodgranskat |
-| 6 | [Top bar on all monitors](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/4603) | Märkt Needs Design samt Panel och Display. Kräver beslut om panelens funktion och innehåll på sekundära skärmar före implementation. |
-| 7 | [Ability to set scroll speed in system settings](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/379) | Ärendet kräver en gemensam inställning genom Mutter, GTK, Qt och Wayland-protokollet. Control Center kan inte ge fungerande rullhastighet ensamt; ingen isolerad patch. |
-| 8 | [Port to GTK4](https://gitlab.gnome.org/GNOME/geary/-/work_items/1212) | Ej kodgranskat |
-| 9 | [Login controls not displayed on all screens](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/3867) | Märkt Enhancement. Föreslår spegling eller konfiguration av inloggningsskärmens bildskärmar; kräver Mutter/GDM-policy och designbeslut, inte en Shell-ändring isolerat. |
-| 10 | [Rework GNOME Shell's architecture to allow restarting under Wayland without crashing / taking down the spawned apps with it](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/5634) | Ej kodgranskat |
-| 11 | [File Roller drag'n'drop extraction to Nautilus folder is broken](https://gitlab.gnome.org/GNOME/file-roller/-/work_items/4) | GTK4-portningen saknar helt dragkälla; tidigare XDS-extraktion togs bort i commit 8b26a13. Större återinförande krävs. |
-| 12 | [Quit when inactive](https://gitlab.gnome.org/GNOME/gnome-software/-/work_items/942) | README förbjuder AI-genererade bidrag; ej skickat. |
-| 13 | [Wrong keyboard layout in lock screen](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/225) | Aktiv MR [!3681](https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/3681) hanterar #225 och flera relaterade fel; den har uppdaterats mot main. Ingen dubblettändring. |
-| 14 | [Update for the Wayland tearing protocol](https://gitlab.gnome.org/GNOME/mutter/-/work_items/2517) | Märkt Wayland Protocol Request/Performance. Förslaget kräver ny klientprotokollshantering, policies för VRR och helskärmsinnehåll samt KMS-presentation; för stort för en oberoende punktpatch. |
-| 15 | [Ability to "mark all emails as read"](https://gitlab.gnome.org/GNOME/geary/-/work_items/101) | Ärendet vill ha ett tydligt ”markera alla”. Maintainer efterfrågar GNOME-design innan implementation; nuvarande funktion kan bara markera markerade konversationer. Ingen egen dubblettändring. |
-| 16 | [Disable focus stealing prevention](https://gitlab.gnome.org/GNOME/mutter/-/work_items/673) | Ändringen skulle medvetet ta bort Mutter-policy mot fokusstöld. Ärendet efterfrågar en ny generell aktiveringsmodell för GAction, WebKitGTK och andra verktygslådor; ingen lämplig punktfix. |
-| 17 | [Selecting a folder to save to loses focus on file name](https://gitlab.gnome.org/GNOME/gtk/-/work_items/326) | Märkt GTK3. I GTK main flyttas fokus till fillistan men skrivning startar inte längre sökning, enligt maintainer. De relevanta GTK4-MR:erna !4945 och !4960 är stängda; ingen säker dubblettändring. |
-| 18 | [Blur semi-transparent backgrounds in some of GNOME Shell's UI components](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/1590) | Shell har redan en `Shell.BlurEffect` för låsskärmens bakgrund, men ärendet föreslår flera olika komponenter (sökning, popovers och låsskärm) utan kontrast-, prestanda- eller designbeslut per yta. Ingen generell effektpatch. |
-| 19 | [Snap to top and bottom (edges) too](https://gitlab.gnome.org/GNOME/mutter/-/work_items/579) | Nuvarande Mutter har bara `META_TILE_LEFT`, `META_TILE_RIGHT` och maximering. Top/botten och hörnplattor kräver nya tile-lägen genom fönsterkonfiguration, kantbegränsningar, områdesberäkning och tangentbindningar. Ingen säker punktpatch. |
-| 20 | [Remote desktop with locked local screen](https://gitlab.gnome.org/GNOME/gnome-remote-desktop/-/work_items/16) | Märkt Feature. Kravet behöver en separat virtuell session eller säkert skärmsekretessläge på compositor-nivå; det går inte att ge med en ändring i fjärrskrivbordets anslutningskod. |
-| 21 | [Allow sorting/grouping conversations in the list](https://gitlab.gnome.org/GNOME/geary/-/work_items/85) | Ej kodgranskat |
-| 22 | [OSK needs (at least the option of) modifiers (Ctrl/Alt/Super)](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/181) | Terminalinmatning väljer redan `*-extended`-layouter. De exponerar låsbara Ctrl- och Alt-tangenter, och `KeyboardController` skickar modifierar före/efter råa tangenttryck. Super finns inte i layouterna; att lägga till den kräver beslut om Shell-genvägar och fokus, inte en säker layoutändring. |
-| 23 | [Port to GTK4](https://gitlab.gnome.org/GNOME/Initiatives/-/work_items/26) | Ej kodgranskat |
-| 24 | [Better Window Tiling](https://gitlab.gnome.org/GNOME/mutter/-/work_items/704) | Ej kodgranskat |
-| 25 | [color management: support scRGB](https://gitlab.gnome.org/GNOME/mutter/-/work_items/4083) | Ej kodgranskat |
-| 26 | [Add automatic and manual scheduling for light and dark theme switching](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/2060) | Backgroundpanelen skriver bara `org.gnome.desktop.interface color-scheme` när användaren väljer tema. Night Light har egen Mutter-backad schema- och schemaläggning. Temaschema kräver nya beständiga inställningar och en långlivad tjänst som växlar dem; enbart Settings-UI skulle inte fungera utanför appen. |
-| 27 | [Add per-monitor min/max brightness settings](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/1209) | Ärendet pekar själv på gnome-settings-daemon- och kernelarbete för externa paneler och flera enheter. Nuvarande Settings läser bara Shells globala `HasBrightnessControl` för funktioner som automatisk ljusstyrka. Per-monitor gränser kräver per-skärm-backend/API först, inte en fristående inställningspanel. |
-| 28 | [Extension installation?](https://gitlab.gnome.org/GNOME/gnome-extensions-app/-/work_items/6) | Ärendet identifierar två konkurrerande riktningar: en sandboxbar URI-/D-Bus-installationsväg från extensions.gnome.org eller sökning och installation i appen. Båda kräver produkt- och säkerhetsbeslut; dagens app är uttryckligen ett verktyg för att hantera installerade Shell-tillägg. |
-| 29 | [An easy way to return the Application Grid positions to its default? (Gnome 3.38)](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/3180) | Märkt Feature/Icon Grid. Återställning skulle radera användarens ordning och kräver ett utformat, bekräftat återställningsflöde samt placering i Shells gränssnitt. |
-| 30 | [Cannot login to microsoft office365 "exchange" account with 2fa enabled](https://gitlab.gnome.org/GNOME/gnome-online-accounts/-/work_items/102) | Märkt Feature/EWS. Lösenordsbaserad EWS-inloggning kan inte genomföra Microsofts MFA; lösningen kräver OAuth/OIDC-providerflöde och Microsoft-konfiguration, inte att ett TOTP-fält läggs till. |
-| 31 | [Fractional Scaling Known issues and TODO](https://gitlab.gnome.org/GNOME/mutter/-/work_items/478) | Ej kodgranskat |
-| 32 | ["Open with other application" will set selected application as default](https://gitlab.gnome.org/GNOME/glib/-/work_items/1026) | GLib erbjuder redan separata API:er för att starta en vald app och för att ändra standardapp. Felet beskrivs i Nautilus kontextmeny och kan inte lösas i GLib utan att fel komponent ändras. |
-| 33 | [Recoloring API](https://gitlab.gnome.org/GNOME/libadwaita/-/work_items/53) | Ej kodgranskat |
-| 34 | [Import of certificate with seahorse does not work; Import button stays disabled](https://gitlab.gnome.org/GNOME/seahorse/-/work_items/205) | Knappen kräver en importer från GCR. GCR skapar bara PKCS#11-importörer för skrivbara, initierade token; ingen generell systemcertifikat-destination finns. Kräver produktbeslut, inte en säker enradsfix. |
-| 35 | [Allow that alarms also beep when gnome-clocks is not running](https://gitlab.gnome.org/GNOME/gnome-clocks/-/work_items/1) | Aktiv MR [!336](https://gitlab.gnome.org/GNOME/gnome-clocks/-/merge_requests/336) lägger till autostart som tjänst och har passerande pipeline. Ägaren pekar även på det öppna portal-arbetet [#281](https://gitlab.gnome.org/GNOME/gnome-clocks/-/work_items/281); skapa inte en konkurrerande implementation. |
-| 36 | [ListView scrolling sometimes jumps up and down when doing high-resolution scrolling](https://gitlab.gnome.org/GNOME/gtk/-/work_items/6344) | Aktiv upstream-MR [!8042](https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/8042) arbetar med scrollinterpolation. Rotorsaken är varierande, uppskattade radhöjder i virtuella listor; en fix måste provas på stora listor med varierande höjd. Ingen ogenomskinlig dubblettpatch. |
-| 37 | [provide the option to change the default window size](https://gitlab.gnome.org/GNOME/console/-/work_items/140) | README förbjuder AI-genererade bidrag; ej skickat. |
-| 38 | [App grid: Allow uninstalling apps](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/4752) | Märkt Feature. Ärendet saknar beslut om bekräftelse eller ångra-flöde och kräver integrering med GNOME Software/pakethantering; ingen Shell-patch utan design. |
-| 39 | [GTK 4 Spellcheck Support](https://gitlab.gnome.org/GNOME/gtk/-/work_items/3814) | Upstream har en aktiv WIP-gren, `wip/chergert/spellcheck` (dd7ce2e), och planeringen omfattar plattformsleverantörer, flerspråkighet, Flatpak/portal, textregioner och rendering. Detta är ett flerlagersarbete; skapa inte en parallell, ofullständig stavningspatch. |
-| 40 | [Provide GPU and vRAM usage in the Resources tab's graphs and counters](https://gitlab.gnome.org/GNOME/gnome-system-monitor/-/work_items/62) | AMDGPU-metriker är inskickade som [libgtop!54](https://gitlab.gnome.org/GNOME/libgtop/-/merge_requests/54). API:t rapporterar belastning, GTT, synligt VRAM och VRAM från DRM-sysfs och behåller rätt `cardN`-sökväg på blandade GPU-system. Fedora-, Ubuntu- och ABI-pipelinen passerar. |
-| 41 | [Improve running binaries experience](https://gitlab.gnome.org/GNOME/nautilus/-/work_items/443) | Märkt Needs Design och RFC. Förslaget ändrar Nautilus säkerhetsmodell och kräver dialogtexter, trust-flöde och terminalbeteende; ingen säker kodpatch utan godkänd design. |
-| 42 | [Mouse not being recorded when screencasting (Even when enabled)](https://gitlab.gnome.org/GNOME/mutter/-/work_items/3182) | Aktuell Mutter har en separat cursor-ström med stöd för inbäddad bild och metadata, samt testklient för cursor-lägen. Ärendet gäller X11; utan reproduktion där går det inte att avgöra om felet fortfarande finns eller göra en säker patch. |
-| 43 | [Add support for OSC 52](https://gitlab.gnome.org/GNOME/vte/-/work_items/2495) | VTE parsern känner redan igen OSC 52. Maintainer kräver uttryckligt användarsamtycke per clipboard-begäran, där VTE signalerar och terminalen visar godkännande. En gammal patch med appinställning räcker inte. |
-| 44 | [Include additional mimetype icons?](https://gitlab.gnome.org/GNOME/adwaita-icon-theme/-/work_items/24) | Efterfrågar egna, enkla ikoner för vanliga programmeringsspråk men saknar vald design och lista över MIME-typer. Skapa inte generiska eller maskinskapade ikoner utan designbeslut. |
-| 45 | [[Feature] Blurred wallpaper as overview background](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/4307) | Låsskärmen använder redan `Shell.BlurEffect` på bakgrunden. Översikten har en annan rendering och gest-/prestandamodell; att kopiera låsskärmens effekt skulle ändra avsedd design och behöver ett godkänt översiktsförslag. |
-| 46 | [Prompt rename automatically when a new file is created from template](https://gitlab.gnome.org/GNOME/nautilus/-/work_items/524) | Tilldelat upstream. MR !1658 ersätter !647; skapa inte dubblett. |
-| 47 | [Ability to record system audio in video screencasts](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/5524) | Screencasttjänsten bygger en ren videopipeline från Mutters PipeWire-ström; D-Bus-API:t har bara markör, bildfrekvens och videopipeline som val. Systemljud kräver en PipeWire-audiokälla, synkronisering och muxning för varje videoencoder samt ett uttryckligt UI-/integritetsval. Ingen säker checkbox-patch. |
-| 48 | [More flexible event recurrence UI (repeat every X number of days/weeks/months/years, specific days of the week or month, etc.)](https://gitlab.gnome.org/GNOME/gnome-calendar/-/work_items/272) | Ej kodgranskat |
-| 49 | [Can't zoom in on screenshots](https://gitlab.gnome.org/GNOME/gnome-software/-/work_items/313) | Kodväg granskad. README förbjuder AI-genererade bidrag; ej skickat. |
-| 50 | [New design for fractional scaling setting](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/2516) | Aktuell Display-panel använder en knappgrupp för få skalor och växlar till combobox för fler eller hopfällt läge, i stället för en lång lista. Den saknar fortfarande den föreslagna förhandsvisningen och en definierad backend för X11-kompatibilitetsläget; den senare kan inte läggas till som bara UI. |
-
-Publicering: En reproducerbar uppföljning för GNOME Shell-historikfelet är publicerad i [#6540](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/6540#note_2868214). Fixin är inskickad som [GNOME Shell !4405](https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/4405) från forken `yeager/gnome-shell`. Commitmeddelandet har uppdaterats enligt maintainer-kommentaren och hela pipelinen passerar efter en omkörning av ett instabilt compositor-test.
-
-## Utökning till 250 ärenden
-
-Alla 250 ärenden finns i [gnome-250-oppna-arenden-2026-09-11.csv](gnome-250-oppna-arenden-2026-09-11.csv). Plats 1–50 kommer från GitLabs globala röstsortering. Plats 51–250 är ett verifierat aktuellt urval med faktiska röstsiffror, tydligt märkt som ej globalt röstsorterat medan GraphQL-anropet är rate-limitat.
-
-## Separat fel hittat vid arbete med #4
-
-Första skärmbilden registreras inte i Senaste filer om recently-used.xbel saknas. Enradsfix finns i [screenshot-recent-files/fix.patch](screenshot-recent-files/fix.patch). Före/efter-test med verkliga GNOME-bibliotek: originalet misslyckas, fixen passerar. Orsaken och fixriktningen är publicerade som en uppföljning till [#6540](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/6540#note_2868214), och patchen finns i [!4405](https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/4405). Det här stänger inte #4.
-
-GitLab GraphQL ger tillgång till kopplade MR:er trots att REST-kommentarer nekas. Batchfältet relatedMergeRequests tillåter bara ett ärende per anrop. Ytterligare insamling fick HTTP 429 och pausades; partiella verifierade resultat finns i work/issue-details.
-
-## Nautilus: Zstandard-arkiv
-
-Nautilus [!2125](https://gitlab.gnome.org/GNOME/nautilus/-/merge_requests/2125) för #1936 finns på grenen `yeager/nautilus:compression-tar-zstd` (commit `5f8df94`). Den höjer minsta gnome-autoar till 0.5.0, lägger till `.tar.zst` i komprimeringsdialogen och lägger till ett displayless-test. Schemat har validerats; Fedora- och Flatpak-CI är gröna.
-
-## NetworkManager-openvpn: OpenVPN 2.6-DNS
-
-[MR !117](https://gitlab.gnome.org/GNOME/NetworkManager-openvpn/-/merge_requests/117) lägger till stöd för OpenVPN 2.6:s DNS-miljövariabler och behåller den äldre `foreign_option_N`-parsern. Pipeline `1108593` byggde distributionsarkivet, men Fedora-testet faller på samma const-kvalificeringsfel i oförändrade `shared/utils.c` och `properties/nm-openvpn-editor.c` som huvudgrenens pipeline `1107872`. Den nya hjälparfilen kompilerade klart.
-
-En separat pipelinefix är inskickad som [NetworkManager-openvpn !118](https://gitlab.gnome.org/GNOME/NetworkManager-openvpn/-/merge_requests/118): const-korrekta läspekarna i de två berörda befintliga filerna.
-
-
-## Shell !4405 — mergad
-
-Fixen för saknad recent-files-historik mergades 2026-09-11 efter att pipeline 1108595 passerade.
-
-
-## NetworkManager-openvpn !118 — grön
-
-Pipeline 1108601 passerade både distributionsbygge och Fedora-test efter typkorrigeringen i den befintliga parsern.
-
-## gnome-autoar: asynkrona signalreturer
-
-[!57](https://gitlab.gnome.org/GNOME/gnome-autoar/-/merge_requests/57) uppdaterades till commit `512a9c1`. Den väntar på retursignaler från huvudtråden och har nu ett tidsbegränsat regressionstest för asynkron lösenordsbegäran. `meson test -C _build gnome-autoar:test-extract-unit --print-errorlogs` passerar lokalt.
-
-## libgtop: procmap-smaps
-
-[!55](https://gitlab.gnome.org/GNOME/libgtop/-/merge_requests/55) fixar #70. Parsern startade siffertolkningen på kolon i smaps-raden, vilket gav noll för storlek, RSS och delade/privata clean/dirty-fält. Den startar nu efter kolonet. Verifierat med `LIBGTOP_SERVER=:direct ./examples/procmap <pid>` mot systemets `/proc/<pid>/smaps`.
-
-## Epiphany: WebExtension-krasch
-
-[!2205](https://gitlab.gnome.org/GNOME/epiphany/-/merge_requests/2205) fixar #2908. WebKit kan serialisera ett tomt svarsnamn som `NULL`; svarshanteraren använde `strcmp()` och kraschade då webbprocessen. MR:n använder `g_strcmp0()`. Full Meson-konfiguration saknar lokalt beroendet `gck-2`; den NULL-säkra GLib-jämförelsen har syntaxkontrollerats.
-
-## Papers: kontrast i sidlisten
-
-#749 granskades mot aktuell CSS. Papers har ingen lokal färgregel för den berörda sidlisten utan använder GTK/Adwaitas semantiska färger. Ingen hårdkodad CSS-patch skickas utan widget- och temaspecifik reproduktion.
-
-## Epiphany !2205 — grön
-
-Pipeline för WebExtension-fixen passerade och MR:n är mergebar.
-
-## libsecret: intermittenta Secret Service-fel
-
-#115 är triagerad. Rapporten behöver GNOME Keyring- och DBus-spårning för att placera det intermittenta krypteringsfelet; ingen säker libsecret-ändring skickas.
-
-## libgtop !55 — grön
-
-ABI-pipelinen passerade efter att den byggbara basrevisionen användes. MR:n innehåller procmap-fixen för #70 och är redo för granskning.
-
-| 133 | [Crash in `meta_wayland_tablet_update_sprite()` due to NULL `tablet`](https://gitlab.gnome.org/GNOME/mutter/-/work_items/5043) | Skickad som [Mutter !5322](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/5322). Skyddar sprite-uppdateringen mot proximity-händelser utan matchande tablet, vilket tar bort den rapporterade NULL-avrefereringen. |
-
-| 140 | [Crashes with LG webOS builtin chromecast receiver](https://gitlab.gnome.org/GNOME/gnome-network-displays/-/work_items/500) | Skickad som [GNOME Network Displays !259](https://gitlab.gnome.org/GNOME/gnome-network-displays/-/merge_requests/259). Förhindrar rekursiv anslutningsstängning och stack overflow när en Chromecast-mottagare stänger TLS-anslutningen. |
-
-| 141 | [`to_preview_text()` hänger på stora e-postmeddelanden](https://gitlab.gnome.org/GNOME/geary/-/work_items/1712) | Skickad som [Geary !899](https://gitlab.gnome.org/GNOME/geary/-/merge_requests/899). Begränsar den text som normaliseras till 64 KiB och behåller giltig UTF-8. |
-
-| 157 | [MprisSource/MprisPlayer SignalTracker leak on lock screen](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/9410) | Skickad som [GNOME Shell !4406](https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/4406). Frigör MPRIS-spelar- och proxyanslutningar när låsskärmens notifieringsruta tas bort. |
-
-GNOME Shell !4406 passerade pipeline och är mergebar.
-- 2026-09-11: GTK !10371 submitted for #8295: avoid preloading SVG icons in worker threads, preventing Pango Fontconfig font-map races during fallback rasterization.
-- 2026-09-11: GNOME Shell !4408 submitted for #9394: unpack MPRIS metadata once per update to avoid quadratic main-thread work.
-- 2026-09-11: Pango !927 submitted for #900: keep Clang 23's generated unused-global warning non-fatal while retaining the warning.
-- 2026-09-11: Nautilus !2126 submitted for #4321: focus Replace when the file-conflict dialog is shown.
-- 2026-09-11: GNOME Shell !4408 kördes om efter ett ensamt fel i den intermittenta huvudlösa testen `closeWithActiveWindows`; omkörningen passerade och MR:n är mergebar.
-- 2026-09-11: GTK #8399 är redan löst i GTK 4.24 enligt upstream; ingen patch behövs.
-- 2026-09-11: GNOME Control Center #3756 behöver layoutfilens plats och reproduktion. Tecla har redan stöd för `~/.config/xkb`; Shell använder dessutom compositorns aktiva keymap.
-- 2026-09-11: GNOME Settings Daemon #888 saknar status/loggar som identifierar ansvarig dimningskodväg.
-- 2026-09-11: GNOME Characters !182 submitted for #187: return one search-result meta per identifier even when icon-data is unavailable.
-- 2026-09-11: GIMP !3000 submitted for #15742: update color-picker information when exact channel values differ at the same coordinates.
-- 2026-09-11: GNOME Terminal !12 submitted for #8155: pop down the header menu before the delayed fullscreen transition on Wayland.
-
-## MR-kontroll 2026-09-12
-
-- Nautilus [!2125](https://gitlab.gnome.org/GNOME/nautilus/-/merge_requests/2125) stängdes av underhållaren med hänvisning till #1936; den bevakas inte längre.
-- Nautilus [!2126](https://gitlab.gnome.org/GNOME/nautilus/-/merge_requests/2126) uppdaterades enligt granskning: Blueprint använder nu `focus-widget: replace_button` i stället för en särskild `map`-handler. Ny pipeline körs.
-- Epiphany [!2205](https://gitlab.gnome.org/GNOME/epiphany/-/merge_requests/2205) har `Fixes #2908` i commitmeddelandet och är fortsatt grön.
-- GIMP [!3000](https://gitlab.gnome.org/GNOME/gimp/-/merge_requests/3000) använder nu commitprefixet `app/widgets:` och är markerad redo för granskning. Ny pipeline körs.
-- GTK [!10371](https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/10371) kördes om efter ett ensamt fel i det orelaterade X11-testet `gtk:clipboard-x11`; omkörningen pågår.
-- Pango [!927](https://gitlab.gnome.org/GNOME/pango/-/merge_requests/927) faller endast i Windows-testmiljöerna efter lyckat bygge; felen gäller installerade typsnitt, WIC och bidi-tester och påverkas inte av compiler-flaggan i patchen.
-
-## GIMP #16751 — lokaliserade menyvägar i åtgärdssökningen
-
-[GIMP !3002](https://gitlab.gnome.org/GNOME/gimp/-/merge_requests/3002) delar upp menymodellens engelska kanoniska sökväg från den lokaliserade presentationsvägen. Uppslagning av menyobjekt fortsätter använda den kanoniska vägen, medan Action Search nu visar de översatta undermenynamnen. `git diff --check` passerar. Lokal Meson-konfiguration når projektet men saknar `atk`-utvecklingspaketet; upstream-CI bygger ändringen.
-
-## libgnome-games-support #41 — återanvänd poängrader
-
-[libgnome-games-support !59](https://gitlab.gnome.org/GNOME/libgnome-games-support/-/merge_requests/59) skapar poängdialogens spelarcell i `Gtk.SignalListItemFactory.setup` i stället för att skapa en ny `Gtk.Entry` vid varje `bind`. Cellen växlar mellan återanvänd etikett och inmatning och nollställer sin bundna poäng vid `unbind`. `git diff --check` passerar; lokalt saknas `valac`, så CI gör den fulla Vala-kompileringen.
-Senast kontrollerad: 2026-09-12 08:10 CEST — GTK !10371 är nu grön och mergeable; fyra kända externa/baseline-fel återstår.
-
-- Uppföljning 2026-09-12: commit `8d85c0a` regenererade POT-filen efter CI-felet; både native- och Flatpak-jobbet passerade.
-
-- Uppföljning 2026-09-12: commit `f09bf64` ersätter den flytande GMime-grenen med den verifierade källutgåvan 3.2.15, som innehåller `configure`; ny Flatpak-pipeline startad.
-
-## xdg-desktop-portal-gnome #225 — InputCapture-version på GNOME 50
-- Lokal branch: `fix-input-capture-version-50`, commit `a629b1c`.
-- Ändring: annonserar InputCapture API-version 2 i `gnome-50`; main annonserar senare version 3.
-- Verifierat: `git diff --check`. Lokal Meson-konfiguration stoppas av saknat GTK4-utvecklingspaket.
-- Skickad som [xdg-desktop-portal-gnome !272](https://gitlab.gnome.org/GNOME/xdg-desktop-portal-gnome/-/merge_requests/272); CI kör.
-
-- Uppföljning 2026-09-12: Geary !899:s Flatpak-bygg använder nu GMime 3.2.15 och libhandy 1.6.4 som kontrollerade arkivkällor; pipeline `1108830` kör.
-- Uppföljning 2026-09-12: Pango !927:s Windows-fel reproduceras på `main`; de ligger utanför compiler-varningspatchen och lämnas utan orelaterad ändring.
-- Uppföljning 2026-09-12: Geary !899 kompilerar nu med aktuell Vala genom att returnera den konfigurerade eller beräknade språklistan direkt; commit `f29d17f` är pushad och ny pipeline kör.
-- Uppföljning 2026-09-12: Geary !899 pipeline `1108832` passerade Fedora- och Flatpak-jobben efter beroende- och Vala-kompatibilitetsfixarna.
-- Uppföljning 2026-09-12: GNOME Shell !4410 skickad för #9413; kortlivade notifieringssändare får en 500 ms-graceperiod. `tools/run-eslint.sh js/ui/notificationDaemon.js` passerar.
-- Uppföljning 2026-09-12: GNOME Shell !4410 pipeline `1108844` passerade och MR:n är mergebar.
-
-## GNOME Shell #urklippshistorik — ändringssignal
-
-[GNOME Shell !4411](https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/4411) exponerar signalen `changed` på `St.Clipboard` när ägaren till systemurklippet byts. Bygget i CI passerade; den enda testkörningen föll i det befintliga intermittenta testet `closeWithActiveWindows`, och körs om.
-
-- Uppföljning 2026-09-12: GNOME Shell !4411 byggde hela projektet i pipeline `1108847`. Den enda felande testen var `closeWithActiveWindows`; samma test föll i två körningar medan övriga 21 tester passerade. Ändringen berör endast `StClipboard` och testet skapar/förstör testfönster; ingen godtycklig ändring av testet skickas.
-- Baslinje verifierad 2026-09-12: GNOME Shells `main`-pipeline `1108600` för commit `fa82d28c` föll i exakt samma `closeWithActiveWindows`-test; efterföljande `main`-pipeline `1108709` passerade. !4411:s två testfel är därför ett känt intermittent baslinjefel.
-
-## gdk-pixbuf #308 — ICNS-läsning utanför buffert
-
-Lokal commit `80407c1ea` lägger gränskontroller vid varje RLE-läsning och för den avbrutna 128×128-preamble-läsningen. Reproduceraren accepteras på ofixad `master` men avvisas av den patchade laddaren; en giltig RLE-ICNS laddas. Hela lokala testsviten passerar (23 tester). Skickad som [gdk-pixbuf !280](https://gitlab.gnome.org/GNOME/gdk-pixbuf/-/merge_requests/280); CI kör.
-
-- Uppföljning 2026-09-12: gdk-pixbuf !280:s Linux-, sanitizer- och MSYS2-byggen passerar. `style-check-diff` rapporterar en clang-format-diff, men jobbet är uttryckligen advisory (`allow_failure`) och dess egna instruktioner säger att projektets GTK-kodstil går före formatterarens förslag; den befintliga tabbindenteringen i `io-icns.c` behålls. MSVC-bygget passerade. Därmed passerar alla blockande CI-jobb; formatteringsjobbet är fortsatt en icke-blockerande rekommendation.
-
-## Shotwell #5195 — onödiga nätverksläsningar vid import
-
-Skickad som [Shotwell !112](https://gitlab.gnome.org/GNOME/shotwell/-/merge_requests/112), commit `ae34254c`. Kopierade foton analyseras och får miniatyrer från källfilen före kopian; efter kopian uppdateras bara master-sökvägen till målet. Därmed läses inte den nykopierade filens innehåll tillbaka från ett nätverksmonterat bibliotek. `git diff --check` passerar. Lokal Meson-konfiguration saknar `valac`; pipeline `1108865` kör.
-
-## libadwaita #1159 — apply-knapp efter suffixar
-
-Skickad som [libadwaita !1819](https://gitlab.gnome.org/GNOME/libadwaita/-/merge_requests/1819), commit `88f14d20`. Apply-knappen är nu en trailing action efter suffixwidgets, så lösenordsradens visa/dölj-knapp ligger före den. Regressionstestet kontrollerar mallens ordning. `git diff --check` passerar. Lokal konfiguration stoppas av GLib 2.88.0 medan huvudgrenen kräver 2.89.3; CI startar.
-
-## libmanette #53 — egen GLib-main context
-
-Skickad som [libmanette !159](https://gitlab.gnome.org/GNOME/libmanette/-/merge_requests/159), commit `e6daef5`. HID-pollning, evdevs IO-watch och Steam Decks rumble-timeout fästs nu i den tråd-lokala main contexten. Det gör att program med en pushad egen context får händelser där, samtidigt som standardloopen används när ingen egen context finns. `git diff --check` passerar. Lokal Meson-konfiguration stoppas av saknat `libevdev`; CI bygger och testar ändringen.
-
-- Uppföljning 2026-09-12: Epiphany #1859 är redan löst i upstream-MR !2182; ingen dubblett skickades.
-
-## GNOME Connections #209 — F10 i RDP
-
-Skickad som [GNOME Connections !187](https://gitlab.gnome.org/GNOME/gnome-connections/-/merge_requests/187), commit `a21c59c`. När en fjärrdisplay visas konsumeras F10 efter att displayen har tagit emot händelsen, så GTK:s standardnavigering inte flyttar fokus till Tillbaka-knappen. `git diff --check` passerar. Lokal Meson-konfiguration stoppas av saknat `valac`; CI kör.
-
-- Uppföljning 2026-09-12: Shotwell !112:s båda Flatpak-byggen passerade.
-
-## Uppföljning 2026-09-12
-
-- Nautilus [!2127](https://gitlab.gnome.org/GNOME/nautilus/-/merge_requests/2127) passerade alla automatiska jobb: Flatpak, Fedora Rawhide, kodstil, POT och täckning. De återstående ASan- och aarch64-jobben är manuella.
-- GNOME Connections [!187](https://gitlab.gnome.org/GNOME/gnome-connections/-/merge_requests/187) passerade Flatpak; Fedora-jobbet är manuellt.
-- GNOME Shell #9327 är redan löst i glycin [!470](https://gitlab.gnome.org/GNOME/glycin/-/merge_requests/470); ingen dubblett skickas.
-- gThumb [!63](https://gitlab.gnome.org/GNOME/gthumb/-/merge_requests/63) kör Flatpak-CI.
-
-## Console #384 — xdg-terminal-exec
-[Console !198](https://gitlab.gnome.org/GNOME/console/-/merge_requests/198) lägger till `X-ExecArgs=-e` i desktop-filen. Console har redan stöd för `-e`; metadata gör att `xdg-terminal-exec` kan skicka kommandoargument på det sätt som specifikationen anger.
-
-Båda GitLab-pipelines (1108883 och 1108885) är gröna: release-tarball, coverage, Fedora (GCC/Clang), Flatpak (x86_64/aarch64) och samtliga GNOME OS-sanitizerbyggen passerar.
-
-- Uppföljning 2026-09-12: ersatte felaktiga `X-ExecArgs` med kompatibilitetsnyckeln `X-ExecArg`, som den installerade `xdg-terminal-exec` faktiskt läser. En isolerad XDG-miljö väljer `org.gnome.Console.desktop` med den nya desktop-filen. Commit `4ad9d2f` är pushad; pipeline `1108914` passerade helt.
-
-## gtk-frdp / GNOME Connections #203 — RDP-loop vid död värd
-[gtk-frdp !34](https://gitlab.gnome.org/GNOME/gtk-frdp/-/merge_requests/34) ändrar felvägen efter `freerdp_check_event_handles()`: idle-källan stoppas och den befintliga frånkopplingsvägen köas. Det förhindrar att den misslyckade kontrollen körs på nytt omedelbart och lämnar CPU-användningen hög när RDP-värden slutat svara.
-
-MR:n har ingen pipeline eftersom projektet saknar CI-konfiguration. `git diff --check` passerar. Den är öppen och har inga kommentarer eller granskningar.
-
-## Uppföljning 2026-09-12 — pipelineåtgärder
-- GIMP [!3000](https://gitlab.gnome.org/GNOME/gimp/-/merge_requests/3000): clang-format avvek i den ändrade färgramefunktionen. Formateringen är korrigerad i `74ea32dd0f`; ny pipeline 1108894 har passerat commit-logg, clang-format och beroendebygget. Debianbygget kör fortfarande.
-- GNOME Shell [!4411](https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/4411): det enda misslyckade jobbet är den tidigare reproducerade flakiga baslinjetesten `closeWithActiveWindows`; övriga bygg-, lint- och referensjobb passerar.
-- NetworkManager-openvpn [!117](https://gitlab.gnome.org/GNOME/NetworkManager-openvpn/-/merge_requests/117) och Pango [!927](https://gitlab.gnome.org/GNOME/pango/-/merge_requests/927) har plattformsberoende CI-fel som kräver full felutskrift för en källkodsfix; de har inte ändrats på gissning.
-
-## Pango !927 — Windows-CI
-[!927](https://gitlab.gnome.org/GNOME/pango/-/merge_requests/927) fick två uppföljningscommitar efter Windows-felen:
-
-- `0eef67d`: Meson provar `-Wno-error=unused-but-set-global` före användning, så äldre MinGW-GCC inte får en okänd varningsflagga.
-- `d759ec1`: MSYS2-jobbet aktiverar Fontconfig som det redan installerar, så render- och fontliststegen får den dependency de använder.
-
-Pipeline 1108899 kör på GitLab.
-
-## Kalender #1454
-Ingen dubblettpatch: aktuell libadwaita annonserar vid visning av en `AdwToast` dess titel och knapp via `gtk_accessible_announce()`. Detta åtgärdar exakt den Orca-timing som rapporten beskriver.
-
-### Uppföljning: Pango Windows-CI
-Pipeline 1108899 för !927 passerar referens, Fedora och sanitizer. MSYS2 och Visual Studio fallerar, men samma två jobb fallerar också i GNOME/Pangos senaste `main`-pipeline 1108386 (commit `8e74c27c`). Det är en upstream Windows-CI-baslinje och inte en regression i MR:n.
-
-## Kontrollcenter #3756
-Tecla kan ta emot ett layoutnamn men får för `custom` bara id:t, inte den kompositörbyggda keymapen. Skalets ”Show Keyboard Layout” startar Tecla utan layoutargument och visar därför aktuell keymap. En korrekt förhandsvisning av en vald, icke-aktiv custom-källa behöver ett API för just den källans serialiserade keymap; ingen felaktig fallback skickas.
-
-## GNOME Settings Daemon #952
-`find_timezone()` använder rå GeoClue-koordinater och sorterar tzdb:s platser efter geodetiskt avstånd. Systemets tzdb innehåller `America/Cancun` på `+2105-08646`, så den rapporterade platsen bör väljas före Mexico City. Rapporten saknar GSD:s `Got location <lat>,<lon>`-rad; utan den går det inte att skilja felaktig GeoClue-position från en algoritmregression. Ingen zonhårdkodning skickas.
-
-## GIMP #16104
-Ingen dubblettpatch. Aktuell master anropar `gimp_image_resize_to_layers()` efter varje lagerkopia, även när bilden saknar markering, och lagrar minsta lagerförskjutning för in-place-klistring. Detta trimmas bort transparent canvas runt ett mindre kopierat lager och hanterar lager som ligger delvis utanför bilden, vilket är exakt regressionen som rapporterades för 3.2.0.
-
-## GIMP #16163
-Ingen dubblettpatch: upstream [GIMP !2290](https://gitlab.gnome.org/GNOME/gimp/-/merge_requests/2290), ”Undo actions for filter visibility”, är kopplad till ärendet, har passerat CI och är planerad för 3.3.2.
-
-## GNOME Disks #496
-Ingen dubblettpatch. Upstream-commit `9522d080` (”drive: Reconcile block changes by UDisks object identity”, 2026-08-06) uppdaterar managerns blockändringsväg så att återanslutna loop-enheter hittar eller skapar rätt sidomodellpost.
-
-## GIMP #15595 — endian-känslig flyttalsimport
-
-Källkontroll bekräftar felet: `file-raw-data.c` normaliserade heltal men inte 16-/32-bitars flyttalsord. En lokal gren `fix-raw-float-endianness` korrigerar både sammanhängande och planär import samt förhandsvisning. `git diff --check` och ändringsbegränsad `clang-format-diff` är rena. Lokal Meson-konfiguration slutfördes efter installation av GIMP:s utvecklingsberoenden. `file-raw-data.c` kompilerar rent; den lokala aarch64-länkningen faller sedan på befintliga GIMP-UI-symboler. GitLab-pipeline `1108905` passerade helt: Debian-bygg, ABI-kontroll, dokumentation, Meson, och filinsticks-testsviten. GIMP:s MR-formulär förbjuder uttryckligen AI-genererad kod och text, så ingen MR skickas in.
-
-## Kontrollcenter #3374 — standardterminal
-
-[Kontrollcenter !3486](https://gitlab.gnome.org/GNOME/gnome-control-center/-/merge_requests/3486) lägger till Terminal under Standardappar. Raden hittar TerminalEmulator-poster som stöds av `xdg-terminal-exec`, visar aktuell terminal och skriver användarens GNOME- och generella terminalprioritering. Diffen passerar `git diff --check` och ändringsbegränsad clang-format. Lokal byggning blockeras av systemets GTK 4.22/GLib 2.88 medan projektet kräver GTK 4.23/GLib 2.89; GNOME-CI kör.
-
-## Kontrollcenter #3795 — WWAN utan SIM-ID
-
-[Kontrollcenter !3487](https://gitlab.gnome.org/GNOME/gnome-control-center/-/merge_requests/3487) återanvänder enhetens aktiva NetworkManager-profil när ingen sparad profil matchar modemets SIM-ID. Det visar profilens faktiska roaming- och autoconnect-värden och säkerställer att ändringar committas till den befintliga fjärrprofilen. Pipeline `1108925` passerade helt: Fedora, GNOME OS, ASan, UBSan, LSan, statisk analys, täckning och kodstil.
-
-## Kontrollcenter #3800 — bevara vald ljudutgång
-
-MR [!3488](https://gitlab.gnome.org/GNOME/gnome-control-center/-/merge_requests/3488) blockerar komboradens urvals-signal medan en borttagen utgång tas ur modellen. Därmed kan bara ett avsiktligt användarval anropa `pa_context_set_default_sink()`, och PipeWires `default.configured.audio.sink` ändras inte när WirePlumber väljer en tillfällig reservutgång. `git diff --check` passerar; CI körs.
-
-## Kontrollcenter #3803 — Processor på arm64
-
-MR [!3489](https://gitlab.gnome.org/GNOME/gnome-control-center/-/merge_requests/3489) gör Processor-raden användbar när `/proc/cpuinfo` saknar modellnamn, vilket är normalt på upstream arm64. Den använder först enhetsträdets maskinmodell och sedan CPU-arkitekturen som garanterad reserv. `git diff --check` passerar; CI körs.
-
-## Kontrollcenter #3736 — inspelningsnivåer
-
-Utredning visar att nivåmätaren för `GvcMixerSourceOutput` använder `pa_stream_set_monitor_stream()`, som bara är avsedd för uppspelningsströmmar, och ansluter till source-output-indexet i stället för källan som strömmen spelar in från. En förberedd libgnome-volume-control-ändring (`52b39e7`) sparar den korrekta källans index vid varje uppdatering; den klarar syntaxkontroll. Kontrollcentrets följdändring inväntar att libgvc-ändringen kan publiceras.
-
-## Kontrollcenter #3770 — Wayland-avstängning
-
-MR [!3490](https://gitlab.gnome.org/GNOME/gnome-control-center/-/merge_requests/3490) undviker att förstöra öppna genvägsdialoger efter att Wayland-displayen är stängd. Den normala vägen lämnas oförändrad. Branchens fristående style-jobb saknade forkens ref, medan MR-pipelinen nu kör den faktiska ändringen.
-
-## libgnome-volume-control — inspelningskälla
-
-MR [!39](https://gitlab.gnome.org/GNOME/libgnome-volume-control/-/merge_requests/39) exponerar källindexet för varje inspelningsström. Den är beroendet för den förberedda Kontrollcenter-ändringen till #3736. Lokal C-syntaxkontroll passerar.
-
-## Power Saver: Dim Screen ignored (#3812)
-
-- Orsak: `gsd-power-manager` satte en 30-sekunders dimningsvakt i Power Saver innan den kontrollerade `idle-dim`.
-- MR: https://gitlab.gnome.org/GNOME/gnome-settings-daemon/-/merge_requests/494
-- Ändring: kontrollera `idle-dim` före valet av Power Saver- eller normal timeout.
-- Lokal validering: `meson setup` (med valfria orelaterade plugins avstängda) och `meson compile -C build` passerar.
+# GNOME Work Plan
+
+This plan tracks 250 GNOME issues selected by community demand and current relevance. It is an engineering queue, not a promise that every request is suitable for an isolated patch. Each item is first checked for a current reproduction, existing upstream work, ownership boundaries, design requirements, and a testable implementation path.
+
+## Working Rules
+
+- Prefer a small, reviewable fix with a regression test.
+- Do not duplicate an active upstream merge request.
+- Do not replace a required design or security decision with a superficial UI change.
+- Archive every prepared contribution as an ordered patch series with its upstream base.
+- AI assistance is allowed; the final patch still requires technical review and accountable ownership.
+
+## Issue Inventory
+
+The first 50 entries were globally vote-sorted when collected. Entries 51–250 are verified current issues, but are not globally vote-sorted because the source query was rate-limited. Full machine-readable data is in [`issues-250.csv`](issues-250.csv).
+
+| Rank | Selection | Project | Issue | Votes |
+| ---: | --- | --- | --- | ---: |
+| 1 | globally vote-sorted | mutter | [Separate workspaces on multiple monitors](https://gitlab.gnome.org/GNOME/mutter/-/work_items/37) | 207 |
+| 2 | globally vote-sorted | nautilus | [Implement "Jump to file" feature (type ahead / type to seek)](https://gitlab.gnome.org/GNOME/nautilus/-/work_items/1157) | 135 |
+| 3 | globally vote-sorted | geary | [Unified inbox](https://gitlab.gnome.org/GNOME/geary/-/work_items/53) | 92 |
+| 4 | globally vote-sorted | gnome-shell | [Ability to save screenshots to clipboard only (without saving to disk)](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/5208) | 84 |
+| 5 | globally vote-sorted | geary | [Tracking: Transparent encryption and signing with GPG](https://gitlab.gnome.org/GNOME/geary/-/work_items/6) | 75 |
+| 6 | globally vote-sorted | gnome-shell | [Top bar on all monitors](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/4603) | 71 |
+| 7 | globally vote-sorted | gnome-control-center | [Ability to set scroll speed in system settings](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/379) | 71 |
+| 8 | globally vote-sorted | geary | [Port to GTK4](https://gitlab.gnome.org/GNOME/geary/-/work_items/1212) | 70 |
+| 9 | globally vote-sorted | gnome-shell | [Login controls not displayed on all screens](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/3867) | 67 |
+| 10 | globally vote-sorted | gnome-shell | [Rework GNOME Shell's architecture to allow restarting under Wayland without crashing / taking down the spawned apps with it](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/5634) | 54 |
+| 11 | globally vote-sorted | file-roller | [File Roller drag'n'drop extraction to Nautilus folder is broken](https://gitlab.gnome.org/GNOME/file-roller/-/work_items/4) | 53 |
+| 12 | globally vote-sorted | gnome-software | [Quit when inactive](https://gitlab.gnome.org/GNOME/gnome-software/-/work_items/942) | 50 |
+| 13 | globally vote-sorted | gnome-shell | [Wrong keyboard layout in lock screen](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/225) | 49 |
+| 14 | globally vote-sorted | mutter | [Update for the Wayland tearing protocol](https://gitlab.gnome.org/GNOME/mutter/-/work_items/2517) | 48 |
+| 15 | globally vote-sorted | geary | [Ability to "mark all emails as read"](https://gitlab.gnome.org/GNOME/geary/-/work_items/101) | 47 |
+| 16 | globally vote-sorted | mutter | [Disable focus stealing prevention](https://gitlab.gnome.org/GNOME/mutter/-/work_items/673) | 46 |
+| 17 | globally vote-sorted | gtk | [Selecting a folder to save to loses focus on file name](https://gitlab.gnome.org/GNOME/gtk/-/work_items/326) | 44 |
+| 18 | globally vote-sorted | gnome-shell | [Blur semi-transparent backgrounds in some of GNOME Shell's UI components](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/1590) | 43 |
+| 19 | globally vote-sorted | mutter | [Snap to top and bottom (edges) too](https://gitlab.gnome.org/GNOME/mutter/-/work_items/579) | 43 |
+| 20 | globally vote-sorted | gnome-remote-desktop | [Remote desktop with locked local screen](https://gitlab.gnome.org/GNOME/gnome-remote-desktop/-/work_items/16) | 40 |
+| 21 | globally vote-sorted | geary | [Allow sorting/grouping conversations in the list](https://gitlab.gnome.org/GNOME/geary/-/work_items/85) | 39 |
+| 22 | globally vote-sorted | gnome-shell | [OSK needs (at least the option of) modifiers (Ctrl/Alt/Super)](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/181) | 39 |
+| 23 | globally vote-sorted | Initiatives | [Port to GTK4](https://gitlab.gnome.org/GNOME/Initiatives/-/work_items/26) | 38 |
+| 24 | globally vote-sorted | mutter | [Better Window Tiling](https://gitlab.gnome.org/GNOME/mutter/-/work_items/704) | 38 |
+| 25 | globally vote-sorted | mutter | [color management: support scRGB](https://gitlab.gnome.org/GNOME/mutter/-/work_items/4083) | 36 |
+| 26 | globally vote-sorted | gnome-control-center | [Add automatic and manual scheduling for light and dark theme switching](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/2060) | 36 |
+| 27 | globally vote-sorted | gnome-control-center | [Add per-monitor min/max brightness settings](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/1209) | 36 |
+| 28 | globally vote-sorted | gnome-extensions-app | [Extension installation?](https://gitlab.gnome.org/GNOME/gnome-extensions-app/-/work_items/6) | 35 |
+| 29 | globally vote-sorted | gnome-shell | [An easy way to return the Application Grid positions to its default? (Gnome 3.38)](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/3180) | 35 |
+| 30 | globally vote-sorted | gnome-online-accounts | [Cannot login to microsoft office365 "exchange" account with 2fa enabled](https://gitlab.gnome.org/GNOME/gnome-online-accounts/-/work_items/102) | 35 |
+| 31 | globally vote-sorted | mutter | [Fractional Scaling Known issues and TODO](https://gitlab.gnome.org/GNOME/mutter/-/work_items/478) | 35 |
+| 32 | globally vote-sorted | glib | ["Open with other application" will set selected application as default](https://gitlab.gnome.org/GNOME/glib/-/work_items/1026) | 35 |
+| 33 | globally vote-sorted | libadwaita | [Recoloring API](https://gitlab.gnome.org/GNOME/libadwaita/-/work_items/53) | 34 |
+| 34 | globally vote-sorted | seahorse | [Import of certificate with seahorse does not work; Import button stays disabled](https://gitlab.gnome.org/GNOME/seahorse/-/work_items/205) | 34 |
+| 35 | globally vote-sorted | gnome-clocks | [Allow that alarms also beep when gnome-clocks is not running](https://gitlab.gnome.org/GNOME/gnome-clocks/-/work_items/1) | 34 |
+| 36 | globally vote-sorted | gtk | [ListView scrolling sometimes jumps up and down when doing high-resolution scrolling](https://gitlab.gnome.org/GNOME/gtk/-/work_items/6344) | 33 |
+| 37 | globally vote-sorted | console | [provide the option to change the default window size](https://gitlab.gnome.org/GNOME/console/-/work_items/140) | 32 |
+| 38 | globally vote-sorted | gnome-shell | [App grid: Allow uninstalling apps](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/4752) | 32 |
+| 39 | globally vote-sorted | gtk | [GTK 4 Spellcheck Support](https://gitlab.gnome.org/GNOME/gtk/-/work_items/3814) | 32 |
+| 40 | globally vote-sorted | gnome-system-monitor | [Provide GPU and vRAM usage in the Resources tab's graphs and counters](https://gitlab.gnome.org/GNOME/gnome-system-monitor/-/work_items/62) | 32 |
+| 41 | globally vote-sorted | nautilus | [Improve running binaries experience](https://gitlab.gnome.org/GNOME/nautilus/-/work_items/443) | 32 |
+| 42 | globally vote-sorted | mutter | [Mouse not being recorded when screencasting (Even when enabled)](https://gitlab.gnome.org/GNOME/mutter/-/work_items/3182) | 31 |
+| 43 | globally vote-sorted | vte | [Add support for OSC 52](https://gitlab.gnome.org/GNOME/vte/-/work_items/2495) | 31 |
+| 44 | globally vote-sorted | adwaita-icon-theme | [Include additional mimetype icons?](https://gitlab.gnome.org/GNOME/adwaita-icon-theme/-/work_items/24) | 31 |
+| 45 | globally vote-sorted | gnome-shell | [[Feature] Blurred wallpaper as overview background](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/4307) | 30 |
+| 46 | globally vote-sorted | nautilus | [Prompt rename automatically when a new file is created from template](https://gitlab.gnome.org/GNOME/nautilus/-/work_items/524) | 30 |
+| 47 | globally vote-sorted | gnome-shell | [Ability to record system audio in video screencasts](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/5524) | 29 |
+| 48 | globally vote-sorted | gnome-calendar | [More flexible event recurrence UI (repeat every X number of days/weeks/months/years, specific days of the week or month, etc.)](https://gitlab.gnome.org/GNOME/gnome-calendar/-/work_items/272) | 29 |
+| 49 | globally vote-sorted | gnome-software | [Can't zoom in on screenshots](https://gitlab.gnome.org/GNOME/gnome-software/-/work_items/313) | 29 |
+| 50 | globally vote-sorted | gnome-control-center | [New design for fractional scaling setting](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/2516) | 28 |
+| 51 | verified current selection; not globally vote-sorted | nautilus | ["Open in Console": choose which terminal application to open](https://gitlab.gnome.org/GNOME/nautilus/-/work_items/2978) | 22 |
+| 52 | verified current selection; not globally vote-sorted | gnome-control-center | [Default Apps: Add Terminal](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/3374) | 16 |
+| 53 | verified current selection; not globally vote-sorted | vte | [Implementing the Kitty keyboard protocol](https://gitlab.gnome.org/GNOME/vte/-/work_items/2601) | 15 |
+| 54 | verified current selection; not globally vote-sorted | gtk | [Cannot use keyboard shortcut Ctrl+Shift+N to create new folder on non-Latin keyboard layouts](https://gitlab.gnome.org/GNOME/gtk/-/work_items/5384) | 15 |
+| 55 | verified current selection; not globally vote-sorted | gnome-bluetooth | [Allow editing device name for display](https://gitlab.gnome.org/GNOME/gnome-bluetooth/-/work_items/13) | 11 |
+| 56 | verified current selection; not globally vote-sorted | gnome-calendar | [Ability to set / configure (or auto-remember) per-calendar default reminder alarm time delays, for newly created or imported ical events](https://gitlab.gnome.org/GNOME/gnome-calendar/-/work_items/98) | 10 |
+| 57 | verified current selection; not globally vote-sorted | nautilus | [Use zst compression instead of xz](https://gitlab.gnome.org/GNOME/nautilus/-/work_items/1936) | 9 |
+| 58 | verified current selection; not globally vote-sorted | gnome-autoar | [Multiple threads support for (de)compression](https://gitlab.gnome.org/GNOME/gnome-autoar/-/work_items/29) | 7 |
+| 59 | verified current selection; not globally vote-sorted | gnome-control-center | [Support image-based system updates](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/3773) | 7 |
+| 60 | verified current selection; not globally vote-sorted | gnome-shell | [Keyboard layout changes when typing password on lock screen](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/8617) | 5 |
+| 61 | verified current selection; not globally vote-sorted | papers | [Implement tile-based rendering (faster, multithreaded, lower memory usage, etc.)](https://gitlab.gnome.org/GNOME/papers/-/work_items/210) | 4 |
+| 62 | verified current selection; not globally vote-sorted | mutter | [temporary low frame rate after wake from suspend](https://gitlab.gnome.org/GNOME/mutter/-/work_items/4022) | 4 |
+| 63 | verified current selection; not globally vote-sorted | gnome-build-meta | [Move to dbus-broker](https://gitlab.gnome.org/GNOME/gnome-build-meta/-/work_items/709) | 3 |
+| 64 | verified current selection; not globally vote-sorted | mutter | [Mutter on Wayland makes incorrect assumption about StartupNotify key in desktop entries](https://gitlab.gnome.org/GNOME/mutter/-/work_items/1330) | 3 |
+| 65 | verified current selection; not globally vote-sorted | gnome-control-center | [gnome-control-center applications panel does not appear to be populating correctly.](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/3721) | 3 |
+| 66 | verified current selection; not globally vote-sorted | gnome-shell | [notify-send with --app-name doesn't work, notifications are silenced](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/9413) | 2 |
+| 67 | verified current selection; not globally vote-sorted | gnome-software | [Update software repository settings UI](https://gitlab.gnome.org/GNOME/gnome-software/-/work_items/3000) | 2 |
+| 68 | verified current selection; not globally vote-sorted | gnome-system-monitor | [Display swap usage per process](https://gitlab.gnome.org/GNOME/gnome-system-monitor/-/work_items/352) | 2 |
+| 69 | verified current selection; not globally vote-sorted | gtk | [Sends too many text_input.enable() events](https://gitlab.gnome.org/GNOME/gtk/-/work_items/8349) | 2 |
+| 70 | verified current selection; not globally vote-sorted | NetworkManager-openvpn | [nm-openvpn-service-openvpn-helper does not support new dns and resolve domain environment entry format (OpenVPN client 2.6+)](https://gitlab.gnome.org/GNOME/NetworkManager-openvpn/-/work_items/152) | 2 |
+| 71 | verified current selection; not globally vote-sorted | gnome-calendar | [Adaptive event details dialog](https://gitlab.gnome.org/GNOME/gnome-calendar/-/work_items/1205) | 2 |
+| 72 | verified current selection; not globally vote-sorted | gnome-keyring | [DBus race between gcr-prompter and gnome-shell internal prompter for unlocking keyring](https://gitlab.gnome.org/GNOME/gnome-keyring/-/work_items/176) | 2 |
+| 73 | verified current selection; not globally vote-sorted | gnome-shell | [Bluetooth Quick Settings UX: too easy to accidentally disable bluetooth](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/8595) | 2 |
+| 74 | verified current selection; not globally vote-sorted | gtk | [API to override the max number of items in a ListView](https://gitlab.gnome.org/GNOME/gtk/-/work_items/7824) | 2 |
+| 75 | verified current selection; not globally vote-sorted | mutter | [VRR not applying uniformly to Wayland Native applications (Proton games)](https://gitlab.gnome.org/GNOME/mutter/-/work_items/4559) | 2 |
+| 76 | verified current selection; not globally vote-sorted | gnome-build-meta | [no man pages in the base image](https://gitlab.gnome.org/GNOME/gnome-build-meta/-/work_items/1052) | 2 |
+| 77 | verified current selection; not globally vote-sorted | gimp | [Fill and Stroke tools write alpha=0 instead of color on new layers (3.2.4)](https://gitlab.gnome.org/GNOME/gimp/-/work_items/16750) | 1 |
+| 78 | verified current selection; not globally vote-sorted | gnome-control-center | [No way to map a touchpad to a single monitor](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/3517) | 1 |
+| 79 | verified current selection; not globally vote-sorted | gimp | [Scanner doesn't remember export path](https://gitlab.gnome.org/GNOME/gimp/-/work_items/16273) | 1 |
+| 80 | verified current selection; not globally vote-sorted | mutter | [Secondary GPU hot-add with already-connected monitors never triggers monitor reconfiguration](https://gitlab.gnome.org/GNOME/mutter/-/work_items/4617) | 1 |
+| 81 | verified current selection; not globally vote-sorted | NetworkManager-openvpn | [nm-openvpn fails to clean up orphaned tun device and process on unclean VPN disconnect](https://gitlab.gnome.org/GNOME/NetworkManager-openvpn/-/work_items/168) | 1 |
+| 82 | verified current selection; not globally vote-sorted | gnome-software | [Missing icons with gtk 4.23.4](https://gitlab.gnome.org/GNOME/gnome-software/-/work_items/3021) | 1 |
+| 83 | verified current selection; not globally vote-sorted | citemplates | [opendir(/var/lib/flatpak/repo): No such file or directory](https://gitlab.gnome.org/GNOME/citemplates/-/work_items/49) | 1 |
+| 84 | verified current selection; not globally vote-sorted | nautilus | [Nautilus not opening my terminal when clicking `Open in console`](https://gitlab.gnome.org/GNOME/nautilus/-/work_items/3221) | 1 |
+| 85 | verified current selection; not globally vote-sorted | nautilus | ["Open in Terminal" menu item has a different position from "Open in Console"](https://gitlab.gnome.org/GNOME/nautilus/-/work_items/2446) | 1 |
+| 86 | verified current selection; not globally vote-sorted | gdm | [RFE: Separate login and screen unlock PAM stacks](https://gitlab.gnome.org/GNOME/gdm/-/work_items/1098) | 1 |
+| 87 | verified current selection; not globally vote-sorted | gnome-calendar | [Allow setting recurring events to occur on the "last day of the month" (28th, 29th, 30th, 31st day) automatically](https://gitlab.gnome.org/GNOME/gnome-calendar/-/work_items/938) | 1 |
+| 88 | verified current selection; not globally vote-sorted | epiphany | [Empty OpenSearch XML crashes epiphany](https://gitlab.gnome.org/GNOME/epiphany/-/work_items/2954) | 1 |
+| 89 | verified current selection; not globally vote-sorted | gimp | [Null pointer crash when painting in 3.0.2](https://gitlab.gnome.org/GNOME/gimp/-/work_items/13501) | 1 |
+| 90 | verified current selection; not globally vote-sorted | calls | [Dial Pad tab fails to enable use of the SIP provider for a SIP test number](https://gitlab.gnome.org/GNOME/calls/-/work_items/705) | 1 |
+| 91 | verified current selection; not globally vote-sorted | gnome-shell | [Optimize the GPU impact of accessibility zoom](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/9398) | 1 |
+| 92 | verified current selection; not globally vote-sorted | gnome-tweaks | [allow to use default systemd action for power button press, or add hybrid sleep to the drop-down list](https://gitlab.gnome.org/GNOME/gnome-tweaks/-/work_items/78) | 1 |
+| 93 | verified current selection; not globally vote-sorted | xdg-desktop-portal-gnome | [Remote Desktop permission is not persisted for Steam Controller on Wayland](https://gitlab.gnome.org/GNOME/xdg-desktop-portal-gnome/-/work_items/220) | 1 |
+| 94 | verified current selection; not globally vote-sorted | gnome-shell | [My screencast gets fried when background blur is enabled](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/9310) | 1 |
+| 95 | verified current selection; not globally vote-sorted | gnome-build-meta | [Can't login because GDM tries to use fingerprint reader](https://gitlab.gnome.org/GNOME/gnome-build-meta/-/work_items/734) | 1 |
+| 96 | verified current selection; not globally vote-sorted | mobile-broadband-provider-info | [Add support for 901 mcc](https://gitlab.gnome.org/GNOME/mobile-broadband-provider-info/-/work_items/34) | 1 |
+| 97 | verified current selection; not globally vote-sorted | gnome-shell | [[Bug] Cursor themes not working in 51.beta](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/9341) | 1 |
+| 98 | verified current selection; not globally vote-sorted | mutter | [intermittent test failure in stacking tests: trying to create a negative-sized region](https://gitlab.gnome.org/GNOME/mutter/-/work_items/3633) | 1 |
+| 99 | verified current selection; not globally vote-sorted | gimp | [file_save saves without EXIF](https://gitlab.gnome.org/GNOME/gimp/-/work_items/14166) | 1 |
+| 100 | verified current selection; not globally vote-sorted | gimp | [Increase HEIF maximum image size limit on load](https://gitlab.gnome.org/GNOME/gimp/-/work_items/3867) | 1 |
+| 101 | verified current selection; not globally vote-sorted | epiphany | [Autofill Fills CSS-Hidden Fields](https://gitlab.gnome.org/GNOME/epiphany/-/work_items/2951) | 1 |
+| 102 | verified current selection; not globally vote-sorted | gnome-build-meta | [docs: improve the chapter-to-chapter flow of our book](https://gitlab.gnome.org/GNOME/gnome-build-meta/-/work_items/1300) | 1 |
+| 103 | verified current selection; not globally vote-sorted | gnome-calendar | [Figure out what to display/expose to screen reader users](https://gitlab.gnome.org/GNOME/gnome-calendar/-/work_items/1634) | 1 |
+| 104 | verified current selection; not globally vote-sorted | gtk | [Win32: cursor scale is truncated to an integer, doesn't match Windows' own 150%/175% cursor-size tier](https://gitlab.gnome.org/GNOME/gtk/-/work_items/8398) | 1 |
+| 105 | verified current selection; not globally vote-sorted | gtk | [selecting an item immediately after scrolling to the top causes the view to jump back and forth](https://gitlab.gnome.org/GNOME/gtk/-/work_items/8391) | 1 |
+| 106 | verified current selection; not globally vote-sorted | gnome-autoar | [Return value from signal handlers is lost in case of async API](https://gitlab.gnome.org/GNOME/gnome-autoar/-/work_items/42) | 0 |
+| 107 | verified current selection; not globally vote-sorted | gnome-shell | [Run command dialog terminal discoverability and compatibility](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/9412) | 0 |
+| 108 | verified current selection; not globally vote-sorted | glycin | [glycin-svg spins at 100 % CPU forever when the loader's RLIMIT_AS is exhausted](https://gitlab.gnome.org/GNOME/glycin/-/work_items/322) | 0 |
+| 109 | verified current selection; not globally vote-sorted | gtk | [this SVG file is not rendered](https://gitlab.gnome.org/GNOME/gtk/-/work_items/8410) | 0 |
+| 110 | verified current selection; not globally vote-sorted | gweather-locations | [Missing city: Bardstown, KY](https://gitlab.gnome.org/GNOME/gweather-locations/-/work_items/63) | 0 |
+| 111 | verified current selection; not globally vote-sorted | gnome-system-monitor | [Provide a "Copy process ID" action (in properties dialog, and right-click menu?)](https://gitlab.gnome.org/GNOME/gnome-system-monitor/-/work_items/377) | 0 |
+| 112 | verified current selection; not globally vote-sorted | glib | [Unable to include glib.h inside an extern "C" block from C++ code](https://gitlab.gnome.org/GNOME/glib/-/work_items/4046) | 0 |
+| 113 | verified current selection; not globally vote-sorted | gnome-shell | [Unable to extract shell extension](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/8567) | 0 |
+| 114 | verified current selection; not globally vote-sorted | gimp | [Filters > Decor > Addborder  opacity is influenced by setting of brush opacity](https://gitlab.gnome.org/GNOME/gimp/-/work_items/16719) | 0 |
+| 115 | verified current selection; not globally vote-sorted | epiphany | [Pango Markup Injection in Passwords dialog](https://gitlab.gnome.org/GNOME/epiphany/-/work_items/2956) | 0 |
+| 116 | verified current selection; not globally vote-sorted | gimp | [TIFF with Position offset loaded incorrectly with "Open as Layers"](https://gitlab.gnome.org/GNOME/gimp/-/work_items/16756) | 0 |
+| 117 | verified current selection; not globally vote-sorted | gnome-shell | [Ghost/duplicate window in overview after external monitor disconnect](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/9382) | 0 |
+| 118 | verified current selection; not globally vote-sorted | gimp | [Move to snapcraft9/core26 (with Chisel)](https://gitlab.gnome.org/GNOME/gimp/-/work_items/15744) | 0 |
+| 119 | verified current selection; not globally vote-sorted | glycin | [Memory allocation fails on Buildservers with "Operation not permitted (os error 1)"](https://gitlab.gnome.org/GNOME/glycin/-/work_items/324) | 0 |
+| 120 | verified current selection; not globally vote-sorted | papers | [Sidebar content hard to read due to the low contrast between the black (thin) text and the gray background](https://gitlab.gnome.org/GNOME/papers/-/work_items/749) | 0 |
+| 121 | verified current selection; not globally vote-sorted | papers | [feature request: option to disable all link preview popups](https://gitlab.gnome.org/GNOME/papers/-/work_items/744) | 0 |
+| 122 | verified current selection; not globally vote-sorted | gimp | [Spectral Blending Implementation Issues](https://gitlab.gnome.org/GNOME/gimp/-/work_items/16727) | 0 |
+| 123 | verified current selection; not globally vote-sorted | papers | [Unlike Evince, Papers can't open from links auxiliary files in presentation mode](https://gitlab.gnome.org/GNOME/papers/-/work_items/745) | 0 |
+| 124 | verified current selection; not globally vote-sorted | gimp | [Select by Colour doesn't work with some un-merged Colours filters.](https://gitlab.gnome.org/GNOME/gimp/-/work_items/16723) | 0 |
+| 125 | verified current selection; not globally vote-sorted | gimp | [Image > Canvas Size does not work right when there are vector layers and groups involved](https://gitlab.gnome.org/GNOME/gimp/-/work_items/16736) | 0 |
+| 126 | verified current selection; not globally vote-sorted | gnome-control-center | [text size settings panel and "Seeing" settings are inconsistent](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/3725) | 0 |
+| 127 | verified current selection; not globally vote-sorted | gtk | [search-entry: Needs extra touch to show OSK although it has focus](https://gitlab.gnome.org/GNOME/gtk/-/work_items/8409) | 0 |
+| 128 | verified current selection; not globally vote-sorted | libgtop | [procmap incorrectly reads shared_clean, shared_dirty, private_clean and private_dirty under latest Linux kernel's procfs](https://gitlab.gnome.org/GNOME/libgtop/-/work_items/70) | 0 |
+| 129 | verified current selection; not globally vote-sorted | gimp | [Blank UI when launching on macOS](https://gitlab.gnome.org/GNOME/gimp/-/work_items/13203) | 0 |
+| 130 | verified current selection; not globally vote-sorted | mutter | [SIGSEGV when resuming from s2idle on 51.rc](https://gitlab.gnome.org/GNOME/mutter/-/work_items/5042) | 0 |
+| 131 | verified current selection; not globally vote-sorted | libsecret | [secret-tool: Couldn't create item: The secret was transferred or encrypted in an invalid way.](https://gitlab.gnome.org/GNOME/libsecret/-/work_items/115) | 0 |
+| 132 | verified current selection; not globally vote-sorted | snapshot | [No top buttons on Pop OS 24.04 Cosmic](https://gitlab.gnome.org/GNOME/snapshot/-/work_items/371) | 0 |
+| 133 | verified current selection; not globally vote-sorted | mutter | [Crash in `meta_wayland_tablet_update_sprite()` due to NULL `tablet`](https://gitlab.gnome.org/GNOME/mutter/-/work_items/5043) | 0 |
+| 134 | verified current selection; not globally vote-sorted | gtk | [SVG animation yet playing within CSS background](https://gitlab.gnome.org/GNOME/gtk/-/work_items/8408) | 0 |
+| 135 | verified current selection; not globally vote-sorted | gnome-control-center | ["Dim Screen" doesn't work in "Power Saver" mode](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/3812) | 0 |
+| 136 | verified current selection; not globally vote-sorted | mutter | [Black screen on AMD Strix Halo (gfx1150 / DCN 3.5.1) — shadow buffer blit produces no output with atomic modesetting](https://gitlab.gnome.org/GNOME/mutter/-/work_items/4722) | 0 |
+| 137 | verified current selection; not globally vote-sorted | gnome-boxes | [USB redirection gets stuck in an endless reset loop when the device is connected to a USB 3.0 (SuperSpeed) host port](https://gitlab.gnome.org/GNOME/gnome-boxes/-/work_items/1179) | 0 |
+| 138 | verified current selection; not globally vote-sorted | epiphany | [WebExtension API crashes web process: strcmp(NULL) in on_send_message_finish](https://gitlab.gnome.org/GNOME/epiphany/-/work_items/2908) | 0 |
+| 139 | verified current selection; not globally vote-sorted | gnome-remote-desktop | [Failed NLA reconnect leaves orphaned GDM greeter holding screen lock, blocking all subsequent logins](https://gitlab.gnome.org/GNOME/gnome-remote-desktop/-/work_items/318) | 0 |
+| 140 | verified current selection; not globally vote-sorted | gnome-network-displays | [Crashes with LG webOS builtin chromecast receiver](https://gitlab.gnome.org/GNOME/gnome-network-displays/-/work_items/500) | 0 |
+| 141 | verified current selection; not globally vote-sorted | geary | [`to_preview_text()` hangs at 100% CPU on very large email bodies due to unbounded `reduce_whitespace` input](https://gitlab.gnome.org/GNOME/geary/-/work_items/1712) | 0 |
+| 142 | verified current selection; not globally vote-sorted | gnumeric | [Embedded images (JPEG/PNG) not displayed in Flatpak build (1.12.60/1.12.61, GNOME 49/50 runtime)](https://gitlab.gnome.org/GNOME/gnumeric/-/work_items/892) | 0 |
+| 143 | verified current selection; not globally vote-sorted | mutter | [renderer/native: rebuild_views drops queued KMS updates without listener feedback, leaking the onscreen via a posted_frame ref cycle](https://gitlab.gnome.org/GNOME/mutter/-/work_items/4982) | 0 |
+| 144 | verified current selection; not globally vote-sorted | meld | [macOS CI builds broken](https://gitlab.gnome.org/GNOME/meld/-/work_items/994) | 0 |
+| 145 | verified current selection; not globally vote-sorted | mutter | [High GPU usage in 51.rc while the monitor is sleeping](https://gitlab.gnome.org/GNOME/mutter/-/work_items/5041) | 0 |
+| 146 | verified current selection; not globally vote-sorted | gnome-maps | [contact info about iD presets](https://gitlab.gnome.org/GNOME/gnome-maps/-/work_items/1000) | 0 |
+| 147 | verified current selection; not globally vote-sorted | gnote | [Plugin to remove broken links?](https://gitlab.gnome.org/GNOME/gnote/-/work_items/225) | 0 |
+| 148 | verified current selection; not globally vote-sorted | libadwaita | [AdwSidebarItems only wraps when in `page` mode](https://gitlab.gnome.org/GNOME/libadwaita/-/work_items/1164) | 0 |
+| 149 | verified current selection; not globally vote-sorted | gnome-settings-daemon | ["Performance mode temporarily disabled" appears mistakenly](https://gitlab.gnome.org/GNOME/gnome-settings-daemon/-/work_items/960) | 0 |
+| 150 | verified current selection; not globally vote-sorted | gnome-settings-daemon | [Screen dims when Power Saver profile is enabled and "Dim Screen" is disabled](https://gitlab.gnome.org/GNOME/gnome-settings-daemon/-/work_items/888) | 0 |
+| 151 | verified current selection; not globally vote-sorted | citemplates | [Add support for rust-nightly](https://gitlab.gnome.org/GNOME/citemplates/-/work_items/50) | 0 |
+| 152 | verified current selection; not globally vote-sorted | gnome-keyring | [gdbusconnection.c:invoke_get_property_in_idle_cb assertion failure: error != NULL](https://gitlab.gnome.org/GNOME/gnome-keyring/-/work_items/195) | 0 |
+| 153 | verified current selection; not globally vote-sorted | epiphany | [Mouse gestures are broken](https://gitlab.gnome.org/GNOME/epiphany/-/work_items/2955) | 0 |
+| 154 | verified current selection; not globally vote-sorted | gtk | [gdk_surface_handle_event: SIGSEGV dereferencing surface in nautilus (GDK_SURFACE_IS_MAPPED, gdksurface.c:2993)](https://gitlab.gnome.org/GNOME/gtk/-/work_items/8368) | 0 |
+| 155 | verified current selection; not globally vote-sorted | tinysparql | [Segfault in sqlite3VdbeExec (null VdbeCursor) during file-notifier cursor iteration](https://gitlab.gnome.org/GNOME/tinysparql/-/work_items/501) | 0 |
+| 156 | verified current selection; not globally vote-sorted | mutter | [Clicking in Fedora installer (anaconda) sometimes doesn't work since 3f17e68 "clutter/frame-clock: Restrict ASAP dispatch in maybe_reschedule_update"](https://gitlab.gnome.org/GNOME/mutter/-/work_items/5033) | 0 |
+| 157 | verified current selection; not globally vote-sorted | gnome-shell | [MprisSource/MprisPlayer SignalTracker leak on lock screen](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/9410) | 0 |
+| 158 | verified current selection; not globally vote-sorted | gtk | [GtkLabel: set_attributes() does not invalidate the rendered PangoLayout for labels set with set_markup(), once painted](https://gitlab.gnome.org/GNOME/gtk/-/work_items/8407) | 0 |
+| 159 | verified current selection; not globally vote-sorted | nautilus | [Add fallback for "Open in Console"](https://gitlab.gnome.org/GNOME/nautilus/-/work_items/3667) | 0 |
+| 160 | verified current selection; not globally vote-sorted | gnome-control-center | [Fingerprint Enrollment UI Papercuts](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/3798) | 0 |
+| 161 | verified current selection; not globally vote-sorted | shotwell | [Importing (to network drive) results in too many reads](https://gitlab.gnome.org/GNOME/shotwell/-/work_items/5195) | 0 |
+| 162 | verified current selection; not globally vote-sorted | mutter | [Intermittent desktop stutter/lagginess for about 10 seconds after (re)boot or resume on Intel i915](https://gitlab.gnome.org/GNOME/mutter/-/work_items/5023) | 0 |
+| 163 | verified current selection; not globally vote-sorted | epiphany | [Invalid OpenSearch url crashes epiphany](https://gitlab.gnome.org/GNOME/epiphany/-/work_items/2953) | 0 |
+| 164 | verified current selection; not globally vote-sorted | nautilus | [Primary suggested "Replace" action button is not focused when the overwrite confirmation dialog appears](https://gitlab.gnome.org/GNOME/nautilus/-/work_items/4321) | 0 |
+| 165 | verified current selection; not globally vote-sorted | gdk-pixbuf | [(CVE-2026-18090) Heap out-of-bounds read in `uncompress()` in `gdk-pixbuf/io-icns.c`](https://gitlab.gnome.org/GNOME/gdk-pixbuf/-/issues/308) | 0 |
+| 166 | verified current selection; not globally vote-sorted | libgnome-games-support | [Only create score dialog row widgets on setup](https://gitlab.gnome.org/GNOME/libgnome-games-support/-/work_items/41) | 0 |
+| 167 | verified current selection; not globally vote-sorted | chronojump | [forceSensor capture from terminal (autonomous program)](https://gitlab.gnome.org/GNOME/chronojump/-/work_items/1274) | 0 |
+| 168 | verified current selection; not globally vote-sorted | evolution | [MS 365 login using Intune fails](https://gitlab.gnome.org/GNOME/evolution/-/work_items/3389) | 0 |
+| 169 | verified current selection; not globally vote-sorted | gnome-control-center | [Sound panel behaves incorrectly when selecting Bluetooth Handsfree device](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/3710) | 0 |
+| 170 | verified current selection; not globally vote-sorted | libgnome-volume-control | [Drop workaround for pipewire/wireplumber creating additional, unselectable devices](https://gitlab.gnome.org/GNOME/libgnome-volume-control/-/work_items/36) | 0 |
+| 171 | verified current selection; not globally vote-sorted | libgnome-volume-control | [Sound panel stays on "No Input Devices" when the default source is WirePlumber's port-less Bluetooth loopback (A2DP)](https://gitlab.gnome.org/GNOME/libgnome-volume-control/-/work_items/48) | 0 |
+| 172 | verified current selection; not globally vote-sorted | libadwaita | [AdwPasswordEntryRow: the apply button sits before the suffix widgets](https://gitlab.gnome.org/GNOME/libadwaita/-/work_items/1159) | 0 |
+| 173 | verified current selection; not globally vote-sorted | glycin | [(Non-root podman)-containerized native file dialog crashes when container is started with: --cap-add=PERFMON](https://gitlab.gnome.org/GNOME/glycin/-/work_items/325) | 0 |
+| 174 | verified current selection; not globally vote-sorted | console | [Support the org.freedesktop.Terminal1 intent specification](https://gitlab.gnome.org/GNOME/console/-/work_items/461) | 0 |
+| 175 | verified current selection; not globally vote-sorted | console | [xdg-terminal-exec support](https://gitlab.gnome.org/GNOME/console/-/work_items/384) | 0 |
+| 176 | verified current selection; not globally vote-sorted | libmanette | [Global main context (GMainContext) dependency](https://gitlab.gnome.org/GNOME/libmanette/-/work_items/53) | 0 |
+| 177 | verified current selection; not globally vote-sorted | gnome-settings-daemon | [Donation notification for particular campaigns](https://gitlab.gnome.org/GNOME/gnome-settings-daemon/-/work_items/953) | 0 |
+| 178 | verified current selection; not globally vote-sorted | gnome-remote-desktop | [RDP remote login: mouse works in GDM, but sometimes stops working after login](https://gitlab.gnome.org/GNOME/gnome-remote-desktop/-/work_items/363) | 0 |
+| 179 | verified current selection; not globally vote-sorted | gdm | [Unlocking logged-in sessions stuck at password prompt since 50.1](https://gitlab.gnome.org/GNOME/gdm/-/work_items/1093) | 0 |
+| 180 | verified current selection; not globally vote-sorted | mutter | [After Microsoft Edge starts, the mouse cursor stays busy for about 15 seconds, then returns to normal.](https://gitlab.gnome.org/GNOME/mutter/-/work_items/4826) | 0 |
+| 181 | verified current selection; not globally vote-sorted | epiphany | [Web app launched from GNOME Software crashes Epiphany](https://gitlab.gnome.org/GNOME/epiphany/-/work_items/1859) | 0 |
+| 182 | verified current selection; not globally vote-sorted | gnome-connections | [F10 is intercepted by Connections and exits the active RDP display](https://gitlab.gnome.org/GNOME/gnome-connections/-/work_items/209) | 0 |
+| 183 | verified current selection; not globally vote-sorted | gnome-connections | [Potential security issue: local clipboard content should not be indiscriminately sent to the server without the user's consent](https://gitlab.gnome.org/GNOME/gnome-connections/-/work_items/200) | 0 |
+| 184 | verified current selection; not globally vote-sorted | gnome-connections | [High CPU usage when the remote host becomes unresponsive](https://gitlab.gnome.org/GNOME/gnome-connections/-/work_items/203) | 0 |
+| 185 | verified current selection; not globally vote-sorted | gnome-connections | [RDP Session Terminates Instantly When Using Flatpak Connections](https://gitlab.gnome.org/GNOME/gnome-connections/-/work_items/206) | 0 |
+| 186 | verified current selection; not globally vote-sorted | gnome-terminal | [Hamburger menu popover stuck when entering fullscreen on Wayland](https://gitlab.gnome.org/GNOME/gnome-terminal/-/work_items/8155) | 0 |
+| 187 | verified current selection; not globally vote-sorted | mutter | [Mutter fails to adjust calibration of touchpanel upon resolution aspect ratio change](https://gitlab.gnome.org/GNOME/mutter/-/work_items/5040) | 0 |
+| 188 | verified current selection; not globally vote-sorted | pygobject | [GLib.log_set_default_handler is not ported in the Python binding](https://gitlab.gnome.org/GNOME/pygobject/-/work_items/772) | 0 |
+| 189 | verified current selection; not globally vote-sorted | pygobject | [GLib.LogField is serialized with values referenced as raw memory addresses instead of byte strings, hence it can not used from the Python code](https://gitlab.gnome.org/GNOME/pygobject/-/work_items/771) | 0 |
+| 190 | verified current selection; not globally vote-sorted | librsvg | [Crash in downstream Cairo when rendering <text>](https://gitlab.gnome.org/GNOME/librsvg/-/work_items/1239) | 0 |
+| 191 | verified current selection; not globally vote-sorted | gnome-shell | [Scrolling on quick settings volume slider with Bluetooth headphones connected sometimes results in volume jumping to completely different level](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/9406) | 0 |
+| 192 | verified current selection; not globally vote-sorted | glib | [(CVE-2026-86469) (#YWH-PGM9867-289) TOCTOU on GLib through g_file_replace() in gio/glocalfileoutputstream.c via G_FILE_CREATE_REPLACE_DESTINATION leads to Arbitrary File Overwrite](https://gitlab.gnome.org/GNOME/glib/-/work_items/4044) | 0 |
+| 193 | verified current selection; not globally vote-sorted | nautilus | [Pressing ctrl+x (cut) on a file in Recents view should raise an error toast/notification](https://gitlab.gnome.org/GNOME/nautilus/-/work_items/4273) | 0 |
+| 194 | verified current selection; not globally vote-sorted | gnome-shell | [Padding is inconsistent](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/9405) | 0 |
+| 195 | verified current selection; not globally vote-sorted | meld | [slowdown while merging a change into another buffer in 3 way comparison](https://gitlab.gnome.org/GNOME/meld/-/work_items/993) | 0 |
+| 196 | verified current selection; not globally vote-sorted | gnome-disk-utility | [Disk page looks awkward when no information is present](https://gitlab.gnome.org/GNOME/gnome-disk-utility/-/work_items/503) | 0 |
+| 197 | verified current selection; not globally vote-sorted | gthumb | [Videos "Respect orientation" option is misleading](https://gitlab.gnome.org/GNOME/gthumb/-/work_items/410) | 0 |
+| 198 | verified current selection; not globally vote-sorted | gnome-shell | [Shm leak during lock screen](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/9403) | 0 |
+| 199 | verified current selection; not globally vote-sorted | evolution-data-server | [PROCEDURE alarm argument injection bypassing the ATTACH allow-list](https://gitlab.gnome.org/GNOME/evolution-data-server/-/work_items/656) | 0 |
+| 200 | verified current selection; not globally vote-sorted | gnome-shell | [App Grid icons loading delay](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/9327) | 0 |
+| 201 | verified current selection; not globally vote-sorted | gnome-shell | [AppFolderDialog leaks a changed::name GSettings handler → use-after-free crash on app install](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/9384) | 0 |
+| 202 | verified current selection; not globally vote-sorted | gnome-shell | [mpris.js: _updateState() is O(N²) in metadata size, stalling the compositor on large MPRIS Metadata](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/9394) | 0 |
+| 203 | verified current selection; not globally vote-sorted | gimp | [Actions path on Search popup (/) are not localized](https://gitlab.gnome.org/GNOME/gimp/-/work_items/16751) | 0 |
+| 204 | verified current selection; not globally vote-sorted | gtk | [Nautilus "Open With" crashes with SIGSEGV in `cairo_font_options_copy`/`pango_fc_font_map_add` — PangoFcFontMap accessed from a GTask thread pool worker while rendering a symbolic icon](https://gitlab.gnome.org/GNOME/gtk/-/work_items/8295) | 0 |
+| 205 | verified current selection; not globally vote-sorted | mutter | [Clipping of top bar when mouse pointer is on bottom of screen](https://gitlab.gnome.org/GNOME/mutter/-/work_items/4681) | 0 |
+| 206 | verified current selection; not globally vote-sorted | pango | [Build fails with clang 23: -Werror=unused-but-set-variable now includes -Wunused-but-set-global](https://gitlab.gnome.org/GNOME/pango/-/work_items/900) | 0 |
+| 207 | verified current selection; not globally vote-sorted | citemplates | [Update default-rules](https://gitlab.gnome.org/GNOME/citemplates/-/work_items/48) | 0 |
+| 208 | verified current selection; not globally vote-sorted | gimp | [View->Shrink Wrap: erratic behavior with vertical images](https://gitlab.gnome.org/GNOME/gimp/-/work_items/16717) | 0 |
+| 209 | verified current selection; not globally vote-sorted | mutter | [Crash when disabling external monitor in Settings](https://gitlab.gnome.org/GNOME/mutter/-/work_items/2718) | 0 |
+| 210 | verified current selection; not globally vote-sorted | mutter | [[44, 45] fullscreen-maximize test case intermittently fails on ARM: Expected size 800x600 didn't match actual size 500x400](https://gitlab.gnome.org/GNOME/mutter/-/work_items/3050) | 0 |
+| 211 | verified current selection; not globally vote-sorted | mutter | [Intermittent test failure: stacking/restore-size.metatest: 27: Expected size 300x200 didn't match actual size 500x400](https://gitlab.gnome.org/GNOME/mutter/-/work_items/2509) | 0 |
+| 212 | verified current selection; not globally vote-sorted | mutter | [[44, 45] unfullscreen-strut-change test case intermittently fails on ARM: Expected size 800x600 didn't match actual size 500x400](https://gitlab.gnome.org/GNOME/mutter/-/work_items/3051) | 0 |
+| 213 | verified current selection; not globally vote-sorted | mutter | [Clutter /grab/input-only test intermittently failing: assertion failed (expected[i].type == elem->type): (6 == 3)](https://gitlab.gnome.org/GNOME/mutter/-/work_items/3205) | 0 |
+| 214 | verified current selection; not globally vote-sorted | gnome-shell-extensions | [Window List: Sometimes draws on top of fullscreen windows in an auto-hide way.](https://gitlab.gnome.org/GNOME/gnome-shell-extensions/-/work_items/598) | 0 |
+| 215 | verified current selection; not globally vote-sorted | nautilus | [GTK4 Deprecations](https://gitlab.gnome.org/GNOME/nautilus/-/work_items/2722) | 0 |
+| 216 | verified current selection; not globally vote-sorted | libsoup | [(CVE-2026-85197) (#YWH-PGM9867-298) Heap UAF on SoupSession through on_data_read() in libsoup/http2/soup-client-message-io-http2.c via g_input_stream_read_async() in glib/gio/ginputstream.c with GOAWAY frame](https://gitlab.gnome.org/GNOME/libsoup/-/work_items/552) | 0 |
+| 217 | verified current selection; not globally vote-sorted | gjs | [Free `GObject`s declared with the `using` keyword after end of scope](https://gitlab.gnome.org/GNOME/gjs/-/work_items/749) | 0 |
+| 218 | verified current selection; not globally vote-sorted | gnome-settings-daemon | [Automatic Time Zone incorrectly changes America/Cancun to America/Mexico_City after every reboot in Cancun, Mexico](https://gitlab.gnome.org/GNOME/gnome-settings-daemon/-/work_items/952) | 0 |
+| 219 | verified current selection; not globally vote-sorted | xdg-desktop-portal-gnome | [InputCapture reports version 0 on GNOME 50.0, despite full v1 backend support](https://gitlab.gnome.org/GNOME/xdg-desktop-portal-gnome/-/work_items/225) | 0 |
+| 220 | verified current selection; not globally vote-sorted | pygobject | [ASAN g_* reports leaks on pygobject info objects](https://gitlab.gnome.org/GNOME/pygobject/-/work_items/770) | 0 |
+| 221 | verified current selection; not globally vote-sorted | libmks | [MksDisplay requests guest resolution in logical pixels, so the guest is upscaled and blurry under fractional scaling](https://gitlab.gnome.org/GNOME/libmks/-/work_items/22) | 0 |
+| 222 | verified current selection; not globally vote-sorted | librsvg | [panic: Data storage buffer dimension mismatch](https://gitlab.gnome.org/GNOME/librsvg/-/work_items/1215) | 0 |
+| 223 | verified current selection; not globally vote-sorted | librsvg | [Don't process data: URIs for images when fuzzing](https://gitlab.gnome.org/GNOME/librsvg/-/work_items/1238) | 0 |
+| 224 | verified current selection; not globally vote-sorted | gtk | [GtkMenuButton not rendering SVG properly](https://gitlab.gnome.org/GNOME/gtk/-/work_items/8399) | 0 |
+| 225 | verified current selection; not globally vote-sorted | baobab | [Is a non-GIO (e.g. POSIX) fast path acceptable for this utility? Is there an AI usage policy?](https://gitlab.gnome.org/GNOME/baobab/-/work_items/242) | 0 |
+| 226 | verified current selection; not globally vote-sorted | mutter | [non-deterministic test failures](https://gitlab.gnome.org/GNOME/mutter/-/work_items/4035) | 0 |
+| 227 | verified current selection; not globally vote-sorted | gnome-calendar | ["Event deleted" GtkOverlay message is announced by Orca only as it is about to disappear, as focus defaults to the sidebar togglebutton which gets read first](https://gitlab.gnome.org/GNOME/gnome-calendar/-/work_items/1454) | 0 |
+| 228 | verified current selection; not globally vote-sorted | mutter | [wayland-unit test is flaky](https://gitlab.gnome.org/GNOME/mutter/-/work_items/4711) | 0 |
+| 229 | verified current selection; not globally vote-sorted | gimp | [Color picker reports old value on same location across layers with alpha enabled](https://gitlab.gnome.org/GNOME/gimp/-/work_items/15742) | 0 |
+| 230 | verified current selection; not globally vote-sorted | gimp | [The clipboard pattern and brush are the image size and not the copied layer size.](https://gitlab.gnome.org/GNOME/gimp/-/work_items/16104) | 0 |
+| 231 | verified current selection; not globally vote-sorted | gimp | [Separator hover state gets stuck after click away from popup/context menu](https://gitlab.gnome.org/GNOME/gimp/-/work_items/15867) | 0 |
+| 232 | verified current selection; not globally vote-sorted | gimp | [Incorrect Histogram Arithmetic Mean Values](https://gitlab.gnome.org/GNOME/gimp/-/work_items/4332) | 0 |
+| 233 | verified current selection; not globally vote-sorted | gimp | [Raw float image loader ignores endian](https://gitlab.gnome.org/GNOME/gimp/-/work_items/15595) | 0 |
+| 234 | verified current selection; not globally vote-sorted | mutter | [map-after-headless test fails randomly](https://gitlab.gnome.org/GNOME/mutter/-/work_items/5030) | 0 |
+| 235 | verified current selection; not globally vote-sorted | gimp | [Text tool: Non-zero (negative) kerning is broken](https://gitlab.gnome.org/GNOME/gimp/-/work_items/5673) | 0 |
+| 236 | verified current selection; not globally vote-sorted | gnome-shell | [Sound and window management bugs.](https://gitlab.gnome.org/GNOME/gnome-shell/-/work_items/9402) | 0 |
+| 237 | verified current selection; not globally vote-sorted | libsoup | [Cannot load goodhousekeeping.com: Unexpected state changed READ_DATA -> READ_DATA_START, expected to be from READ_HEADERS](https://gitlab.gnome.org/GNOME/libsoup/-/work_items/555) | 0 |
+| 238 | verified current selection; not globally vote-sorted | gnome-control-center | [Previewing a custom keyboard layout from Settings doesn't work](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/3756) | 0 |
+| 239 | verified current selection; not globally vote-sorted | gtk | [build: reenable macos-arm64 when the runner is fixed](https://gitlab.gnome.org/GNOME/gtk/-/work_items/8401) | 0 |
+| 240 | verified current selection; not globally vote-sorted | mutter | [Per-user/per-session selection of primary GPU](https://gitlab.gnome.org/GNOME/mutter/-/work_items/5037) | 0 |
+| 241 | verified current selection; not globally vote-sorted | gnome-characters | [Wrong number of result metas returned by search provider](https://gitlab.gnome.org/GNOME/gnome-characters/-/work_items/187) | 0 |
+| 242 | verified current selection; not globally vote-sorted | gimp | [Changing the visibility of an un-merged filter is omitted from the undo history.](https://gitlab.gnome.org/GNOME/gimp/-/work_items/16163) | 0 |
+| 243 | verified current selection; not globally vote-sorted | vte | [Long IME preedit text is clipped instead of wrapped](https://gitlab.gnome.org/GNOME/vte/-/work_items/2962) | 0 |
+| 244 | verified current selection; not globally vote-sorted | gnome-disk-utility | [[Bug] Drives on sidebar do not always refresh for loop devices](https://gitlab.gnome.org/GNOME/gnome-disk-utility/-/work_items/496) | 0 |
+| 245 | verified current selection; not globally vote-sorted | libxml2 | [regexp: Remaining issues with character ranges and escapes](https://gitlab.gnome.org/GNOME/libxml2/-/work_items/1103) | 0 |
+| 246 | verified current selection; not globally vote-sorted | gdk-pixbuf | [Four memory bugs found in gdk-pixbuf with PoCs](https://gitlab.gnome.org/GNOME/gdk-pixbuf/-/work_items/314) | 0 |
+| 247 | verified current selection; not globally vote-sorted | gnome-control-center | [graphics tablets: Tablet rotation no longer affecting touch](https://gitlab.gnome.org/GNOME/gnome-control-center/-/work_items/3804) | 0 |
+| 248 | verified current selection; not globally vote-sorted | gimp | [GIMP should support SpaceNavigator / 3D Xinput devices](https://gitlab.gnome.org/GNOME/gimp/-/work_items/1050) | 0 |
+| 249 | verified current selection; not globally vote-sorted | gimp | [GeoTiff file opens only in b/w and not in grayscale (due to tags not being read)](https://gitlab.gnome.org/GNOME/gimp/-/work_items/9691) | 0 |
+| 250 | verified current selection; not globally vote-sorted | evince | [Unimplemented annotation: POPPLER_ANNOT_SCREEN](https://gitlab.gnome.org/GNOME/evince/-/work_items/35) | 0 |
+
+## Archived Contribution Series
+
+Each series is stored below `patches/` and can be applied with `git am`. The exact source repository, upstream base, tip commit, and patch filenames are in [`PATCHES.json`](PATCHES.json) and in the series-local `METADATA.json`.
+
+| Project | Branch | Commits | Archive |
+| --- | --- | ---: | --- |
+| console | `xdg-terminal-exec` | 2 | [`xdg-terminal-exec`](patches/console/xdg-terminal-exec) |
+| epiphany | `webextension-null-message` | 1 | [`webextension-null-message`](patches/epiphany/webextension-null-message) |
+| gdk-pixbuf | `icns-rle-bounds` | 1 | [`icns-rle-bounds`](patches/gdk-pixbuf/icns-rle-bounds) |
+| geary | `preview-text-input-limit` | 6 | [`preview-text-input-limit`](patches/geary/preview-text-input-limit) |
+| gimp | `addborder-opacity` | 1 | [`addborder-opacity`](patches/gimp/addborder-opacity) |
+| gimp | `fix-action-search-localized-menu-path` | 1 | [`fix-action-search-localized-menu-path`](patches/gimp/fix-action-search-localized-menu-path) |
+| gimp | `fix-color-picker-exact-samples` | 3 | [`fix-color-picker-exact-samples`](patches/gimp/fix-color-picker-exact-samples) |
+| gimp | `fix-raw-float-endianness` | 1 | [`fix-raw-float-endianness`](patches/gimp/fix-raw-float-endianness) |
+| gnome-autoar | `async-signal-return` | 1 | [`async-signal-return`](patches/gnome-autoar/async-signal-return) |
+| gnome-characters | `fix-search-result-metas` | 1 | [`fix-search-result-metas`](patches/gnome-characters/fix-search-result-metas) |
+| gnome-connections | `rdp-pass-f10` | 1 | [`rdp-pass-f10`](patches/gnome-connections/rdp-pass-f10) |
+| gnome-control-center | `feature-default-terminal` | 2 | [`feature-default-terminal`](patches/gnome-control-center/feature-default-terminal) |
+| gnome-control-center | `fix-about-arm-cpu-info` | 2 | [`fix-about-arm-cpu-info`](patches/gnome-control-center/fix-about-arm-cpu-info) |
+| gnome-control-center | `fix-global-shortcuts-wayland-shutdown` | 1 | [`fix-global-shortcuts-wayland-shutdown`](patches/gnome-control-center/fix-global-shortcuts-wayland-shutdown) |
+| gnome-control-center | `fix-input-level-source` | 1 | [`fix-input-level-source`](patches/gnome-control-center/fix-input-level-source) |
+| gnome-control-center | `fix-sound-preserve-configured-sink` | 1 | [`fix-sound-preserve-configured-sink`](patches/gnome-control-center/fix-sound-preserve-configured-sink) |
+| gnome-control-center | `fix-wwan-unspecified-sim` | 1 | [`fix-wwan-unspecified-sim`](patches/gnome-control-center/fix-wwan-unspecified-sim) |
+| gnome-network-displays | `ctrl-close-reentrancy` | 2 | [`ctrl-close-reentrancy`](patches/gnome-network-displays/ctrl-close-reentrancy) |
+| gnome-settings-daemon | `fix-power-saver-idle-dim` | 2 | [`fix-power-saver-idle-dim`](patches/gnome-settings-daemon/fix-power-saver-idle-dim) |
+| gnome-shell | `app-folder-dialog-signal-cleanup` | 1 | [`app-folder-dialog-signal-cleanup`](patches/gnome-shell/app-folder-dialog-signal-cleanup) |
+| gnome-shell | `mpris-cleanup-isolated` | 1 | [`mpris-cleanup-isolated`](patches/gnome-shell/mpris-cleanup-isolated) |
+| gnome-shell | `mpris-metadata-unpack` | 1 | [`mpris-metadata-unpack`](patches/gnome-shell/mpris-metadata-unpack) |
+| gnome-shell | `notification-sender-grace` | 1 | [`notification-sender-grace`](patches/gnome-shell/notification-sender-grace) |
+| gnome-shell | `work/screenshot-recent-files-fix` | 1 | [`work-screenshot-recent-files-fix`](patches/gnome-shell/work-screenshot-recent-files-fix) |
+| gnome-shell | `work/screenshot-save-to-disk` | 1 | [`work-screenshot-save-to-disk`](patches/gnome-shell/work-screenshot-save-to-disk) |
+| gnome-terminal | `fix-fullscreen-menu-popover` | 1 | [`fix-fullscreen-menu-popover`](patches/gnome-terminal/fix-fullscreen-menu-popover) |
+| gthumb | `clarify-video-orientation` | 1 | [`clarify-video-orientation`](patches/gthumb/clarify-video-orientation) |
+| gtk | `avoid-svg-preload` | 1 | [`avoid-svg-preload`](patches/gtk/avoid-svg-preload) |
+| gtk-frdp | `close-on-event-check-failure` | 1 | [`close-on-event-check-failure`](patches/gtk-frdp/close-on-event-check-failure) |
+| libadwaita | `entry-row-apply-after-suffix` | 1 | [`entry-row-apply-after-suffix`](patches/libadwaita/entry-row-apply-after-suffix) |
+| libgnome-games-support | `fix-score-dialog-row-factory` | 1 | [`fix-score-dialog-row-factory`](patches/libgnome-games-support/fix-score-dialog-row-factory) |
+| libgnome-volume-control | `fix-recording-level-source` | 1 | [`fix-recording-level-source`](patches/libgnome-volume-control/fix-recording-level-source) |
+| libgtop | `procmap-smaps-values` | 2 | [`procmap-smaps-values`](patches/libgtop/procmap-smaps-values) |
+| libgtop | `work/gpu-metrics-port` | 2 | [`work-gpu-metrics-port`](patches/libgtop/work-gpu-metrics-port) |
+| libmanette | `thread-main-context` | 1 | [`thread-main-context`](patches/libmanette/thread-main-context) |
+| nautilus | `compression-tar-zstd` | 1 | [`compression-tar-zstd`](patches/nautilus/compression-tar-zstd) |
+| nautilus | `cut-recent-feedback` | 1 | [`cut-recent-feedback`](patches/nautilus/cut-recent-feedback) |
+| nautilus | `focus-conflict-replace` | 1 | [`focus-conflict-replace`](patches/nautilus/focus-conflict-replace) |
+| NetworkManager-openvpn | `ci-const-correctness` | 1 | [`ci-const-correctness`](patches/NetworkManager-openvpn/ci-const-correctness) |
+| NetworkManager-openvpn | `openvpn-2-6-dns-options` | 1 | [`openvpn-2-6-dns-options`](patches/NetworkManager-openvpn/openvpn-2-6-dns-options) |
+| pango | `ci-windows-fontconfig` | 1 | [`ci-windows-fontconfig`](patches/pango/ci-windows-fontconfig) |
+| pango | `clang23-unused-global` | 3 | [`clang23-unused-global`](patches/pango/clang23-unused-global) |
+| shotwell | `prepare-before-copy` | 1 | [`prepare-before-copy`](patches/shotwell/prepare-before-copy) |
+| xdg-desktop-portal-gnome | `fix-input-capture-version-50` | 1 | [`fix-input-capture-version-50`](patches/xdg-desktop-portal-gnome/fix-input-capture-version-50) |
+
+## Known Dependencies and Follow-up
+
+- The GNOME Control Center recording-level patch depends on the accompanying libgnome-volume-control API patch.
+- The Power Saver patch includes a regression test that fails against the previous behaviour and passes with the fix.
+- Some archived series already have upstream merge requests. They remain here so their work is available while GitLab access or review is unavailable.
+- GitLab status, review comments, and pipelines must be rechecked before any archived series is resubmitted upstream.
