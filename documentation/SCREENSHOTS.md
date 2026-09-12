@@ -10,6 +10,7 @@ App screenshots show the current local build in English. The Calendar image is a
 | Command Shelf | [command-shelf.png](screenshots/command-shelf.png) | Named local snippets and explicit clipboard copying. |
 | Name Shift | [name-shift.png](screenshots/name-shift.png) | A valid local rename preview before the explicit rename action is applied. |
 | Extension Pack Installer | [extension-pack-installer.png](screenshots/extension-pack-installer.png) | A validated local extension archive and explicit install action. |
+| Flatpak Remove | [flatpak-remove.png](screenshots/flatpak-remove.png) | The local Flatpak removal UI. |
 
 For patches without a visible interface, `VALIDATION.md` records the testable behavior and commands instead of inventing a visual result.
 
