@@ -1,3 +1,13 @@
+## GNOME Calendar: configurable repeat intervals
+
+Patch archive: `patches/gnome-calendar/recurrence-interval/`
+
+- The patch applies cleanly to a fresh worktree at the recorded base revision.
+- `blueprint-compiler compile src/gui/event-editor/gcal-schedule-section.blp` passed.
+- The three modified C files compiled with Meson's generated compiler commands.
+- A focused schedule-model regression test covers an interval of two, clamps zero to one, and confirms that the immutable prior schedule remains unchanged. The existing Calendar test binary cannot be linked locally because the complete build is stopped by three unrelated Blueprint 0.19 compatibility errors.
+- The event editor exposes a numeric **Repeat Every** control for daily, weekday, weekly, monthly, and yearly recurrences. iCalendar `INTERVAL` is retained on load and written back when the event is saved.
+
 ## GNOME System Monitor: per-process swap usage
 
 Patch archive: `patches/gnome-system-monitor/process-swap/`

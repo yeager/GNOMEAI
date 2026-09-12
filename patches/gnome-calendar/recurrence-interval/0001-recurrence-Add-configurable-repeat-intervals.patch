@@ -1,0 +1,334 @@
+From 908307b2c203e6e17437b8fd02d3fdf322f42f5a Mon Sep 17 00:00:00 2001
+From: yeager <yeager@users.noreply.github.com>
+Date: Sat, 12 Sep 2026 14:43:25 +0200
+Subject: [PATCH] recurrence: Add configurable repeat intervals
+
+---
+ src/core/gcal-recurrence.c                    | 10 ++++
+ src/core/gcal-recurrence.h                    |  1 +
+ src/gui/event-editor/gcal-event-schedule.c    | 32 +++++++++++++
+ src/gui/event-editor/gcal-event-schedule.h    |  2 +
+ .../event-editor/gcal-schedule-section.blp    | 27 +++++++++++
+ src/gui/event-editor/gcal-schedule-section.c  | 48 +++++++++++++++++++
+ 6 files changed, 120 insertions(+)
+
+diff --git a/src/core/gcal-recurrence.c b/src/core/gcal-recurrence.c
+index 3d27103..98bc63d 100644
+--- a/src/core/gcal-recurrence.c
++++ b/src/core/gcal-recurrence.c
+@@ -50,6 +50,7 @@ gcal_recurrence_new (void)
+ 
+   new_recur->frequency = GCAL_RECURRENCE_NO_REPEAT;
+   new_recur->limit_type = GCAL_RECURRENCE_FOREVER;
++  new_recur->interval = 1;
+ 
+   new_recur->limit.until = NULL;
+   new_recur->limit.count = 0;
+@@ -78,6 +79,7 @@ gcal_recurrence_copy (GcalRecurrence *recur)
+ 
+   new_recur->frequency = recur->frequency;
+   new_recur->limit_type = recur->limit_type;
++  new_recur->interval = recur->interval;
+ 
+   if (recur->limit_type == GCAL_RECURRENCE_UNTIL && recur->limit.until)
+     new_recur->limit.until = g_date_time_ref (recur->limit.until);
+@@ -133,6 +135,9 @@ gcal_recurrence_is_equal (GcalRecurrence *recur1,
+   if (recur1->limit_type != recur2->limit_type)
+     return FALSE;
+ 
++  if (recur1->interval != recur2->interval)
++    return FALSE;
++
+   if (recur1->limit_type == GCAL_RECURRENCE_UNTIL)
+     {
+       if (!g_date_time_equal (recur1->limit.until, recur2->limit.until))
+@@ -214,6 +219,8 @@ gcal_recurrence_parse_recurrence_rules (ECalComponent *comp)
+         recur->frequency = GCAL_RECURRENCE_OTHER;
+     }
+ 
++  recur->interval = MAX (1, i_cal_recurrence_get_interval (rrule));
++
+   if (i_cal_recurrence_get_count (rrule) > 0)
+     {
+       recur->limit_type = GCAL_RECURRENCE_COUNT;
+@@ -302,6 +309,9 @@ gcal_recurrence_to_rrule (GcalRecurrence *recur)
+       break;
+     }
+ 
++  if (recur->frequency != GCAL_RECURRENCE_NO_REPEAT)
++    i_cal_recurrence_set_interval (rrule, MAX (1, recur->interval));
++
+   switch (recur->limit_type)
+     {
+     case GCAL_RECURRENCE_COUNT:
+diff --git a/src/core/gcal-recurrence.h b/src/core/gcal-recurrence.h
+index 946b971..73fbf63 100644
+--- a/src/core/gcal-recurrence.h
++++ b/src/core/gcal-recurrence.h
+@@ -60,6 +60,7 @@ struct _GcalRecurrence
+ 
+   GcalRecurrenceFrequency  frequency;
+   GcalRecurrenceLimitType  limit_type;
++  guint                    interval;
+ 
+   struct
+   {
+diff --git a/src/gui/event-editor/gcal-event-schedule.c b/src/gui/event-editor/gcal-event-schedule.c
+index 7eee34b..f048063 100644
+--- a/src/gui/event-editor/gcal-event-schedule.c
++++ b/src/gui/event-editor/gcal-event-schedule.c
+@@ -371,6 +371,20 @@ gcal_event_schedule_set_recur_limit_type (const GcalEventSchedule *values,
+   return copy;
+ }
+ 
++GcalEventSchedule *
++gcal_event_schedule_set_recurrence_interval (const GcalEventSchedule *values,
++                                              guint                    interval)
++{
++  GcalEventSchedule *copy = gcal_event_schedule_copy (values);
++
++  g_assert (copy->curr.recur != NULL);
++  g_assert (copy->curr.recur->frequency != GCAL_RECURRENCE_NO_REPEAT);
++
++  copy->curr.recur->interval = MAX (1, interval);
++
++  return copy;
++}
++
+ GcalEventSchedule *
+ gcal_event_schedule_set_recurrence_count (const GcalEventSchedule *values,
+                                           guint count)
+@@ -636,6 +650,22 @@ test_recur_changes_to_no_repeat (void)
+   g_assert_null (new_recur);
+ }
+ 
++static void
++test_recur_changes_interval (void)
++{
++  g_autoptr (GcalEventSchedule) values = gcal_event_schedule_with_date_times ("20250303T10:00:00-06:00",
++                                                                                "20250303T11:00:00-06:00",
++                                                                                FALSE);
++  g_autoptr (GcalEventSchedule) recurring = gcal_event_schedule_set_recur_frequency (values,
++                                                                                        GCAL_RECURRENCE_WEEKLY);
++  g_autoptr (GcalEventSchedule) interval_two = gcal_event_schedule_set_recurrence_interval (recurring, 2);
++  g_autoptr (GcalEventSchedule) interval_zero = gcal_event_schedule_set_recurrence_interval (recurring, 0);
++
++  g_assert_cmpuint (interval_two->curr.recur->interval, ==, 2);
++  g_assert_cmpuint (interval_zero->curr.recur->interval, ==, 1);
++  g_assert_cmpuint (recurring->curr.recur->interval, ==, 1);
++}
++
+ static void
+ test_recur_changes_limit_type_to_count (void)
+ {
+@@ -675,6 +705,8 @@ gcal_event_schedule_add_tests (void)
+                    test_43_switching_to_all_day_preserves_timezones);
+   g_test_add_func ("/event_editor/event_schedule/recur_changes_to_no_repeat",
+                    test_recur_changes_to_no_repeat);
++  g_test_add_func ("/event_editor/event_schedule/recur_changes_interval",
++                   test_recur_changes_interval);
+   g_test_add_func ("/event_editor/event_schedule/recur_changes_limit_type_to_count",
+                    test_recur_changes_limit_type_to_count);
+   g_test_add_func ("/event_editor/event_schedule/recur_changes_limit_type_to_until",
+diff --git a/src/gui/event-editor/gcal-event-schedule.h b/src/gui/event-editor/gcal-event-schedule.h
+index a7a83c5..c52f48e 100644
+--- a/src/gui/event-editor/gcal-event-schedule.h
++++ b/src/gui/event-editor/gcal-event-schedule.h
+@@ -76,6 +76,8 @@ GcalEventSchedule  *gcal_event_schedule_set_recur_frequency     (const GcalEvent
+                                                                  GcalRecurrenceFrequency  frequency);
+ GcalEventSchedule  *gcal_event_schedule_set_recur_limit_type    (const GcalEventSchedule *values,
+                                                                  GcalRecurrenceLimitType  limit_type);
++GcalEventSchedule  *gcal_event_schedule_set_recurrence_interval (const GcalEventSchedule *values,
++                                                                 guint                    interval);
+ GcalEventSchedule  *gcal_event_schedule_set_recurrence_count    (const GcalEventSchedule *values,
+                                                                  guint                    count);
+ GcalEventSchedule  *gcal_event_schedule_set_recurrence_until    (const GcalEventSchedule *values,
+diff --git a/src/gui/event-editor/gcal-schedule-section.blp b/src/gui/event-editor/gcal-schedule-section.blp
+index ef2a3fd..a5bab5b 100644
+--- a/src/gui/event-editor/gcal-schedule-section.blp
++++ b/src/gui/event-editor/gcal-schedule-section.blp
+@@ -82,6 +82,24 @@ template $GcalScheduleSection: $GcalEventEditorSection {
+       notify::selected-item => $on_repeat_type_changed_cb();
+     }
+ 
++    Adw.ActionRow repeat_interval_row {
++      title: _("Repeat Every");
++      activatable-widget: repeat_interval_spin;
++
++      [suffix]
++      SpinButton repeat_interval_spin {
++        numeric: true;
++        adjustment: repeat_interval_adjustment;
++        valign: center;
++        value-changed => $on_repeat_interval_changed_cb() swapped;
++      }
++
++      [suffix]
++      Label repeat_interval_unit_label {
++        valign: center;
++      }
++    }
++
+     Adw.ComboRow repeat_duration_combo {
+       title: _("End Repeat");
+       valign: center;
+@@ -133,3 +151,12 @@ Adjustment number_of_occurrences_adjustment {
+   page-size: 10;
+   value: 2;
+ }
++
++Adjustment repeat_interval_adjustment {
++  lower: 1;
++  upper: 999;
++  step-increment: 1;
++  page-increment: 10;
++  page-size: 10;
++  value: 1;
++}
+diff --git a/src/gui/event-editor/gcal-schedule-section.c b/src/gui/event-editor/gcal-schedule-section.c
+index 32a9f52..5e57a55 100644
+--- a/src/gui/event-editor/gcal-schedule-section.c
++++ b/src/gui/event-editor/gcal-schedule-section.c
+@@ -46,6 +46,9 @@ struct _GcalScheduleSection
+   GcalDateTimeChooser *end_date_time_chooser;
+   GtkWidget           *number_of_occurrences_spin;
+   GtkWidget           *repeat_combo;
++  GtkWidget           *repeat_interval_row;
++  GtkWidget           *repeat_interval_spin;
++  GtkWidget           *repeat_interval_unit_label;
+   GtkWidget           *repeat_duration_combo;
+   GtkWidget           *until_date_selector;
+ };
+@@ -72,10 +75,12 @@ typedef struct
+ 
+   struct {
+     gboolean duration_combo_visible;
++    gboolean interval_visible;
+     gboolean number_of_occurrences_visible;
+     gboolean until_date_visible;
+     GcalRecurrenceFrequency frequency;
+     GcalRecurrenceLimitType limit_type;
++    guint interval;
+     guint limit_count;
+     GDateTime *limit_until;
+   } recurrence;
+@@ -108,6 +113,7 @@ static void          on_schedule_type_changed_cb                 (GtkWidget
+                                                                   GcalScheduleSection *self);
+ 
+ static void          on_number_of_occurrences_changed_cb         (GcalScheduleSection *self);
++static void          on_repeat_interval_changed_cb               (GcalScheduleSection *self);
+ static void          on_until_date_changed_cb                    (GcalScheduleSection *self);
+ 
+ static WidgetState *
+@@ -160,7 +166,9 @@ widget_state_from_values (const GcalEventSchedule *values)
+   if (values->curr.recur && values->curr.recur->frequency != GCAL_RECURRENCE_NO_REPEAT)
+     {
+       state->recurrence.duration_combo_visible = TRUE;
++      state->recurrence.interval_visible = TRUE;
+       state->recurrence.frequency = values->curr.recur->frequency;
++      state->recurrence.interval = MAX (1, values->curr.recur->interval);
+       state->recurrence.limit_type = values->curr.recur->limit_type;
+ 
+       switch (values->curr.recur->limit_type)
+@@ -186,10 +194,12 @@ widget_state_from_values (const GcalEventSchedule *values)
+   else
+     {
+       state->recurrence.duration_combo_visible = FALSE;
++      state->recurrence.interval_visible = FALSE;
+       state->recurrence.number_of_occurrences_visible = FALSE;
+       state->recurrence.until_date_visible = FALSE;
+       state->recurrence.frequency = GCAL_RECURRENCE_NO_REPEAT;
+       state->recurrence.limit_type = GCAL_RECURRENCE_FOREVER;
++      state->recurrence.interval = 1;
+       state->recurrence.limit_count = 0;
+       state->recurrence.limit_until = NULL;
+     }
+@@ -255,12 +265,32 @@ remove_recurrence_properties (GcalEvent *event)
+   e_cal_component_commit_sequence (comp);
+ }
+ 
++static const char *
++recurrence_interval_unit (GcalRecurrenceFrequency frequency)
++{
++  switch (frequency)
++    {
++    case GCAL_RECURRENCE_DAILY:
++      return _("Days");
++    case GCAL_RECURRENCE_MON_FRI:
++    case GCAL_RECURRENCE_WEEKLY:
++      return _("Weeks");
++    case GCAL_RECURRENCE_MONTHLY:
++      return _("Months");
++    case GCAL_RECURRENCE_YEARLY:
++      return _("Years");
++    default:
++      return "";
++    }
++}
++
+ static void
+ update_widgets (GcalScheduleSection *self,
+                 WidgetState         *state)
+ {
+   g_signal_handlers_block_by_func (self->schedule_type_stack, on_schedule_type_changed_cb, self);
+   g_signal_handlers_block_by_func (self->number_of_occurrences_spin, on_number_of_occurrences_changed_cb, self);
++  g_signal_handlers_block_by_func (self->repeat_interval_spin, on_repeat_interval_changed_cb, self);
+   g_signal_handlers_block_by_func (self->until_date_selector, on_until_date_changed_cb, self);
+   block_date_signals (self);
+ 
+@@ -284,6 +314,11 @@ update_widgets (GcalScheduleSection *self,
+     }
+ 
+   /* Recurrences */
++  gtk_widget_set_visible (self->repeat_interval_row, state->recurrence.interval_visible);
++  gtk_spin_button_set_value (GTK_SPIN_BUTTON (self->repeat_interval_spin), state->recurrence.interval);
++  gtk_label_set_label (GTK_LABEL (self->repeat_interval_unit_label),
++                       recurrence_interval_unit (state->recurrence.frequency));
++
+   gtk_widget_set_visible (self->repeat_duration_combo, state->recurrence.duration_combo_visible);
+ 
+   adw_combo_row_set_selected (ADW_COMBO_ROW (self->repeat_combo), state->recurrence.frequency);
+@@ -304,6 +339,7 @@ update_widgets (GcalScheduleSection *self,
+ 
+   unblock_date_signals (self);
+   g_signal_handlers_unblock_by_func (self->until_date_selector, on_until_date_changed_cb, self);
++  g_signal_handlers_unblock_by_func (self->repeat_interval_spin, on_repeat_interval_changed_cb, self);
+   g_signal_handlers_unblock_by_func (self->number_of_occurrences_spin, on_number_of_occurrences_changed_cb, self);
+   g_signal_handlers_unblock_by_func (self->schedule_type_stack, on_schedule_type_changed_cb, self);
+ }
+@@ -451,6 +487,14 @@ get_recurrence_frequency (GcalScheduleSection *self)
+   return (GcalRecurrenceFrequency) item;
+ }
+ 
++static void
++on_repeat_interval_changed_cb (GcalScheduleSection *self)
++{
++  guint interval = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (self->repeat_interval_spin));
++  GcalEventSchedule *updated = gcal_event_schedule_set_recurrence_interval (self->values, interval);
++  update_from_event_schedule (self, updated);
++}
++
+ static void
+ on_repeat_duration_changed_cb (GtkWidget           *widget,
+                                GParamSpec          *pspec,
+@@ -553,6 +597,9 @@ gcal_schedule_section_class_init (GcalScheduleSectionClass *klass)
+   gtk_widget_class_bind_template_child (widget_class, GcalScheduleSection, end_date_time_chooser);
+   gtk_widget_class_bind_template_child (widget_class, GcalScheduleSection, number_of_occurrences_spin);
+   gtk_widget_class_bind_template_child (widget_class, GcalScheduleSection, repeat_combo);
++  gtk_widget_class_bind_template_child (widget_class, GcalScheduleSection, repeat_interval_row);
++  gtk_widget_class_bind_template_child (widget_class, GcalScheduleSection, repeat_interval_spin);
++  gtk_widget_class_bind_template_child (widget_class, GcalScheduleSection, repeat_interval_unit_label);
+   gtk_widget_class_bind_template_child (widget_class, GcalScheduleSection, repeat_duration_combo);
+   gtk_widget_class_bind_template_child (widget_class, GcalScheduleSection, until_date_selector);
+ 
+@@ -560,6 +607,7 @@ gcal_schedule_section_class_init (GcalScheduleSectionClass *klass)
+   gtk_widget_class_bind_template_callback (widget_class, on_end_date_changed_cb);
+   gtk_widget_class_bind_template_callback (widget_class, on_start_date_time_changed_cb);
+   gtk_widget_class_bind_template_callback (widget_class, on_end_date_time_changed_cb);
++  gtk_widget_class_bind_template_callback (widget_class, on_repeat_interval_changed_cb);
+   gtk_widget_class_bind_template_callback (widget_class, on_repeat_duration_changed_cb);
+   gtk_widget_class_bind_template_callback (widget_class, on_repeat_type_changed_cb);
+   gtk_widget_class_bind_template_callback (widget_class, on_number_of_occurrences_changed_cb);
+-- 
+2.53.0
+

@@ -1,0 +1,22 @@
+{
+  "project": "gnome-calendar",
+  "series": "recurrence-interval",
+  "source_branch": "main",
+  "base": "89ff82924b092302e8be36bf569ac614d248bd77",
+  "tip": "908307b2c203e6e17437b8fd02d3fdf322f42f5a",
+  "commits": [
+    "908307b2c203e6e17437b8fd02d3fdf322f42f5a"
+  ],
+  "patches": [
+    "0001-recurrence-Add-configurable-repeat-intervals.patch"
+  ],
+  "archive_directory": "patches/gnome-calendar/recurrence-interval",
+  "validation": {
+    "commands": [
+      "git apply --check on a clean worktree at the recorded base",
+      "blueprint-compiler compile src/gui/event-editor/gcal-schedule-section.blp",
+      "manual compilation of gcal-recurrence.c, gcal-event-schedule.c, and gcal-schedule-section.c using Meson generated compiler commands"
+    ],
+    "result": "The patch applies cleanly to the recorded base. The Blueprint file and all three modified C files compile. The full project build remains blocked by three pre-existing Blueprint 0.19 compatibility errors in unrelated files."
+  }
+}

@@ -758,5 +758,20 @@
       "0001-processes-Display-per-process-swap-usage.patch"
     ],
     "archive_directory": "process-swap"
+  },
+  {
+    "project": "gnome-calendar",
+    "source_branch": "main",
+    "base": "89ff82924b092302e8be36bf569ac614d248bd77",
+    "tip": "908307b2c203e6e17437b8fd02d3fdf322f42f5a",
+    "commits": [
+      "908307b2c203e6e17437b8fd02d3fdf322f42f5a"
+    ],
+    "patches": [
+      "0001-recurrence-Add-configurable-repeat-intervals.patch"
+    ],
+    "archive_directory": "recurrence-interval",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-calendar.git",
+    "branch": "main"
   }
 ]
