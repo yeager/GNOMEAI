@@ -27,5 +27,6 @@ Patch archive: `patches/gnome-bluetooth/device-alias/`
 
 - `meson setup build --wipe` passed.
 - `meson compile -C build` passed.
-- `LANGUAGE=C LC_ALL=C LANG=C meson test -C build --print-errorlogs` passed: 17 of 17 tests.
+- `LANGUAGE=C LC_ALL=C LANG=C meson test -C build --print-errorlogs` passed: 18 of 18 tests.
+- A dbusmock regression test changes `Alias` and confirms the client receives the update.
 - The UI writes the user-selected BlueZ `org.bluez.Device1.Alias` property with an asynchronous system-DBus call; it does not maintain a separate name store.

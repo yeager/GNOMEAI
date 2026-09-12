@@ -1,4 +1,4 @@
-From 5354c9a1c4217b293fc5121f69238eb462a0f654 Mon Sep 17 00:00:00 2001
+From 013c561a3f3695b5e4c4cd0245b89c5a262c9d29 Mon Sep 17 00:00:00 2001
 From: yeager <yeager@users.noreply.github.com>
 Date: Sat, 12 Sep 2026 14:04:40 +0200
 Subject: [PATCH] settings: Allow renaming Bluetooth devices
@@ -6,7 +6,8 @@ Subject: [PATCH] settings: Allow renaming Bluetooth devices
 ---
  lib/bluetooth-settings-widget.c | 55 +++++++++++++++++++++++++++++++++
  lib/settings.ui                 | 17 ++++++++++
- 2 files changed, 72 insertions(+)
+ tests/integration-test.py       | 21 +++++++++++++
+ 3 files changed, 93 insertions(+)
 
 diff --git a/lib/bluetooth-settings-widget.c b/lib/bluetooth-settings-widget.c
 index 3326ff1..ae3be43 100644
@@ -116,6 +117,45 @@ index 16d33ec..6b08eec 100644
              <child>
                <object class="AdwPreferencesGroup">
                  <child>
+diff --git a/tests/integration-test.py b/tests/integration-test.py
+index 6fc9a30..568704b 100755
+--- a/tests/integration-test.py
++++ b/tests/integration-test.py
+@@ -134,6 +134,22 @@ class OopTests(dbusmock.DBusTestCase):
+         self.assertEqual(received_notification, True)
+         self.assertEqual(device.props.connected, True)
+ 
++    def test_device_alias_changed(self):
++        bus = dbus.SystemBus()
++        device_path = '/org/bluez/hci0/dev_22_33_44_55_66_77'
++        properties = dbus.Interface(bus.get_object('org.bluez', device_path),
++                                    'org.freedesktop.DBus.Properties')
++
++        list_store = self.client.get_devices()
++        self.wait_for_condition(lambda: list_store.get_n_items() == 1)
++        device = list_store.get_item(0)
++        self.assertEqual(device.props.alias, 'My Mouse')
++
++        properties.Set('org.bluez.Device1', 'Alias',
++                       dbus.String('Desk Mouse', variant_level=1))
++        self.wait_for_condition(lambda: device.props.alias == 'Desk Mouse')
++        self.assertEqual(device.props.alias, 'Desk Mouse')
++
+     def test_device_removal(self):
+         bus = dbus.SystemBus()
+         dbusmock_bluez = dbus.Interface(bus.get_object('org.bluez', '/'), 'org.bluez.Mock')
+@@ -550,6 +566,11 @@ class Tests(dbusmock.DBusTestCase):
+         self.dbusmock_bluez.AddDevice('hci0', '22:33:44:55:66:77', 'My Mouse')
+         self.run_test_process()
+ 
++    def test_device_alias_changed(self):
++        self.dbusmock_bluez.AddAdapter('hci0', 'my-computer')
++        self.dbusmock_bluez.AddDevice('hci0', '22:33:44:55:66:77', 'My Mouse')
++        self.run_test_process()
++
+     def test_device_removal(self):
+         self.dbusmock_bluez.AddAdapter('hci0', 'my-computer')
+         self.run_test_process()
 -- 
 2.53.0
 
