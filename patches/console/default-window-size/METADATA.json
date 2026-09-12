@@ -1,0 +1,22 @@
+{
+  "project": "console",
+  "series": "default-window-size",
+  "source_branch": "xdg-terminal-exec",
+  "base": "4ad9d2f0b402e8334b4e3e3c01f67f7149007474",
+  "tip": "a83fcc7ba6a1ab578402a6db9ffeb26a5a74d5af",
+  "commits": [
+    "a83fcc7ba6a1ab578402a6db9ffeb26a5a74d5af"
+  ],
+  "patches": [
+    "0001-preferences-Add-default-window-size-controls.patch"
+  ],
+  "archive_directory": "patches/console/default-window-size",
+  "validation": {
+    "commands": [
+      "meson setup build --wipe",
+      "meson compile -C build",
+      "meson test -C build --print-errorlogs"
+    ],
+    "result": "44 of 44 tests passed"
+  }
+}

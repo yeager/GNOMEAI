@@ -20,7 +20,7 @@ class StoreTests(unittest.TestCase):
     def test_prepend_moves_item_to_front(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "items.json"
-            self.assertEqual(store.prepend("two", ["one", "two"]), ["two", "one"])
+            self.assertEqual(store.prepend("two", ["one", "two"], path), ["two", "one"])
             self.assertEqual(store.save([str(index) for index in range(110)], path),
                              [str(index) for index in range(100)])
 

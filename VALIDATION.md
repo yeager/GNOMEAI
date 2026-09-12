@@ -11,3 +11,12 @@ Patch archive: `patches/gnome-shell/work-screenshot-save-to-disk/`
 - A full compile reached GNOME Shell C sources and stopped on an API mismatch between the archived GNOME Shell 49.1 source and the locally installed Mutter 50.1 headers. The errors are in unchanged `src/shell-global.c` and `src/shell-screenshot.c`; the patch changes only `js/ui/screenshot.js` and `data/org.gnome.shell.gschema.xml.in`.
 
 The upstream JavaScript test suite was disabled only because its `jasmine-gjs` wrap was unavailable in the offline configuration. It has not been represented as passing.
+
+## Console: configurable default window size
+
+Patch archive: `patches/console/default-window-size/`
+
+- `meson setup build --wipe` passed.
+- `meson compile -C build` passed.
+- `meson test -C build --print-errorlogs` passed: 44 of 44 tests.
+- The settings regression test covers both the default 800×600 size and a user-configured 1024×768 size when previous-window restoration is disabled.

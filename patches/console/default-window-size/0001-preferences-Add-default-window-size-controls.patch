@@ -1,0 +1,296 @@
+From a83fcc7ba6a1ab578402a6db9ffeb26a5a74d5af Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <yeager@users.noreply.gitlab.gnome.org>
+Date: Sat, 12 Sep 2026 13:58:17 +0200
+Subject: [PATCH] preferences: Add default window size controls
+
+---
+ data/org.gnome.Console.gschema.xml.in     | 10 +++++
+ src/kgx-application.c                     | 20 ++++-----
+ src/kgx-settings.c                        | 55 ++++++++++++++++++++++-
+ src/preferences/kgx-preferences-window.c  | 10 +++++
+ src/preferences/kgx-preferences-window.ui | 36 +++++++++++++++
+ tests/test-settings.c                     | 10 ++++-
+ 6 files changed, 126 insertions(+), 15 deletions(-)
+
+diff --git a/data/org.gnome.Console.gschema.xml.in b/data/org.gnome.Console.gschema.xml.in
+index 2a0c151..aa5a8c1 100644
+--- a/data/org.gnome.Console.gschema.xml.in
++++ b/data/org.gnome.Console.gschema.xml.in
+@@ -43,6 +43,16 @@
+     <key name="restore-window-size" type="b">
+       <default>true</default>
+     </key>
++    <key name="default-window-width" type="i">
++      <range min="160" max="3840"/>
++      <default>800</default>
++      <summary>Default window width</summary>
++    </key>
++    <key name="default-window-height" type="i">
++      <range min="120" max="2160"/>
++      <default>600</default>
++      <summary>Default window height</summary>
++    </key>
+     <key name="audible-bell" type="b">
+       <default>true</default>
+     </key>
+diff --git a/src/kgx-application.c b/src/kgx-application.c
+index 8c7fde9..2aaa0cb 100644
+--- a/src/kgx-application.c
++++ b/src/kgx-application.c
+@@ -866,17 +866,15 @@ kgx_application_add_terminal (KgxApplication *self,
+     gboolean maximised = FALSE;
+     gboolean fullscreen = FALSE;
+ 
+-    if (kgx_settings_get_restore_size (self->settings)) {
+-      active_window = gtk_application_get_active_window (GTK_APPLICATION (self));
+-      if (active_window) {
+-        gtk_window_get_default_size (active_window, &width, &height);
+-      } else {
+-        kgx_settings_get_size (self->settings,
+-                               &width,
+-                               &height,
+-                               &maximised,
+-                               &fullscreen);
+-      }
++    active_window = gtk_application_get_active_window (GTK_APPLICATION (self));
++    if (kgx_settings_get_restore_size (self->settings) && active_window) {
++      gtk_window_get_default_size (active_window, &width, &height);
++    } else {
++      kgx_settings_get_size (self->settings,
++                             &width,
++                             &height,
++                             &maximised,
++                             &fullscreen);
+     }
+ 
+     g_debug ("app: new window (%i×%i)", width, height);
+diff --git a/src/kgx-settings.c b/src/kgx-settings.c
+index 583d72d..30cfd62 100644
+--- a/src/kgx-settings.c
++++ b/src/kgx-settings.c
+@@ -34,6 +34,8 @@
+ #define LAST_SIZE_KEY "last-window-size"
+ #define LAST_MAXIMISED_KEY "last-window-maximised"
+ #define LAST_FULLSCREEN_KEY "last-window-fullscreen"
++#define DEFAULT_WIDTH_KEY "default-window-width"
++#define DEFAULT_HEIGHT_KEY "default-window-height"
+ 
+ #define AUDIBLE_BELL "audible-bell"
+ 
+@@ -46,6 +48,8 @@ struct _KgxSettings {
+   PangoFontDescription *font;
+   double                scale;
+   int                   scrollback_lines;
++  int                   default_width;
++  int                   default_height;
+   gboolean              audible_bell;
+   gboolean              visual_bell;
+   gboolean              use_system_font;
+@@ -76,6 +80,8 @@ enum {
+   PROP_SCALE_CAN_INCREASE,
+   PROP_SCALE_CAN_DECREASE,
+   PROP_SCROLLBACK_LINES,
++  PROP_DEFAULT_WIDTH,
++  PROP_DEFAULT_HEIGHT,
+   PROP_AUDIBLE_BELL,
+   PROP_VISUAL_BELL,
+   PROP_USE_SYSTEM_FONT,
+@@ -125,6 +131,23 @@ update_scale (KgxSettings *self, double value)
+ }
+ 
+ 
++static void
++set_dimension (GObject      *object,
++               GParamSpec   *pspec,
++               int          *dimension,
++               const GValue *value)
++{
++  int new_value = g_value_get_int (value);
++
++  if (*dimension == new_value) {
++    return;
++  }
++
++  *dimension = new_value;
++  g_object_notify_by_pspec (object, pspec);
++}
++
++
+ static void
+ kgx_settings_set_property (GObject      *object,
+                            guint         property_id,
+@@ -155,6 +178,12 @@ kgx_settings_set_property (GObject      *object,
+         }
+       }
+       break;
++    case PROP_DEFAULT_WIDTH:
++      set_dimension (object, pspec, &self->default_width, value);
++      break;
++    case PROP_DEFAULT_HEIGHT:
++      set_dimension (object, pspec, &self->default_height, value);
++      break;
+     case PROP_AUDIBLE_BELL:
+       kgx_set_boolean_prop (object,
+                             pspec,
+@@ -238,6 +267,12 @@ kgx_settings_get_property (GObject    *object,
+     case PROP_SCROLLBACK_LINES:
+       g_value_set_int (value, self->scrollback_lines);
+       break;
++    case PROP_DEFAULT_WIDTH:
++      g_value_set_int (value, self->default_width);
++      break;
++    case PROP_DEFAULT_HEIGHT:
++      g_value_set_int (value, self->default_height);
++      break;
+     case PROP_AUDIBLE_BELL:
+       g_value_set_boolean (value, kgx_settings_get_audible_bell (self));
+       break;
+@@ -351,6 +386,16 @@ kgx_settings_class_init (KgxSettingsClass *klass)
+                       -1, G_MAXINT, 10000,
+                       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+ 
++  pspecs[PROP_DEFAULT_WIDTH] =
++    g_param_spec_int ("default-width", NULL, NULL,
++                      160, 3840, 800,
++                      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
++
++  pspecs[PROP_DEFAULT_HEIGHT] =
++    g_param_spec_int ("default-height", NULL, NULL,
++                      120, 2160, 600,
++                      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
++
+   pspecs[PROP_AUDIBLE_BELL] =
+     g_param_spec_boolean ("audible-bell", NULL, NULL,
+                           TRUE,
+@@ -551,6 +596,12 @@ kgx_settings_init (KgxSettings *self)
+   g_settings_bind (self->settings, "font-scale",
+                    self, "font-scale",
+                    G_SETTINGS_BIND_DEFAULT);
++  g_settings_bind (self->settings, DEFAULT_WIDTH_KEY,
++                   self, "default-width",
++                   G_SETTINGS_BIND_DEFAULT);
++  g_settings_bind (self->settings, DEFAULT_HEIGHT_KEY,
++                   self, "default-height",
++                   G_SETTINGS_BIND_DEFAULT);
+   g_settings_bind (self->settings, "audible-bell",
+                    self, "audible-bell",
+                    G_SETTINGS_BIND_DEFAULT);
+@@ -712,8 +763,8 @@ kgx_settings_get_size (KgxSettings *self,
+   g_return_if_fail (width != NULL && height != NULL && maximised != NULL);
+ 
+   if (!g_settings_get_boolean (self->settings, RESTORE_SIZE_KEY)) {
+-    *width = -1;
+-    *height = -1;
++    *width = self->default_width;
++    *height = self->default_height;
+     *maximised = FALSE;
+     *fullscreen = FALSE;
+     return;
+diff --git a/src/preferences/kgx-preferences-window.c b/src/preferences/kgx-preferences-window.c
+index 31b1202..101c828 100644
+--- a/src/preferences/kgx-preferences-window.c
++++ b/src/preferences/kgx-preferences-window.c
+@@ -40,6 +40,8 @@ struct _KgxPreferencesWindow {
+   GtkWidget            *custom_font;
+   GtkWidget            *unlimited_scrollback;
+   GtkWidget            *scrollback;
++  GtkWidget            *default_width;
++  GtkWidget            *default_height;
+ };
+ 
+ 
+@@ -190,6 +192,8 @@ kgx_preferences_window_class_init (KgxPreferencesWindowClass *klass)
+   gtk_widget_class_bind_template_child (widget_class, KgxPreferencesWindow, custom_font);
+   gtk_widget_class_bind_template_child (widget_class, KgxPreferencesWindow, unlimited_scrollback);
+   gtk_widget_class_bind_template_child (widget_class, KgxPreferencesWindow, scrollback);
++  gtk_widget_class_bind_template_child (widget_class, KgxPreferencesWindow, default_width);
++  gtk_widget_class_bind_template_child (widget_class, KgxPreferencesWindow, default_height);
+ 
+   gtk_widget_class_bind_template_callback (widget_class, font_as_attributes);
+   gtk_widget_class_bind_template_callback (widget_class, font_as_label);
+@@ -276,5 +280,11 @@ kgx_preferences_window_init (KgxPreferencesWindow *self)
+   g_binding_group_bind (self->settings_binds, "scrollback-limit",
+                         self->scrollback, "value",
+                         G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL);
++  g_binding_group_bind (self->settings_binds, "default-width",
++                        self->default_width, "value",
++                        G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL);
++  g_binding_group_bind (self->settings_binds, "default-height",
++                        self->default_height, "value",
++                        G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL);
+ 
+ }
+diff --git a/src/preferences/kgx-preferences-window.ui b/src/preferences/kgx-preferences-window.ui
+index 3a98a42..9d347e0 100644
+--- a/src/preferences/kgx-preferences-window.ui
++++ b/src/preferences/kgx-preferences-window.ui
+@@ -85,6 +85,42 @@
+             </child>
+           </object>
+         </child>
++        <child>
++          <object class="AdwPreferencesGroup">
++            <property name="title" translatable="yes">Default Window Size</property>
++            <property name="description" translatable="yes">Used when restoring the previous window size is disabled</property>
++            <child>
++              <object class="AdwSpinRow" id="default_width">
++                <property name="title" translatable="yes">_Width</property>
++                <property name="use-underline">True</property>
++                <property name="numeric">True</property>
++                <property name="digits">0</property>
++                <property name="adjustment">
++                  <object class="GtkAdjustment">
++                    <property name="lower">160</property>
++                    <property name="upper">3840</property>
++                    <property name="step-increment">10</property>
++                  </object>
++                </property>
++              </object>
++            </child>
++            <child>
++              <object class="AdwSpinRow" id="default_height">
++                <property name="title" translatable="yes">_Height</property>
++                <property name="use-underline">True</property>
++                <property name="numeric">True</property>
++                <property name="digits">0</property>
++                <property name="adjustment">
++                  <object class="GtkAdjustment">
++                    <property name="lower">120</property>
++                    <property name="upper">2160</property>
++                    <property name="step-increment">10</property>
++                  </object>
++                </property>
++              </object>
++            </child>
++          </object>
++        </child>
+         <child>
+           <object class="AdwPreferencesGroup">
+             <property name="title" translatable="yes">Terminal Bell</property>
+diff --git a/tests/test-settings.c b/tests/test-settings.c
+index 0a98812..4d32226 100644
+--- a/tests/test-settings.c
++++ b/tests/test-settings.c
+@@ -408,11 +408,17 @@ test_settings_custom_size (Fixture *fixture, gconstpointer unused)
+   /* We see default values */
+   kgx_settings_get_size (settings, &width, &height, &maximised, &fullscreen);
+ 
+-  g_assert_cmpint (width, ==, -1);
+-  g_assert_cmpint (height, ==, -1);
++  g_assert_cmpint (width, ==, 800);
++  g_assert_cmpint (height, ==, 600);
+   g_assert_false (maximised);
+   g_assert_false (fullscreen);
+ 
++  g_settings_set_int (fixture->settings, "default-window-width", 1024);
++  g_settings_set_int (fixture->settings, "default-window-height", 768);
++  kgx_settings_get_size (settings, &width, &height, &maximised, &fullscreen);
++  g_assert_cmpint (width, ==, 1024);
++  g_assert_cmpint (height, ==, 768);
++
+   /* Enable persistence again */
+   g_settings_set_boolean (fixture->settings, "restore-window-size", TRUE);
+ 
+-- 
+2.53.0
+

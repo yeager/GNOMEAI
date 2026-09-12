@@ -44,5 +44,5 @@ def save(items: Iterable[str], path: Path | None = None) -> list[str]:
     return cleaned
 
 
-def prepend(item: str, items: Iterable[str]) -> list[str]:
-    return save([item, *items])
+def prepend(item: str, items: Iterable[str], path: Path | None = None) -> list[str]:
+    return save([item, *items], path)
