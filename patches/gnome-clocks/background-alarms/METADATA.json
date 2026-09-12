@@ -15,8 +15,9 @@
     "commands": [
       "meson setup build --wipe",
       "meson compile -C build",
-      "meson test -C build --print-errorlogs"
+      "meson test -C build --print-errorlogs",
+      "isolated Xvfb/dbus-run-session run with an active alarm, Ctrl+W, and process liveness check"
     ],
-    "result": "Full build passed; desktop entry, GSettings schema, and metainfo validation passed (3 of 3 tests)."
+    "result": "Full build passed; desktop entry, GSettings schema, and metainfo validation passed (3 of 3 tests). An active alarm kept the running process alive after Ctrl+W in an isolated runtime check."
   }
 }
