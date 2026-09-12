@@ -34,9 +34,9 @@ def inspect_archive(path: str | Path) -> ExtensionArchive:
             for item in members:
                 _safe_member(item.filename)
             metadata_members = [item for item in members
-                                if PurePosixPath(item.filename).name == 'metadata.json']
+                                if item.filename == 'metadata.json']
             if len(metadata_members) != 1:
-                raise ArchiveError('Archive must contain exactly one metadata.json file')
+                raise ArchiveError('Archive must contain metadata.json at its root')
             raw = archive.read(metadata_members[0])
     except (OSError, BadZipFile) as error:
         raise ArchiveError(f'Cannot read archive: {error}') from error

@@ -37,3 +37,11 @@ def test_refuses_existing_destination(tmp_path):
     (tmp_path / 'extensions' / extension.uuid).mkdir(parents=True)
     with pytest.raises(ArchiveError, match='already exists'):
         install_archive(extension, tmp_path / 'extensions')
+
+
+def test_rejects_nested_metadata(tmp_path):
+    archive = tmp_path / 'nested.zip'
+    with ZipFile(archive, 'w') as output:
+        output.writestr('nested/metadata.json', json.dumps({'uuid': 'sample@example', 'name': 'Sample'}))
+    with pytest.raises(ArchiveError, match='at its root'):
+        inspect_archive(archive)
