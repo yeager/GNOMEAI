@@ -1,5 +1,5 @@
-From 49690e16920a8ea739184887666f52fb38d22be7 Mon Sep 17 00:00:00 2001
-From: Codex <codex@openai.com>
+From 7074872a7b61e1f8caf64d9f97270bec9eeec0df Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <po@danielnylander.se>
 Date: Thu, 19 Nov 2026 09:41:23 +0100
 Subject: [PATCH] privacy: clarify camera and location app permissions
 
