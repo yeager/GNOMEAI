@@ -773,5 +773,19 @@
     "archive_directory": "recurrence-interval",
     "source_repository": "https://gitlab.gnome.org/GNOME/gnome-calendar.git",
     "branch": "main"
+  },
+  {
+    "project": "gnome-control-center",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
+    "branch": "fix-camera-permission-copy",
+    "base": "0e8e798ab600a3678482314cec5c6b56453a7782",
+    "tip": "1d90c5699085adc51e8cd7c7a1baf685b7ca60d6",
+    "commits": [
+      "1d90c5699085adc51e8cd7c7a1baf685b7ca60d6"
+    ],
+    "patches": [
+      "0001-privacy-describe-camera-permissions-for-portal-manag.patch"
+    ],
+    "archive_directory": "fix-camera-permission-copy"
   }
 ]
