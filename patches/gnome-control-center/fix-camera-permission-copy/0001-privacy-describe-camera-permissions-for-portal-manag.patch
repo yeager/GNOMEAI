@@ -1,13 +1,14 @@
-From 1d90c5699085adc51e8cd7c7a1baf685b7ca60d6 Mon Sep 17 00:00:00 2001
+From 49690e16920a8ea739184887666f52fb38d22be7 Mon Sep 17 00:00:00 2001
 From: Codex <codex@openai.com>
 Date: Thu, 19 Nov 2026 09:41:23 +0100
-Subject: [PATCH] privacy: describe camera permissions for portal-managed apps
+Subject: [PATCH] privacy: clarify camera and location app permissions
 
-The camera list includes registered native apps and denied entries. Describe the permission dialog instead of sandboxing, and update the Swedish translation.
+Describe apps that use the system permission dialog, including denied requests. Update the Swedish translations.
 ---
- panels/privacy/camera/cc-camera-page.blp |  6 +++---
- po/sv.po                                 | 14 +++++++++-----
- 2 files changed, 12 insertions(+), 8 deletions(-)
+ panels/privacy/camera/cc-camera-page.blp     |  6 ++---
+ panels/privacy/location/cc-location-page.blp |  6 ++---
+ po/sv.po                                     | 26 +++++++++++---------
+ 3 files changed, 21 insertions(+), 17 deletions(-)
 
 diff --git a/panels/privacy/camera/cc-camera-page.blp b/panels/privacy/camera/cc-camera-page.blp
 index e6e0d3d..b082745 100644
@@ -33,8 +34,32 @@ index e6e0d3d..b082745 100644
              wrap: true;
              max-width-chars: 50;
  
+diff --git a/panels/privacy/location/cc-location-page.blp b/panels/privacy/location/cc-location-page.blp
+index 41ea564..c1d908d 100644
+--- a/panels/privacy/location/cc-location-page.blp
++++ b/panels/privacy/location/cc-location-page.blp
+@@ -19,8 +19,8 @@ template $CcLocationPage: Adw.NavigationPage {
+       }
+ 
+       Adw.PreferencesGroup {
+-        title: _("Permitted Apps");
+-        description: _("The following sandboxed apps have been given access to location data. Apps that are not sandboxed can access location data without asking for permission.");
++        title: _("Location Permissions");
++        description: _("Manage location access for apps that use the system permission dialog. Apps that access location directly may not appear here.");
+ 
+         ListBox location_apps_list_box {
+           selection-mode: none;
+@@ -31,7 +31,7 @@ template $CcLocationPage: Adw.NavigationPage {
+ 
+           [placeholder]
+           Label {
+-            label: _("No sandboxed apps have asked for location access");
++            label: _("No apps have requested location access");
+             wrap: true;
+             max-width-chars: 50;
+ 
 diff --git a/po/sv.po b/po/sv.po
-index 46ddbd0..4f74e43 100644
+index 46ddbd0..1eb33a4 100644
 --- a/po/sv.po
 +++ b/po/sv.po
 @@ -5422,17 +5422,21 @@ msgstr "_Kameraåtkomst"
@@ -42,13 +67,15 @@ index 46ddbd0..4f74e43 100644
  msgstr "Låt tillåtna program använda kameror"
  
 -#: panels/privacy/camera/cc-camera-page.blp:22 panels/privacy/location/cc-location-page.blp:22
+-msgid "Permitted Apps"
+-msgstr "Tillåtna program"
 +#: panels/privacy/camera/cc-camera-page.blp:22
 +msgid "Camera Permissions"
 +msgstr "Kamerabehörigheter"
 +
 +#: panels/privacy/location/cc-location-page.blp:22
- msgid "Permitted Apps"
- msgstr "Tillåtna program"
++msgid "Location Permissions"
++msgstr "Platsbehörigheter"
  
  #: panels/privacy/camera/cc-camera-page.blp:23
 -msgid "The following sandboxed apps have been given permission to use cameras. Apps that are not sandboxed can use cameras without asking for permission."
@@ -64,6 +91,23 @@ index 46ddbd0..4f74e43 100644
  
  #: panels/privacy/cc-privacy-panel.blp:5 panels/privacy/gnome-privacy-panel.desktop.in:2
  msgid "Privacy & Security"
+@@ -5843,12 +5847,12 @@ msgid "Use sources like GPS and cellular to determine device location"
+ msgstr "Använd källor som GPS och mobilnät för att avgöra enhetens plats"
+ 
+ #: panels/privacy/location/cc-location-page.blp:23
+-msgid "The following sandboxed apps have been given access to location data. Apps that are not sandboxed can access location data without asking for permission."
+-msgstr "Följande program i sandlåda har givits åtkomst till platsdata. Program som inte är i sandlåda kan komma åt platsdata utan att be om tillåtelse."
++msgid "Manage location access for apps that use the system permission dialog. Apps that access location directly may not appear here."
++msgstr "Hantera platsåtkomst för program som använder systemets behörighetsdialog. Program som använder platsinformation direkt kanske inte visas här."
+ 
+ #: panels/privacy/location/cc-location-page.blp:34
+-msgid "No sandboxed apps have asked for location access"
+-msgstr "Inga program i sandlåda har bett om platsåtkomst"
++msgid "No apps have requested location access"
++msgstr "Inga program har begärt platsåtkomst"
+ 
+ #: panels/privacy/screen/cc-screen-page.blp:5
+ msgid "Screen Lock"
 -- 
 2.55.0
 

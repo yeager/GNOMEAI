@@ -779,9 +779,9 @@
     "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
     "branch": "fix-camera-permission-copy",
     "base": "0e8e798ab600a3678482314cec5c6b56453a7782",
-    "tip": "1d90c5699085adc51e8cd7c7a1baf685b7ca60d6",
+    "tip": "49690e16920a8ea739184887666f52fb38d22be7",
     "commits": [
-      "1d90c5699085adc51e8cd7c7a1baf685b7ca60d6"
+      "49690e16920a8ea739184887666f52fb38d22be7"
     ],
     "patches": [
       "0001-privacy-describe-camera-permissions-for-portal-manag.patch"
