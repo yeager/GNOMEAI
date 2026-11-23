@@ -1,0 +1,32 @@
+From 7b0fbef6924058ef4e43cd8b201b75f389dbaec2 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <po@danielnylander.se>
+Date: Mon, 23 Nov 2026 13:54:01 +0100
+Subject: [PATCH] Translate generic audio port labels into Swedish
+
+---
+ po/sv.po | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/po/sv.po b/po/sv.po
+index 46ddbd0..40a8975 100644
+--- a/po/sv.po
++++ b/po/sv.po
+@@ -9558,6 +9558,15 @@ msgstr[1] "%u ingångar"
+ msgid "System Sounds"
+ msgstr "Systemljud"
+ 
++
++#: subprojects/gvc/gvc-mixer-control.c
++msgid "Speaker"
++msgstr "Högtalare"
++
++#: subprojects/gvc/gvc-mixer-control.c
++msgid "Headphones"
++msgstr "Hörlurar"
++
+ #~ msgid "_Fingerprint Login"
+ #~ msgstr "_Fingeravtrycksinloggning"
+ 
+-- 
+2.55.0
+

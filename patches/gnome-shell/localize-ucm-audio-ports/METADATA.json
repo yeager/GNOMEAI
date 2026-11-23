@@ -1,0 +1,14 @@
+{
+  "project": "gnome-shell",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-shell.git",
+  "branch": "localize-ucm-audio-ports",
+  "base": "52c38237740f8a8a6deeb412de151bfcc7ac67e2",
+  "tip": "9ff7cc12852c5f585f62c9313b4dfdcb648f15fc",
+  "commits": [
+    "9ff7cc12852c5f585f62c9313b4dfdcb648f15fc"
+  ],
+  "patches": [
+    "0001-Translate-generic-audio-port-labels-into-Swedish.patch"
+  ],
+  "archive_directory": "localize-ucm-audio-ports"
+}

@@ -1,0 +1,14 @@
+{
+  "project": "libgnome-volume-control",
+  "source_repository": "https://gitlab.gnome.org/GNOME/libgnome-volume-control.git",
+  "branch": "localize-ucm-audio-ports",
+  "base": "0a4eda0cdc2deb352bebc70ec697c42af46094e4",
+  "tip": "2d86633d8140226e7f1cb50d368148f1b2f8c5bc",
+  "commits": [
+    "2d86633d8140226e7f1cb50d368148f1b2f8c5bc"
+  ],
+  "patches": [
+    "0001-Localize-generic-UCM-audio-port-labels.patch"
+  ],
+  "archive_directory": "localize-ucm-audio-ports"
+}
