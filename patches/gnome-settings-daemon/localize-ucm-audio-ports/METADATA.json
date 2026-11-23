@@ -1,0 +1,14 @@
+{
+  "project": "gnome-settings-daemon",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-settings-daemon.git",
+  "branch": "localize-ucm-audio-ports",
+  "base": "d3e717002a6f89aa1f350f4c6267ceeaff6d2cc6",
+  "tip": "de4635ee11ad1d3717669f90a58a46a10bc08dd3",
+  "commits": [
+    "de4635ee11ad1d3717669f90a58a46a10bc08dd3"
+  ],
+  "patches": [
+    "0001-Translate-generic-audio-port-labels-into-Swedish.patch"
+  ],
+  "archive_directory": "localize-ucm-audio-ports"
+}

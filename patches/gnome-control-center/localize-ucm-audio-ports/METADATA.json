@@ -1,0 +1,14 @@
+{
+  "project": "gnome-control-center",
+  "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
+  "branch": "localize-ucm-audio-ports",
+  "base": "c2135bf50f5a8fb5b827210b25db251dc6a4336b",
+  "tip": "7b0fbef6924058ef4e43cd8b201b75f389dbaec2",
+  "commits": [
+    "7b0fbef6924058ef4e43cd8b201b75f389dbaec2"
+  ],
+  "patches": [
+    "0001-Translate-generic-audio-port-labels-into-Swedish.patch"
+  ],
+  "archive_directory": "localize-ucm-audio-ports"
+}

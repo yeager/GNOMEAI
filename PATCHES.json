@@ -787,5 +787,61 @@
       "0001-privacy-describe-camera-permissions-for-portal-manag.patch"
     ],
     "archive_directory": "fix-camera-permission-copy"
+  },
+  {
+    "project": "libgnome-volume-control",
+    "source_repository": "https://gitlab.gnome.org/GNOME/libgnome-volume-control.git",
+    "branch": "localize-ucm-audio-ports",
+    "base": "0a4eda0cdc2deb352bebc70ec697c42af46094e4",
+    "tip": "2d86633d8140226e7f1cb50d368148f1b2f8c5bc",
+    "commits": [
+      "2d86633d8140226e7f1cb50d368148f1b2f8c5bc"
+    ],
+    "patches": [
+      "0001-Localize-generic-UCM-audio-port-labels.patch"
+    ],
+    "archive_directory": "localize-ucm-audio-ports"
+  },
+  {
+    "project": "gnome-settings-daemon",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-settings-daemon.git",
+    "branch": "localize-ucm-audio-ports",
+    "base": "d3e717002a6f89aa1f350f4c6267ceeaff6d2cc6",
+    "tip": "de4635ee11ad1d3717669f90a58a46a10bc08dd3",
+    "commits": [
+      "de4635ee11ad1d3717669f90a58a46a10bc08dd3"
+    ],
+    "patches": [
+      "0001-Translate-generic-audio-port-labels-into-Swedish.patch"
+    ],
+    "archive_directory": "localize-ucm-audio-ports"
+  },
+  {
+    "project": "gnome-shell",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-shell.git",
+    "branch": "localize-ucm-audio-ports",
+    "base": "52c38237740f8a8a6deeb412de151bfcc7ac67e2",
+    "tip": "9ff7cc12852c5f585f62c9313b4dfdcb648f15fc",
+    "commits": [
+      "9ff7cc12852c5f585f62c9313b4dfdcb648f15fc"
+    ],
+    "patches": [
+      "0001-Translate-generic-audio-port-labels-into-Swedish.patch"
+    ],
+    "archive_directory": "localize-ucm-audio-ports"
+  },
+  {
+    "project": "gnome-control-center",
+    "source_repository": "https://gitlab.gnome.org/GNOME/gnome-control-center.git",
+    "branch": "localize-ucm-audio-ports",
+    "base": "c2135bf50f5a8fb5b827210b25db251dc6a4336b",
+    "tip": "7b0fbef6924058ef4e43cd8b201b75f389dbaec2",
+    "commits": [
+      "7b0fbef6924058ef4e43cd8b201b75f389dbaec2"
+    ],
+    "patches": [
+      "0001-Translate-generic-audio-port-labels-into-Swedish.patch"
+    ],
+    "archive_directory": "localize-ucm-audio-ports"
   }
 ]

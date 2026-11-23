@@ -1,0 +1,42 @@
+From de4635ee11ad1d3717669f90a58a46a10bc08dd3 Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <po@danielnylander.se>
+Date: Mon, 23 Nov 2026 13:54:00 +0100
+Subject: [PATCH] Translate generic audio port labels into Swedish
+
+---
+ po/POTFILES.in | 1 +
+ po/sv.po       | 9 +++++++++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/po/POTFILES.in b/po/POTFILES.in
+index d5ba996..512172d 100644
+--- a/po/POTFILES.in
++++ b/po/POTFILES.in
+@@ -29,3 +29,4 @@ plugins/usb-protection/gsd-usb-protection-manager.c
+ plugins/wwan/cc-wwan-errors-private.h
+ plugins/wwan/gsd-wwan-manager.c
+ plugins/xsettings/gsd-xsettings-manager.c
++subprojects/gvc/gvc-mixer-control.c
+diff --git a/po/sv.po b/po/sv.po
+index 3c657ad..1c4608f 100644
+--- a/po/sv.po
++++ b/po/sv.po
+@@ -2961,6 +2961,15 @@ msgid_plural "You have %u tries left"
+ msgstr[0] "Du har %u försök kvar"
+ msgstr[1] "Du har %u försök kvar"
+ 
++
++#: subprojects/gvc/gvc-mixer-control.c
++msgid "Speaker"
++msgstr "Högtalare"
++
++#: subprojects/gvc/gvc-mixer-control.c
++msgid "Headphones"
++msgstr "Hörlurar"
++
+ #~ msgid "Possible values are “on”, “off”, and “custom”."
+ #~ msgstr "Möjliga värden är ”on” (på), ”off” (av) och ”custom” (anpassad)."
+ 
+-- 
+2.55.0
+
