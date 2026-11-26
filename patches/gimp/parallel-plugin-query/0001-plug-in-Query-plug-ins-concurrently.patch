@@ -1,0 +1,203 @@
+From 878ef8fb7c4ee66f39782dc278b0441823739b4c Mon Sep 17 00:00:00 2001
+From: Daniel Nylander <po@danielnylander.se>
+Date: Thu, 26 Nov 2026 14:53:07 +0100
+Subject: [PATCH] plug-in: Query plug-ins concurrently
+
+---
+ app/plug-in/gimppluginmanager-call.c    | 29 ++++++++
+ app/plug-in/gimppluginmanager-call.h    |  9 +++
+ app/plug-in/gimppluginmanager-restore.c | 90 +++++++++++++++++++++++--
+ 3 files changed, 124 insertions(+), 4 deletions(-)
+
+diff --git a/app/plug-in/gimppluginmanager-call.c b/app/plug-in/gimppluginmanager-call.c
+index f18b7fd..4bac8b2 100644
+--- a/app/plug-in/gimppluginmanager-call.c
++++ b/app/plug-in/gimppluginmanager-call.c
+@@ -115,6 +115,35 @@ gimp_plug_in_manager_call_query (GimpPlugInManager *manager,
+     }
+ }
+ 
++GimpPlugIn *
++gimp_plug_in_manager_call_query_async (GimpPlugInManager *manager,
++                                       GimpContext       *context,
++                                       GimpPlugInDef     *plug_in_def)
++{
++  GimpPlugIn *plug_in;
++
++  g_return_val_if_fail (GIMP_IS_PLUG_IN_MANAGER (manager), NULL);
++  g_return_val_if_fail (GIMP_IS_PDB_CONTEXT (context), NULL);
++  g_return_val_if_fail (GIMP_IS_PLUG_IN_DEF (plug_in_def), NULL);
++
++  plug_in = gimp_plug_in_new (manager, context, NULL, NULL,
++                              plug_in_def->file,
++                              plug_in_def->root_folder,
++                              NULL);
++
++  if (plug_in)
++    {
++      plug_in->plug_in_def = plug_in_def;
++
++      if (gimp_plug_in_open (plug_in, GIMP_PLUG_IN_CALL_QUERY, FALSE))
++        return plug_in;
++
++      g_object_unref (plug_in);
++    }
++
++  return NULL;
++}
++
+ void
+ gimp_plug_in_manager_call_init (GimpPlugInManager *manager,
+                                 GimpContext       *context,
+diff --git a/app/plug-in/gimppluginmanager-call.h b/app/plug-in/gimppluginmanager-call.h
+index efa6d08..dff923c 100644
+--- a/app/plug-in/gimppluginmanager-call.h
++++ b/app/plug-in/gimppluginmanager-call.h
+@@ -30,6 +30,15 @@ void             gimp_plug_in_manager_call_query    (GimpPlugInManager      *man
+                                                      GimpContext            *context,
+                                                      GimpPlugInDef          *plug_in_def);
+ 
++/*  Start the plug-in's query() function asynchronously. The caller owns the
++ *  returned reference; the plug-in manager keeps the plug-in alive while it
++ *  is open.
++ */
++GimpPlugIn     * gimp_plug_in_manager_call_query_async
++                                                    (GimpPlugInManager      *manager,
++                                                     GimpContext            *context,
++                                                     GimpPlugInDef          *plug_in_def);
++
+ /*  Call the plug-in's init() function
+  */
+ void             gimp_plug_in_manager_call_init     (GimpPlugInManager      *manager,
+diff --git a/app/plug-in/gimppluginmanager-restore.c b/app/plug-in/gimppluginmanager-restore.c
+index 6577422..a9c1249 100644
+--- a/app/plug-in/gimppluginmanager-restore.c
++++ b/app/plug-in/gimppluginmanager-restore.c
+@@ -52,6 +52,24 @@
+ #include "gimp-intl.h"
+ 
+ 
++/* Use half the available CPU threads, up to eight, for plug-in queries. */
++#define GIMP_PLUG_IN_MAX_QUERY_CONCURRENCY 8
++
++typedef struct
++{
++  GMainLoop          *loop;
++  GHashTable         *plug_ins;
++  GimpInitStatusFunc  status_callback;
++  gint                n_plugins;
++  gint                n_completed;
++} GimpPlugInQueryState;
++
++
++static void    gimp_plug_in_manager_query_closed     (GimpPlugInManager    *manager,
++                                                      GimpPlugIn           *plug_in,
++                                                      GimpPlugInQueryState *state);
++
++
+ static void    gimp_plug_in_manager_search            (GimpPlugInManager    *manager,
+                                                        GimpInitStatusFunc    status_callback);
+ static void    gimp_plug_in_manager_search_directory  (GimpPlugInManager    *manager,
+@@ -468,8 +486,12 @@ gimp_plug_in_manager_query_new (GimpPlugInManager  *manager,
+                                 GimpContext        *context,
+                                 GimpInitStatusFunc  status_callback)
+ {
+-  GSList *list;
+-  gint    n_plugins;
++  GimpPlugInQueryState state = { 0, };
++  GSList               *list;
++  gint                  n_plugins;
++  gint                  nth;
++  guint                 max_n_active_plug_ins;
++  gulong                closed_handler;
+ 
+   status_callback (_("Querying new Plug-ins"), "", 0.0);
+ 
+@@ -486,7 +508,19 @@ gimp_plug_in_manager_query_new (GimpPlugInManager  *manager,
+ 
+   if (n_plugins)
+     {
+-      gint nth;
++      max_n_active_plug_ins =
++        MAX (1u, MIN (g_get_num_processors () / 2,
++                      GIMP_PLUG_IN_MAX_QUERY_CONCURRENCY));
++
++      state.loop            = g_main_loop_new (NULL, FALSE);
++      state.plug_ins        = g_hash_table_new (g_direct_hash, g_direct_equal);
++      state.status_callback = status_callback;
++      state.n_plugins       = n_plugins;
++
++      closed_handler =
++        g_signal_connect (manager, "plug-in-closed",
++                          G_CALLBACK (gimp_plug_in_manager_query_closed),
++                          &state);
+ 
+       manager->write_pluginrc = TRUE;
+ 
+@@ -508,14 +542,62 @@ gimp_plug_in_manager_query_new (GimpPlugInManager  *manager,
+                 g_print ("Querying plug-in: '%s'\n",
+                          gimp_file_get_utf8_name (plug_in_def->file));
+ 
+-              gimp_plug_in_manager_call_query (manager, context, plug_in_def);
++              {
++                GimpPlugIn *plug_in;
++
++                plug_in =
++                  gimp_plug_in_manager_call_query_async (manager, context,
++                                                         plug_in_def);
++
++                if (plug_in)
++                  {
++                    g_hash_table_add (state.plug_ins, plug_in);
++                    g_object_unref (plug_in);
++                  }
++                else
++                  {
++                    state.n_completed++;
++                    status_callback (NULL, "",
++                                     (gdouble) state.n_completed /
++                                     (gdouble) state.n_plugins);
++                  }
++              }
++
++              if (g_hash_table_size (state.plug_ins) >=
++                  max_n_active_plug_ins)
++                g_main_loop_run (state.loop);
+             }
+         }
++
++      if (g_hash_table_size (state.plug_ins) > 0)
++        g_main_loop_run (state.loop);
++
++      g_signal_handler_disconnect (manager, closed_handler);
++      g_hash_table_unref (state.plug_ins);
++      g_main_loop_unref (state.loop);
+     }
+ 
+   status_callback (NULL, "", 1.0);
+ }
+ 
++static void
++gimp_plug_in_manager_query_closed (GimpPlugInManager    *manager,
++                                   GimpPlugIn           *plug_in,
++                                   GimpPlugInQueryState *state)
++{
++  if (g_hash_table_remove (state->plug_ins, plug_in))
++    {
++      state->n_completed++;
++
++      state->status_callback (NULL, "",
++                              (gdouble) state->n_completed /
++                              (gdouble) state->n_plugins);
++
++      if (g_hash_table_size (state->plug_ins) == 0)
++        g_main_loop_quit (state->loop);
++    }
++}
++
+ /* initialize the plug-ins */
+ static void
+ gimp_plug_in_manager_init_plug_ins (GimpPlugInManager  *manager,
+-- 
+2.55.0
+
